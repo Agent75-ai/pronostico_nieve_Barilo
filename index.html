@@ -10,7 +10,6 @@
       --bg0:#020712;
       --bg1:#071426;
       --bg2:#0c2238;
-      --card:rgba(255,255,255,.085);
       --line:rgba(255,255,255,.16);
       --text:#eff9ff;
       --muted:#a9bdd1;
@@ -33,7 +32,6 @@
       background:
         radial-gradient(circle at 12% -5%,rgba(97,220,255,.30),transparent 32%),
         radial-gradient(circle at 92% 8%,rgba(197,166,255,.22),transparent 34%),
-        radial-gradient(circle at 50% 120%,rgba(121,255,178,.12),transparent 32%),
         linear-gradient(135deg,var(--bg0),var(--bg1) 44%,var(--bg2));
       min-height:100vh;
     }
@@ -53,15 +51,17 @@
     .wrap {
       width:min(1240px,calc(100% - 28px));
       margin:auto;
-      padding:26px 0 52px;
+      padding:24px 0 50px;
+      position:relative;
+      z-index:1;
     }
 
     header {
       display:grid;
       grid-template-columns:1.2fr .8fr;
-      gap:20px;
+      gap:18px;
       align-items:end;
-      margin-bottom:18px;
+      margin-bottom:16px;
     }
 
     .eyebrow {
@@ -112,13 +112,18 @@
       font-size:15.5px;
     }
 
-    .hero-card {
+    .hero-card,
+    .panel,
+    .kpi {
       border:1px solid var(--line);
-      background:linear-gradient(180deg,rgba(255,255,255,.11),rgba(255,255,255,.055));
-      border-radius:26px;
-      padding:16px;
+      background:linear-gradient(180deg,rgba(255,255,255,.105),rgba(255,255,255,.048));
       box-shadow:var(--shadow);
       backdrop-filter:blur(16px);
+    }
+
+    .hero-card {
+      border-radius:26px;
+      padding:16px;
     }
 
     .chip {
@@ -130,20 +135,12 @@
       font-size:13px;
       display:inline-block;
       margin:4px;
-      backdrop-filter:blur(10px);
     }
 
     .panel {
-      border:1px solid var(--line);
-      background:linear-gradient(180deg,rgba(255,255,255,.105),rgba(255,255,255,.048));
       border-radius:26px;
       padding:18px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(16px);
-    }
-
-    .main-first {
-      display:block;
+      margin-bottom:16px;
     }
 
     .grid {
@@ -214,8 +211,8 @@
     .status {
       color:#d2f7ff;
       font-weight:780;
-      margin-top:12px;
-      min-height:34px;
+      margin-top:8px;
+      min-height:28px;
       font-size:13px;
       line-height:1.35;
     }
@@ -224,11 +221,10 @@
       color:var(--muted);
       font-size:12.5px;
       line-height:1.45;
-      margin-top:12px;
+      margin-top:10px;
     }
 
     .source-panel {
-      margin-bottom:16px;
       padding-top:12px;
       padding-bottom:12px;
     }
@@ -251,10 +247,6 @@
 
     .source-ok { color:var(--green); }
     .source-fail { color:var(--red); }
-
-    .settings-drawer {
-      margin-bottom:16px;
-    }
 
     .settings-drawer summary {
       cursor:pointer;
@@ -292,17 +284,7 @@
       margin-bottom:16px;
     }
 
-    .primary-kpis {
-      margin-top:0;
-    }
-
-    .precip-kpis {
-      margin-top:12px;
-    }
-
     .kpi {
-      border:1px solid var(--line);
-      background:linear-gradient(180deg,rgba(255,255,255,.095),rgba(255,255,255,.045));
       border-radius:24px;
       padding:15px;
       min-height:128px;
@@ -319,10 +301,6 @@
       border-radius:50%;
       background:rgba(97,220,255,.10);
       filter:blur(2px);
-    }
-
-    .precip-card::after {
-      background:rgba(101,221,255,.13);
     }
 
     .kpi span {
@@ -387,7 +365,7 @@
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:16px;
-      margin-top:16px;
+      margin-bottom:16px;
     }
 
     .science-card {
@@ -493,10 +471,6 @@
     }
 
     @media (min-width:981px) {
-      .settings-drawer {
-        display:block;
-      }
-
       .settings-drawer summary::after {
         content:"";
         display:none;
@@ -521,7 +495,7 @@
 
     @media (max-width:620px) {
       .wrap {
-        width:min(100% - 18px, 1220px);
+        width:min(100% - 18px, 1240px);
         padding:16px 0 34px;
       }
 
@@ -583,10 +557,6 @@
         font-size:13px;
       }
 
-      .source-panel {
-        border-radius:18px;
-      }
-
       .source-pill {
         white-space:nowrap;
       }
@@ -611,11 +581,6 @@
       th,td {
         padding:8px;
         font-size:12px;
-      }
-
-      .chip {
-        font-size:12px;
-        padding:7px 10px;
       }
     }
   </style>
@@ -642,8 +607,8 @@
     </div>
   </header>
 
-  <main class="main-first">
-    <section class="kpis primary-kpis">
+  <main>
+    <section class="kpis">
       <div class="kpi">
         <span>Veredicto nieve</span>
         <strong id="verdict">—</strong>
@@ -669,26 +634,26 @@
       </div>
     </section>
 
-    <section class="kpis precip-kpis">
-      <div class="kpi precip-card">
+    <section class="kpis">
+      <div class="kpi">
         <span>Veredicto precipitación</span>
         <strong id="precipVerdict">—</strong>
         <small id="precipVerdictText">Sin corrida.</small>
       </div>
 
-      <div class="kpi precip-card">
+      <div class="kpi">
         <span>Próxima precipitación</span>
         <strong id="nextPrecip">—</strong>
         <small id="nextPrecipText">—</small>
       </div>
 
-      <div class="kpi precip-card">
+      <div class="kpi">
         <span>Pico precipitación</span>
         <strong id="peakPrecip">—</strong>
         <small id="peakPrecipText">—</small>
       </div>
 
-      <div class="kpi precip-card">
+      <div class="kpi">
         <span>Total precipitación</span>
         <strong id="totalPrecip">—</strong>
         <small id="totalPrecipText">—</small>
@@ -740,10 +705,10 @@
             <select id="sourceMode">
               <option value="ensemble_openmeteo">Promedio Open-Meteo disponible</option>
               <option value="best_match">Solo Best Match</option>
-              <option value="gfs_seamless">Solo GFS</option>
-              <option value="ecmwf_ifs025">Solo ECMWF IFS 0.25°</option>
-              <option value="icon_global">Solo ICON Global</option>
-              <option value="gem_global">Solo GEM Global</option>
+              <option value="gfs">Solo GFS</option>
+              <option value="ecmwf">Solo ECMWF</option>
+              <option value="icon">Solo ICON</option>
+              <option value="gem">Solo GEM</option>
               <option value="ensemble_plus_metno">Promedio + MET Norway experimental</option>
               <option value="metno">Solo MET Norway experimental</option>
             </select>
@@ -759,7 +724,7 @@
         </div>
 
         <div class="note">
-          MET Norway queda como experimental porque suele requerir proxy/identificación al usarse desde navegador.
+          MET Norway queda como experimental. Si falla, el modelo sigue con Open-Meteo.
         </div>
       </div>
     </details>
@@ -846,4 +811,38 @@ O solo:
           </div>
           <div class="formula">acumulación ≈ precip × prob_nieve × relación_nieve/agua × adherencia</div>
           <div id="physicsAccum" class="diagnosis"></div>
-        </
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Qué faltaría para que sí nieve</h2>
+
+        <div class="science-card">
+          <h3>Condiciones necesarias</h3>
+          <div id="snowNeeds"></div>
+        </div>
+
+        <br>
+
+        <div class="science-card">
+          <h3>Diagnóstico práctico</h3>
+          <div id="snowNeedsText" class="diagnosis"></div>
+        </div>
+      </section>
+    </section>
+
+    <section class="panel">
+      <h2>Auditoría del modelo</h2>
+      <ul class="audit-list">
+        <li>El modelo es diagnóstico y experimental; no reemplaza alertas oficiales.</li>
+        <li>El promedio excluye automáticamente fuentes que fallen.</li>
+        <li>La dispersión entre modelos se muestra como incertidumbre, no como error exacto.</li>
+        <li>Windguru se abre en botón externo y se compara manualmente, sin scraping.</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2>Detalle horario</h2>
+      <div class="tablebox">
+        <table>
+    
