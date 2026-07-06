@@ -13,7 +13,6 @@
       --text:#eff9ff;
       --muted:#a9bdd1;
       --line:rgba(255,255,255,.16);
-      --card:rgba(255,255,255,.085);
       --blue:#61dcff;
       --green:#79ffb2;
       --yellow:#ffd166;
@@ -521,7 +520,7 @@
         <span>Lago Moreno</span>
       </h1>
       <div class="lead">
-        Pronóstico físico-matemático para Lago Moreno, Bariloche. Combina modelos abiertos,
+        Pronóstico físico-matemático para Lago Moreno, Bariloche. Usa una fuente estable,
         estima cota de nieve, bulbo húmedo, energía de fusión, orografía y acumulación horaria.
       </div>
     </div>
@@ -531,7 +530,7 @@
       <span class="chip">Lat/Lon: -41.10, -71.45</span>
       <span class="chip">Altitud: 778 m</span>
       <span class="chip">Sin API key</span>
-      <span class="chip">Mobile ready</span>
+      <span class="chip">Versión estable</span>
     </div>
   </header>
 
@@ -578,7 +577,7 @@
       <div class="kpi">
         <span>Confianza</span>
         <strong id="confidence">—</strong>
-        <small id="confidenceText">Dispersión entre modelos.</small>
+        <small id="confidenceText">Fuente estable.</small>
       </div>
     </section>
 
@@ -618,12 +617,7 @@
           <div class="field full">
             <label>Fuente automática</label>
             <select id="sourceMode">
-              <option value="ensemble">Promedio disponible</option>
-              <option value="best_match">Solo Best Match</option>
-              <option value="gfs">Solo GFS</option>
-              <option value="ecmwf">Solo ECMWF</option>
-              <option value="icon">Solo ICON</option>
-              <option value="gem">Solo GEM</option>
+              <option value="best_match">Open-Meteo Best Match estable</option>
             </select>
           </div>
           <div class="field full">
@@ -634,7 +628,7 @@
           </div>
         </div>
         <div class="note">
-          Si una fuente falla, queda excluida. Si todas fallan, el error aparece arriba.
+          Esta versión usa una sola fuente estable para evitar errores de ensamble y asegurar que el pronóstico corra.
         </div>
       </div>
     </details>
@@ -644,7 +638,6 @@
       <canvas id="chart"></canvas>
       <div class="note">
         Amarillo: probabilidad de nieve. Verde: acumulación cm/h. Azul: precipitación relativa.
-        Banda verde tenue: dispersión entre modelos.
       </div>
     </section>
 
@@ -685,7 +678,7 @@ O:
         <br>
         <div class="science-card">
           <h3>2. Energía de fusión</h3>
-          <div class="formula">M = ∫ max(Tw(z)-0.1°C,0) dz ; supervivencia = exp(-M/360)</div>
+          <div class="formula">M ≈ max(Tw_eff - 0.1°C, 0) × 450 m</div>
           <div id="physicsMelt" class="diagnosis"></div>
         </div>
         <br>
@@ -740,54 +733,91 @@ O:
 (function(){
   "use strict";
 
-  var WINDGURU_URL = "https://www.windguru.cz/366613";
+  const WINDGURU_URL = "https://www.windguru.cz/366613";
+  let latestModel = [];
 
-  var SOURCES = [
-    {id:"best_match", label:"Best Match", endpoint:"https://api.open-meteo.com/v1/forecast", maxDays:10, weight:.34},
-    {id:"gfs", label:"GFS", endpoint:"https://api.open-meteo.com/v1/gfs", maxDays:7, weight:.20},
-    {id:"ecmwf", label:"ECMWF", endpoint:"https://api.open-meteo.com/v1/ecmwf", maxDays:7, weight:.26},
-    {id:"icon", label:"ICON", endpoint:"https://api.open-meteo.com/v1/dwd-icon", maxDays:7, weight:.12},
-    {id:"gem", label:"GEM", endpoint:"https://api.open-meteo.com/v1/gem", maxDays:7, weight:.08}
-  ];
-
-  var latestModel = [];
-  var resizeTimer = null;
-
-  function $(id){ return document.getElementById(id); }
-  function clamp(x,a,b){ return Math.max(a, Math.min(b, x)); }
-  function sigmoid(x){ return 1/(1+Math.exp(-x)); }
-  function rad(d){ return d*Math.PI/180; }
-  function finite(x){ return Number.isFinite(Number(x)); }
-  function num(x,fallback){ var n=Number(x); return Number.isFinite(n)?n:fallback; }
-  function fmt(x,d){ d=d==null?1:d; return finite(x)?Number(x).toFixed(d):"—"; }
+  const $ = id => document.getElementById(id);
+  const finite = x => Number.isFinite(Number(x));
+  const num = (x,f=0) => finite(x) ? Number(x) : f;
+  const clamp = (x,a,b) => Math.max(a,Math.min(b,x));
+  const sigmoid = x => 1/(1+Math.exp(-x));
+  const fmt = (x,d=1) => finite(x) ? Number(x).toFixed(d) : "—";
 
   window.onerror = function(msg,src,line){
-    var s = $("status");
+    const s = $("status");
     if(s) s.textContent = "Error JS: " + msg + " línea " + line;
   };
 
   function localTime(t){
-    var d = new Date(t);
+    const d = new Date(t);
     if(Number.isNaN(d.getTime())) return "—";
-    return d.toLocaleString("es-AR",{weekday:"short",day:"2-digit",hour:"2-digit",minute:"2-digit"});
+    return d.toLocaleString("es-AR", {
+      weekday:"short",
+      day:"2-digit",
+      hour:"2-digit",
+      minute:"2-digit"
+    });
   }
 
   function isoHour(t){
-    var d = new Date(t);
+    const d = new Date(t);
     if(Number.isNaN(d.getTime())) return String(t);
-    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")+" "+String(d.getHours()).padStart(2,"0")+":00";
+    return (
+      d.getFullYear() + "-" +
+      String(d.getMonth()+1).padStart(2,"0") + "-" +
+      String(d.getDate()).padStart(2,"0") + " " +
+      String(d.getHours()).padStart(2,"0") + ":00"
+    );
   }
 
   function esWater(T){ return 6.112*Math.exp((17.67*T)/(T+243.5)); }
   function esIce(T){ return 6.112*Math.exp((22.46*T)/(T+272.62)); }
-  function esSat(T){ return T<0 ? esIce(T) : esWater(T); }
+  function esSat(T){ return T < 0 ? esIce(T) : esWater(T); }
+
+  function pressureFromMsl(pmsl,z){
+    const p0 = finite(pmsl) ? Number(pmsl) : 1013.25;
+    return p0 * Math.pow(1 - 0.0065*z/288.15, 5.255);
+  }
 
   function wetBulb(T,RH,p){
-    if(!finite(T)||!finite(RH)||!finite(p)) return T;
-    RH = clamp(RH,1,100);
-    var eActual = esSat(T)*RH/100;
-    var lo=-45, hi=T+0.2;
+    if(!finite(T) || !finite(RH) || !finite(p)) return T;
 
-    for(var i=0;i<38;i++){
-      var tw=.5*(lo+hi);
-      
+    RH = clamp(RH,1,100);
+    const eActual = esSat(T) * RH / 100;
+
+    let lo = -45;
+    let hi = T + 0.2;
+
+    for(let i=0;i<38;i++){
+      const tw = 0.5*(lo+hi);
+      const gamma = 0.00066 * (1 + 0.00115*tw);
+      const eTw = esSat(tw) - gamma*p*(T-tw);
+
+      if(eTw > eActual) hi = tw;
+      else lo = tw;
+    }
+
+    return 0.5*(lo+hi);
+  }
+
+  function buildUrl(){
+    const lat = $("lat") ? $("lat").value : "-41.1000";
+    const lon = $("lon") ? $("lon").value : "-71.4500";
+    const elev = $("elev") ? $("elev").value : "778";
+    const days = clamp(num($("days") ? $("days").value : 7,7),1,10);
+
+    const hourly = [
+      "temperature_2m",
+      "relative_humidity_2m",
+      "precipitation",
+      "precipitation_probability",
+      "snowfall",
+      "freezing_level_height",
+      "surface_pressure",
+      "pressure_msl",
+      "wind_speed_10m",
+      "wind_direction_10m"
+    ].join(",");
+
+    const p = new URLSearchParams({
+      latitude:lat,
