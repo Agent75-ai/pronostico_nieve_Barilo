@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BariSnow Lago Moreno</title>
+
+  <style>
+    :root {
+      --bg0:#020712;
+      --bg1:#071426;
+      --bg2:#0c2238;
+      --card:rgba(255,255,255,.085);
+      --line:rgba(255,255,255,.16);
+      --text:#eff9ff;
+      --muted:#a9bdd1;
+      --blue:#61dcff;
+      --green:#79ffb2;
+      --yellow:#ffd166;
+      --red:#ff6b6b;
+      --purple:#c5a6ff;
+      --shadow:0 24px 80px rgba(0,0,0,.34);
+    }
+
+    * { box-sizing:border-box; }
+
+    html { scroll-behavior:smooth; }
+
+    body {
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 12% -5%,rgba(97,220,255,.30),transparent 32%),
+        radial-gradient(circle at 92% 8%,rgba(197,166,255,.22),transparent 34%),
+        radial-gradient(circle at 50% 120%,rgba(121,255,178,.12),transparent 32%),
+        linear-gradient(135deg,var(--bg0),var(--bg1) 44%,var(--bg2));
+      min-height:100vh;
+    }
+
+    body::before {
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size:44px 44px;
+      mask-image:linear-gradient(to bottom,rgba(0,0,0,.65),transparent 70%);
+    }
+
+    .wrap {
+      width:min(1240px,calc(100% - 28px));
+      margin:auto;
+      padding:26px 0 52px;
+    }
+
+    header {
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:20px;
+      align-items:end;
+      margin-bottom:18px;
+    }
+
+    .eyebrow {
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      color:#dff8ff;
+      background:rgba(97,220,255,.10);
+      border:1px solid rgba(97,220,255,.28);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:12px;
+      font-weight:850;
+      margin-bottom:12px;
+    }
+
+    .dot {
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--green);
+      box-shadow:0 0 18px var(--green);
+    }
+
+    h1 {
+      margin:0;
+      font-size:clamp(40px,6vw,78px);
+      line-height:.88;
+      letter-spacing:-.075em;
+    }
+
+    h2 {
+      margin:0 0 14px;
+      font-size:18px;
+      letter-spacing:-.025em;
+    }
+
+    h3 {
+      margin:0 0 10px;
+      font-size:15px;
+    }
+
+    .lead {
+      color:var(--muted);
+      max-width:780px;
+      line-height:1.48;
+      margin-top:14px;
+      font-size:15.5px;
+    }
+
+    .hero-card {
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(255,255,255,.11),rgba(255,255,255,.055));
+      border-radius:26px;
+      padding:16px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(16px);
+    }
+
+    .chip {
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.075);
+      padding:8px 12px;
+      border-radius:999px;
+      color:#dff7ff;
+      font-size:13px;
+      display:inline-block;
+      margin:4px;
+      backdrop-filter:blur(10px);
+    }
+
+    .panel {
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(255,255,255,.105),rgba(255,255,255,.048));
+      border-radius:26px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(16px);
+    }
+
+    .main-first {
+      display:block;
+    }
+
+    .grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:11px;
+    }
+
+    .field {
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .full { grid-column:1/-1; }
+
+    label {
+      color:var(--muted);
+      font-size:12px;
+      font-weight:850;
+      letter-spacing:.01em;
+    }
+
+    input, textarea, button, select {
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:15px;
+      padding:11px 12px;
+      background:rgba(0,0,0,.30);
+      color:var(--text);
+      outline:none;
+      font-size:14px;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color:rgba(97,220,255,.76);
+      box-shadow:0 0 0 3px rgba(97,220,255,.13);
+    }
+
+    textarea {
+      min-height:128px;
+      resize:vertical;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    button {
+      cursor:pointer;
+      border:0;
+      background:linear-gradient(135deg,var(--blue),#cff7ff);
+      color:#03131f;
+      font-weight:950;
+      transition:.16s ease;
+    }
+
+    button:hover {
+      transform:translateY(-1px);
+      filter:saturate(1.08);
+    }
+
+    button.secondary {
+      background:rgba(255,255,255,.10);
+      color:var(--text);
+      border:1px solid var(--line);
+    }
+
+    .status {
+      color:#d2f7ff;
+      font-weight:780;
+      margin-top:12px;
+      min-height:34px;
+      font-size:13px;
+      line-height:1.35;
+    }
+
+    .note {
+      color:var(--muted);
+      font-size:12.5px;
+      line-height:1.45;
+      margin-top:12px;
+    }
+
+    .source-panel {
+      margin-bottom:16px;
+      padding-top:12px;
+      padding-bottom:12px;
+    }
+
+    #sourceStatus {
+      overflow-x:auto;
+      white-space:nowrap;
+      padding-bottom:4px;
+    }
+
+    .source-pill {
+      display:inline-block;
+      margin:4px 4px 0 0;
+      padding:5px 8px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      font-size:12px;
+      background:rgba(255,255,255,.08);
+    }
+
+    .source-ok { color:var(--green); }
+    .source-fail { color:var(--red); }
+
+    .settings-drawer {
+      margin-bottom:16px;
+    }
+
+    .settings-drawer summary {
+      cursor:pointer;
+      font-size:18px;
+      font-weight:900;
+      list-style:none;
+    }
+
+    .settings-drawer summary::-webkit-details-marker {
+      display:none;
+    }
+
+    .settings-drawer summary::after {
+      content:"Abrir";
+      float:right;
+      font-size:12px;
+      color:#03131f;
+      background:linear-gradient(135deg,var(--blue),#cff7ff);
+      border-radius:999px;
+      padding:5px 10px;
+    }
+
+    .settings-drawer[open] summary::after {
+      content:"Cerrar";
+    }
+
+    .settings-content {
+      margin-top:14px;
+    }
+
+    .kpis {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .primary-kpis {
+      margin-top:0;
+    }
+
+    .precip-kpis {
+      margin-top:12px;
+    }
+
+    .kpi {
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(255,255,255,.095),rgba(255,255,255,.045));
+      border-radius:24px;
+      padding:15px;
+      min-height:128px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .kpi::after {
+      content:"";
+      position:absolute;
+      inset:auto -30px -55px auto;
+      width:120px;
+      height:120px;
+      border-radius:50%;
+      background:rgba(97,220,255,.10);
+      filter:blur(2px);
+    }
+
+    .precip-card::after {
+      background:rgba(101,221,255,.13);
+    }
+
+    .kpi span {
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:950;
+      text-transform:uppercase;
+      letter-spacing:.055em;
+      position:relative;
+      z-index:1;
+    }
+
+    .kpi strong {
+      display:block;
+      margin:9px 0 5px;
+      font-size:31px;
+      letter-spacing:-.055em;
+      line-height:1;
+      word-break:break-word;
+      position:relative;
+      z-index:1;
+    }
+
+    .kpi small {
+      color:var(--muted);
+      line-height:1.35;
+      position:relative;
+      z-index:1;
+    }
+
+    .green { color:var(--green); }
+    .yellow { color:var(--yellow); }
+    .red { color:var(--red); }
+    .purple { color:var(--purple); }
+
+    .chart-wrap {
+      width:100%;
+      overflow:hidden;
+    }
+
+    canvas {
+      width:100%;
+      height:370px;
+      display:block;
+      border-radius:20px;
+      border:1px solid var(--line);
+      background:
+        radial-gradient(circle at 20% 0%,rgba(97,220,255,.10),transparent 28%),
+        rgba(0,0,0,.25);
+    }
+
+    .diagnosis {
+      line-height:1.58;
+      color:#dcefff;
+      font-size:14px;
+    }
+
+    .diagnosis b { color:white; }
+
+    .split, .science-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+      margin-top:16px;
+    }
+
+    .science-card {
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.065);
+      border-radius:19px;
+      padding:14px;
+    }
+
+    .formula {
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+      background:rgba(0,0,0,.28);
+      border:1px solid var(--line);
+      border-radius:13px;
+      padding:10px;
+      color:#dff8ff;
+      margin:10px 0;
+      overflow:auto;
+      font-size:13px;
+    }
+
+    .need {
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      padding:10px 0;
+      font-size:14px;
+    }
+
+    .need:last-child { border-bottom:0; }
+
+    .need b {
+      color:white;
+      text-align:right;
+    }
+
+    .need-ok { color:var(--green) !important; }
+    .need-mid { color:var(--yellow) !important; }
+    .need-bad { color:var(--red) !important; }
+
+    .meter {
+      height:10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.12);
+      overflow:hidden;
+      margin-top:12px;
+    }
+
+    .meter-fill {
+      height:100%;
+      border-radius:999px;
+      background:linear-gradient(90deg,var(--red),var(--yellow),var(--green));
+    }
+
+    .tablebox {
+      max-height:470px;
+      overflow:auto;
+      border:1px solid var(--line);
+      border-radius:20px;
+      margin-top:16px;
+    }
+
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:13px;
+    }
+
+    th,td {
+      padding:10px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      white-space:nowrap;
+      text-align:left;
+    }
+
+    th {
+      position:sticky;
+      top:0;
+      background:#101b2c;
+      color:#c5d8e8;
+      z-index:1;
+    }
+
+    .badge {
+      display:inline-block;
+      border-radius:999px;
+      padding:4px 9px;
+      font-size:11px;
+      font-weight:950;
+    }
+
+    .low { background:rgba(124,255,178,.14); color:var(--green); }
+    .mid { background:rgba(255,209,102,.14); color:var(--yellow); }
+    .high { background:rgba(255,107,107,.16); color:var(--red); }
+
+    .audit-list {
+      margin:0;
+      padding-left:18px;
+      color:var(--muted);
+      line-height:1.55;
+      font-size:14px;
+    }
+
+    @media (min-width:981px) {
+      .settings-drawer {
+        display:block;
+      }
+
+      .settings-drawer summary::after {
+        content:"";
+        display:none;
+      }
+    }
+
+    @media (max-width:980px) {
+      header,
+      .split,
+      .science-grid {
+        grid-template-columns:1fr;
+      }
+
+      .kpis {
+        grid-template-columns:1fr 1fr;
+      }
+
+      canvas {
+        height:340px;
+      }
+    }
+
+    @media (max-width:620px) {
+      .wrap {
+        width:min(100% - 18px, 1220px);
+        padding:16px 0 34px;
+      }
+
+      header {
+        gap:12px;
+        margin-bottom:12px;
+      }
+
+      .hero-card {
+        display:none;
+      }
+
+      .eyebrow {
+        font-size:11px;
+        padding:7px 10px;
+        margin-bottom:10px;
+      }
+
+      h1 {
+        font-size:38px;
+        line-height:.92;
+      }
+
+      .lead {
+        font-size:13.5px;
+        line-height:1.42;
+      }
+
+      .panel {
+        border-radius:20px;
+        padding:14px;
+      }
+
+      .kpis {
+        grid-template-columns:1fr;
+        gap:10px;
+        margin-bottom:10px;
+      }
+
+      .grid {
+        grid-template-columns:1fr;
+      }
+
+      .kpi {
+        border-radius:18px;
+        padding:14px;
+        min-height:auto;
+      }
+
+      .kpi span {
+        font-size:11px;
+      }
+
+      .kpi strong {
+        font-size:28px;
+      }
+
+      .kpi small {
+        font-size:13px;
+      }
+
+      .source-panel {
+        border-radius:18px;
+      }
+
+      .source-pill {
+        white-space:nowrap;
+      }
+
+      canvas {
+        height:260px;
+      }
+
+      .panel h2 {
+        font-size:17px;
+      }
+
+      .need {
+        flex-direction:column;
+        gap:4px;
+      }
+
+      .need b {
+        text-align:left;
+      }
+
+      th,td {
+        padding:8px;
+        font-size:12px;
+      }
+
+      .chip {
+        font-size:12px;
+        padding:7px 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow"><span class="dot"></span> Modelo experimental de nieve local</div>
+      <h1>BariSnow<br>Lago Moreno</h1>
+      <div class="lead">
+        Pronóstico físico-matemático para Lago Moreno, Bariloche. Combina modelos abiertos,
+        estima cota de nieve, bulbo húmedo, precipitación orográfica y acumulación horaria.
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <span class="chip">Zona: Lago Moreno</span>
+      <span class="chip">Lat/Lon: -41.10, -71.45</span>
+      <span class="chip">Altitud: 778 m</span>
+      <span class="chip">Sin API key</span>
+      <span class="chip">Mobile ready</span>
+    </div>
+  </header>
+
+  <main class="main-first">
+    <section class="kpis primary-kpis">
+      <div class="kpi">
+        <span>Veredicto nieve</span>
+        <strong id="verdict">—</strong>
+        <small id="verdictText">Sin corrida.</small>
+      </div>
+
+      <div class="kpi">
+        <span>Próxima nieve</span>
+        <strong id="nextSnow">—</strong>
+        <small id="nextSnowText">—</small>
+      </div>
+
+      <div class="kpi">
+        <span>Máximo riesgo nieve</span>
+        <strong id="peakRisk">—</strong>
+        <small id="peakRiskText">—</small>
+      </div>
+
+      <div class="kpi">
+        <span>Acumulado nieve</span>
+        <strong id="accum">—</strong>
+        <small id="accumText">—</small>
+      </div>
+    </section>
+
+    <section class="kpis precip-kpis">
+      <div class="kpi precip-card">
+        <span>Veredicto precipitación</span>
+        <strong id="precipVerdict">—</strong>
+        <small id="precipVerdictText">Sin corrida.</small>
+      </div>
+
+      <div class="kpi precip-card">
+        <span>Próxima precipitación</span>
+        <strong id="nextPrecip">—</strong>
+        <small id="nextPrecipText">—</small>
+      </div>
+
+      <div class="kpi precip-card">
+        <span>Pico precipitación</span>
+        <strong id="peakPrecip">—</strong>
+        <small id="peakPrecipText">—</small>
+      </div>
+
+      <div class="kpi precip-card">
+        <span>Total precipitación</span>
+        <strong id="totalPrecip">—</strong>
+        <small id="totalPrecipText">—</small>
+      </div>
+    </section>
+
+    <section class="panel source-panel">
+      <div id="status" class="status">Listo para correr.</div>
+      <div id="sourceStatus" class="note"></div>
+    </section>
+
+    <details class="panel settings-drawer">
+      <summary>Configuración del modelo</summary>
+
+      <div class="settings-content">
+        <div class="grid">
+          <div class="field">
+            <label>Latitud</label>
+            <input id="lat" type="number" step="0.0001" value="-41.1000">
+          </div>
+
+          <div class="field">
+            <label>Longitud</label>
+            <input id="lon" type="number" step="0.0001" value="-71.4500">
+          </div>
+
+          <div class="field">
+            <label>Altitud, m</label>
+            <input id="elev" type="number" value="778">
+          </div>
+
+          <div class="field">
+            <label>Días</label>
+            <input id="days" type="number" min="1" max="10" value="7">
+          </div>
+
+          <div class="field">
+            <label>Orografía</label>
+            <input id="oro" type="number" step="0.05" value="0.42">
+          </div>
+
+          <div class="field">
+            <label>Ajuste frío local °C</label>
+            <input id="coldBias" type="number" step="0.1" value="0.0">
+          </div>
+
+          <div class="field full">
+            <label>Fuente automática</label>
+            <select id="sourceMode">
+              <option value="ensemble_openmeteo">Promedio Open-Meteo disponible</option>
+              <option value="best_match">Solo Best Match</option>
+              <option value="gfs_seamless">Solo GFS</option>
+              <option value="ecmwf_ifs025">Solo ECMWF IFS 0.25°</option>
+              <option value="icon_global">Solo ICON Global</option>
+              <option value="gem_global">Solo GEM Global</option>
+              <option value="ensemble_plus_metno">Promedio + MET Norway experimental</option>
+              <option value="metno">Solo MET Norway experimental</option>
+            </select>
+          </div>
+
+          <div class="field full">
+            <button id="runBtn">Correr pronóstico</button>
+          </div>
+
+          <div class="field full">
+            <button id="windguruBtn" class="secondary" type="button">Abrir Windguru Lago Moreno</button>
+          </div>
+        </div>
+
+        <div class="note">
+          MET Norway queda como experimental porque suele requerir proxy/identificación al usarse desde navegador.
+        </div>
+      </div>
+    </details>
+
+    <section class="panel">
+      <h2>Gráfico principal</h2>
+      <div class="chart-wrap">
+        <canvas id="chart"></canvas>
+      </div>
+      <div class="note">
+        Amarillo: probabilidad de nieve. Verde: acumulación cm/h. Azul: precipitación relativa.
+        Banda verde tenue: dispersión entre modelos. Violeta: Windguru manual, si lo cargás.
+      </div>
+    </section>
+
+    <section class="split">
+      <section class="panel">
+        <h2>Diagnóstico meteorológico</h2>
+        <div id="diagnosis" class="diagnosis">Ejecutá el modelo para generar el análisis.</div>
+      </section>
+
+      <section class="panel">
+        <h2>Comparar con Windguru</h2>
+        <div class="diagnosis">
+          Pegá la nieve de Windguru en formato <b>fecha hora, cm/h</b>.
+          También acepta una lista de números; en ese caso los compara contra las primeras horas del modelo.
+        </div>
+
+        <textarea id="windguruInput" placeholder="Ejemplos:
+2026-07-07 06:00, 0.4
+2026-07-07 07:00, 1.2
+2026-07-07 08:00, 0.8
+
+O solo:
+0
+0.4
+1.2
+0.8"></textarea>
+
+        <div class="grid" style="margin-top:10px;">
+          <div class="field">
+            <button id="compareBtn" class="secondary">Comparar</button>
+          </div>
+          <div class="field">
+            <button id="clearWgBtn" class="secondary">Limpiar</button>
+          </div>
+        </div>
+
+        <div id="wgSummary" class="status"></div>
+      </section>
+    </section>
+
+    <section class="science-grid">
+      <section class="panel">
+        <h2>Física detrás de la probabilidad de nieve</h2>
+
+        <div class="science-card">
+          <h3>1. Bulbo húmedo efectivo</h3>
+          <div class="diagnosis">
+            La nieve depende más del <b>bulbo húmedo</b> que de la temperatura común. Cuando precipita en aire seco,
+            parte se evapora y enfría la columna, bajando la cota de nieve.
+          </div>
+          <div class="formula">Tw_eff = Tw - enfriamiento_precipitación - enfriamiento_orográfico</div>
+          <div id="physicsTw" class="diagnosis"></div>
+        </div>
+
+        <br>
+
+        <div class="science-card">
+          <h3>2. Cota de nieve vs altitud</h3>
+          <div class="diagnosis">
+            Para nieve en Lago Moreno, la cota estimada debe acercarse a la altitud del barrio.
+          </div>
+          <div class="formula">nieve probable si: cota_nieve ≤ altitud_local + 100/200 m</div>
+          <div id="physicsCota" class="diagnosis"></div>
+        </div>
+
+        <br>
+
+        <div class="science-card">
+          <h3>3. Precipitación y acumulación</h3>
+          <div class="diagnosis">
+            Sin precipitación no hay nevada; sin temperatura suficientemente baja, la nieve no acumula.
+          </div>
+          <div class="formula">acumulación ≈ precip × prob_nieve × relación_nieve/agua × adherencia</div>
+          <div id="physicsAccum" class="diagnosis"></div>
+        </
