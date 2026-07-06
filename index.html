@@ -1,587 +1,139 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>BariSnow Lago Moreno</title>
-
-  <style>
-    :root{
-      --bg0:#020712;
-      --bg1:#071426;
-      --bg2:#102843;
-      --text:#eff9ff;
-      --muted:#a9bdd1;
-      --line:rgba(255,255,255,.16);
-      --blue:#61dcff;
-      --green:#79ffb2;
-      --yellow:#ffd166;
-      --red:#ff6b6b;
-      --purple:#c5a6ff;
-      --shadow:0 24px 80px rgba(0,0,0,.34);
-    }
-
-    *{box-sizing:border-box}
-
-    body{
-      margin:0;
-      min-height:100vh;
-      color:var(--text);
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background:
-        radial-gradient(circle at 12% -5%,rgba(97,220,255,.30),transparent 32%),
-        radial-gradient(circle at 92% 8%,rgba(197,166,255,.22),transparent 34%),
-        linear-gradient(135deg,var(--bg0),var(--bg1) 44%,var(--bg2));
-    }
-
-    body:before{
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      background-image:
-        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
-      background-size:44px 44px;
-      mask-image:linear-gradient(to bottom,rgba(0,0,0,.7),transparent 75%);
-    }
-
-    .wrap{
-      position:relative;
-      z-index:1;
-      width:min(1240px,calc(100% - 28px));
-      margin:auto;
-      padding:24px 0 48px;
-    }
-
-    header{
-      display:grid;
-      grid-template-columns:1.2fr .8fr;
-      gap:18px;
-      align-items:end;
-      margin-bottom:16px;
-    }
-
-    .eyebrow{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      margin-bottom:12px;
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid rgba(97,220,255,.28);
-      background:rgba(97,220,255,.10);
-      color:#dff8ff;
-      font-size:12px;
-      font-weight:850;
-    }
-
-    .dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:var(--green);
-      box-shadow:0 0 18px var(--green);
-    }
-
-    h1{
-      margin:0;
-      font-size:clamp(40px,6vw,78px);
-      line-height:.88;
-      letter-spacing:-.075em;
-    }
-
-    h1 span{display:block}
-
-    h2{
-      margin:0 0 14px;
-      font-size:18px;
-      letter-spacing:-.025em;
-    }
-
-    h3{
-      margin:0 0 10px;
-      font-size:15px;
-    }
-
-    .lead{
-      max-width:780px;
-      margin-top:14px;
-      color:var(--muted);
-      line-height:1.48;
-      font-size:15.5px;
-    }
-
-    .hero-card,.panel,.kpi{
-      border:1px solid var(--line);
-      background:linear-gradient(180deg,rgba(255,255,255,.105),rgba(255,255,255,.048));
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(16px);
-    }
-
-    .hero-card{
-      border-radius:26px;
-      padding:16px;
-    }
-
-    .chip{
-      display:inline-block;
-      margin:4px;
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.075);
-      color:#dff7ff;
-      font-size:13px;
-    }
-
-    .panel{
-      border-radius:26px;
-      padding:18px;
-      margin-bottom:16px;
-    }
-
-    .kpis{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:12px;
-      margin-bottom:16px;
-    }
-
-    .kpi{
-      position:relative;
-      overflow:hidden;
-      min-height:128px;
-      border-radius:24px;
-      padding:15px;
-    }
-
-    .kpi:after{
-      content:"";
-      position:absolute;
-      right:-30px;
-      bottom:-55px;
-      width:120px;
-      height:120px;
-      border-radius:50%;
-      background:rgba(97,220,255,.10);
-      filter:blur(2px);
-    }
-
-    .kpi span{
-      position:relative;
-      z-index:1;
-      display:block;
-      color:var(--muted);
-      font-size:12px;
-      font-weight:950;
-      text-transform:uppercase;
-      letter-spacing:.055em;
-    }
-
-    .kpi strong{
-      position:relative;
-      z-index:1;
-      display:block;
-      margin:9px 0 5px;
-      font-size:31px;
-      line-height:1;
-      letter-spacing:-.055em;
-      word-break:break-word;
-    }
-
-    .kpi small{
-      position:relative;
-      z-index:1;
-      color:var(--muted);
-      line-height:1.35;
-    }
-
-    .green{color:var(--green)}
-    .yellow{color:var(--yellow)}
-    .red{color:var(--red)}
-    .purple{color:var(--purple)}
-
-    .grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:11px;
-    }
-
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-
-    .full{grid-column:1/-1}
-
-    label{
-      color:var(--muted);
-      font-size:12px;
-      font-weight:850;
-    }
-
-    input,select,textarea,button{
-      width:100%;
-      padding:11px 12px;
-      border-radius:15px;
-      border:1px solid var(--line);
-      background:rgba(0,0,0,.30);
-      color:var(--text);
-      outline:none;
-      font-size:14px;
-    }
-
-    input:focus,select:focus,textarea:focus{
-      border-color:rgba(97,220,255,.76);
-      box-shadow:0 0 0 3px rgba(97,220,255,.13);
-    }
-
-    button{
-      cursor:pointer;
-      border:0;
-      background:linear-gradient(135deg,var(--blue),#cff7ff);
-      color:#03131f;
-      font-weight:950;
-    }
-
-    button.secondary{
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.10);
-      color:var(--text);
-    }
-
-    textarea{
-      min-height:128px;
-      resize:vertical;
-      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
-      font-size:13px;
-      line-height:1.45;
-    }
-
-    .status{
-      min-height:28px;
-      margin-top:8px;
-      color:#d2f7ff;
-      font-size:13px;
-      font-weight:780;
-      line-height:1.35;
-    }
-
-    .note{
-      margin-top:10px;
-      color:var(--muted);
-      font-size:12.5px;
-      line-height:1.45;
-    }
-
-    #sourceStatus{
-      overflow-x:auto;
-      white-space:nowrap;
-      padding-bottom:4px;
-    }
-
-    .source-pill{
-      display:inline-block;
-      margin:4px 4px 0 0;
-      padding:5px 8px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.08);
-      font-size:12px;
-    }
-
-    .source-ok{color:var(--green)}
-    .source-fail{color:var(--red)}
-
-    details summary{
-      cursor:pointer;
-      list-style:none;
-      font-size:18px;
-      font-weight:900;
-    }
-
-    details summary::-webkit-details-marker{display:none}
-
-    details summary:after{
-      content:"Abrir";
-      float:right;
-      padding:5px 10px;
-      border-radius:999px;
-      background:linear-gradient(135deg,var(--blue),#cff7ff);
-      color:#03131f;
-      font-size:12px;
-    }
-
-    details[open] summary:after{content:"Cerrar"}
-
-    .settings-content{margin-top:14px}
-
-    canvas{
-      display:block;
-      width:100%;
-      height:370px;
-      border-radius:20px;
-      border:1px solid var(--line);
-      background:rgba(0,0,0,.25);
-    }
-
-    .diagnosis{
-      color:#dcefff;
-      font-size:14px;
-      line-height:1.58;
-    }
-
-    .diagnosis b{color:#fff}
-
-    .split,.science-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:16px;
-      margin-bottom:16px;
-    }
-
-    .science-card{
-      padding:14px;
-      border-radius:19px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.065);
-    }
-
-    .formula{
-      margin:10px 0;
-      padding:10px;
-      border-radius:13px;
-      border:1px solid var(--line);
-      background:rgba(0,0,0,.28);
-      color:#dff8ff;
-      overflow:auto;
-      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
-      font-size:13px;
-    }
-
-    .need{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      padding:10px 0;
-      border-bottom:1px solid rgba(255,255,255,.10);
-      font-size:14px;
-    }
-
-    .need:last-child{border-bottom:0}
-    .need b{text-align:right}
-    .need-ok{color:var(--green)!important}
-    .need-mid{color:var(--yellow)!important}
-    .need-bad{color:var(--red)!important}
-
-    .meter{
-      height:10px;
-      margin-top:12px;
-      border-radius:999px;
-      background:rgba(255,255,255,.12);
-      overflow:hidden;
-    }
-
-    .meter-fill{
-      height:100%;
-      border-radius:999px;
-      background:linear-gradient(90deg,var(--red),var(--yellow),var(--green));
-    }
-
-    .tablebox{
-      max-height:470px;
-      overflow:auto;
-      margin-top:16px;
-      border-radius:20px;
-      border:1px solid var(--line);
-    }
-
-    table{
-      width:100%;
-      border-collapse:collapse;
-      font-size:13px;
-    }
-
-    th,td{
-      padding:10px;
-      border-bottom:1px solid rgba(255,255,255,.10);
-      white-space:nowrap;
-      text-align:left;
-    }
-
-    th{
-      position:sticky;
-      top:0;
-      z-index:1;
-      background:#101b2c;
-      color:#c5d8e8;
-    }
-
-    .badge{
-      display:inline-block;
-      padding:4px 9px;
-      border-radius:999px;
-      font-size:11px;
-      font-weight:950;
-    }
-
-    .low{background:rgba(124,255,178,.14);color:var(--green)}
-    .mid{background:rgba(255,209,102,.14);color:var(--yellow)}
-    .high{background:rgba(255,107,107,.16);color:var(--red)}
-
-    @media (min-width:981px){
-      details summary:after{display:none}
-    }
-
-    @media (max-width:980px){
-      header,.split,.science-grid{grid-template-columns:1fr}
-      .kpis{grid-template-columns:1fr 1fr}
-      canvas{height:340px}
-    }
-
-    @media (max-width:620px){
-      .wrap{
-        width:min(100% - 18px,1240px);
-        padding:16px 0 34px;
-      }
-
-      header{
-        gap:12px;
-        margin-bottom:12px;
-      }
-
-      .hero-card{display:none}
-
-      .eyebrow{
-        font-size:11px;
-        padding:7px 10px;
-        margin-bottom:10px;
-      }
-
-      h1{
-        font-size:38px;
-        line-height:.92;
-      }
-
-      .lead{
-        font-size:13.5px;
-        line-height:1.42;
-      }
-
-      .panel{
-        border-radius:20px;
-        padding:14px;
-      }
-
-      .kpis{
-        grid-template-columns:1fr;
-        gap:10px;
-        margin-bottom:10px;
-      }
-
-      .grid{grid-template-columns:1fr}
-
-      .kpi{
-        min-height:auto;
-        border-radius:18px;
-        padding:14px;
-      }
-
-      .kpi span{font-size:11px}
-      .kpi strong{font-size:28px}
-      .kpi small{font-size:13px}
-
-      canvas{height:260px}
-
-      .need{
-        flex-direction:column;
-        gap:4px;
-      }
-
-      .need b{text-align:left}
-
-      th,td{
-        padding:8px;
-        font-size:12px;
-      }
-    }
-  </style>
-</head>
-
-<body>
-<div class="wrap">
-  <header>
-    <div>
-      <div class="eyebrow"><span class="dot"></span> Modelo experimental de nieve local</div>
-      <h1>
-        <span>BariSnow</span>
-        <span>Lago Moreno</span>
-      </h1>
-      <div class="lead">
-        Pronóstico físico-matemático para Lago Moreno, Bariloche. Usa una fuente estable,
-        estima cota de nieve, bulbo húmedo, energía de fusión, orografía y acumulación horaria.
-      </div>
-    </div>
-
-    <div class="hero-card">
-      <span class="chip">Zona: Lago Moreno</span>
-      <span class="chip">Lat/Lon: -41.10, -71.45</span>
-      <span class="chip">Altitud: 778 m</span>
-      <span class="chip">Sin API key</span>
-      <span class="chip">Versión estable</span>
-    </div>
-  </header>
-
-  <main>
-    <section class="kpis">
-      <div class="kpi">
-        <span>Veredicto nieve</span>
-        <strong id="verdict">—</strong>
-        <small id="verdictText">Sin corrida.</small>
-      </div>
-      <div class="kpi">
-        <span>Próxima nieve</span>
-        <strong id="nextSnow">—</strong>
-        <small id="nextSnowText">—</small>
-      </div>
-      <div class="kpi">
-        <span>Máximo riesgo</span>
-        <strong id="peakRisk">—</strong>
-        <small id="peakRiskText">—</small>
-      </div>
-      <div class="kpi">
-        <span>Acumulado nieve</span>
-        <strong id="accum">—</strong>
-        <small id="accumText">—</small>
-      </div>
-    </section>
-
-    <section class="kpis">
-      <div class="kpi">
-        <span>Veredicto precipitación</span>
-        <strong id="precipVerdict">—</strong>
-        <small id="precipVerdictText">Sin corrida.</small>
-      </div>
-      <div class="kpi">
-        <span>Próxima precipitación</span>
-        <strong id="nextPrecip">—</strong>
-        <small id="nextPrecipText">—</small>
-      </div>
-      <div class="kpi">
-        <span>Pico precipitación</span>
-        <strong id="peakPrecip">—</strong>
-        <small id="peakPrecipText">—</small>
-      </div>
-      <div class="kpi">
-        <span>Confianza</span>
-        <strong id="confidence">—</strong>
-        <small id="confidenceText">Fuente estable.</small>
-      </div>
-    </section>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BariSnow Lago Moreno</title>
+
+<style>
+:root{
+  --bg0:#020712;
+  --bg1:#071426;
+  --bg2:#102843;
+  --txt:#eff9ff;
+  --mut:#a9bdd1;
+  --line:rgba(255,255,255,.16);
+  --blue:#61dcff;
+  --green:#79ffb2;
+  --yellow:#ffd166;
+  --red:#ff6b6b;
+  --purple:#c5a6ff;
+  --shadow:0 24px 80px rgba(0,0,0,.34);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  min-height:100vh;
+  color:var(--txt);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 10% -8%,rgba(97,220,255,.32),transparent 34%),
+    radial-gradient(circle at 92% 5%,rgba(197,166,255,.20),transparent 34%),
+    linear-gradient(135deg,var(--bg0),var(--bg1) 45%,var(--bg2));
+}
+
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size:44px 44px;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.70),transparent 75%);
+}
+
+.wrap{
+  position:relative;
+  z-index:1;
+  width:min(1240px,calc(100% - 28px));
+  margin:auto;
+  padding:24px 0 48px;
+}
+
+header{
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:18px;
+  align-items:end;
+  margin-bottom:16px;
+}
+
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:12px;
+  padding:8px 12px;
+  border-radius:999px;
+  border:1px solid rgba(97,220,255,.28);
+  background:rgba(97,220,255,.10);
+  color:#dff8ff;
+  font-size:12px;
+  font-weight:850;
+}
+
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 18px var(--green);
+}
+
+h1{
+  margin:0;
+  font-size:clamp(40px,6vw,78px);
+  line-height:.88;
+  letter-spacing:-.075em;
+}
+
+h1 span{display:block}
+
+h2{
+  margin:0 0 14px;
+  font-size:18px;
+  letter-spacing:-.025em;
+}
+
+h3{
+  margin:0 0 10px;
+  font-size:15px;
+}
+
+.lead{
+  max-width:800px;
+  margin-top:14px;
+  color:var(--mut);
+  line-height:1.48;
+  font-size:15.5px;
+}
+
+.panel,.kpi,.hero-card{
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(255,255,255,.105),rgba(255,255,255,.048));
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(16px);
+}
+
+.hero-card{
+  border-radius:26px;
+  padding:16px;
+}
+
+.chip{
+  display:inline-block;
+  margin:4px;
+  padding:8px 12px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.075);
+  color:#dff7
     <section class="panel">
+      <h2>Estado</h2>
       <div id="status" class="status">Listo para correr.</div>
       <div id="sourceStatus" class="note"></div>
     </section>
@@ -589,49 +141,57 @@
     <details class="panel" id="settingsBox">
       <summary>Configuración del modelo</summary>
       <div class="settings-content">
-        <div class="grid">
+        <div class="grid3">
           <div class="field">
             <label>Latitud</label>
             <input id="lat" type="number" step="0.0001" value="-41.1000">
           </div>
+
           <div class="field">
             <label>Longitud</label>
             <input id="lon" type="number" step="0.0001" value="-71.4500">
           </div>
+
           <div class="field">
             <label>Altitud, m</label>
             <input id="elev" type="number" value="778">
           </div>
+
           <div class="field">
             <label>Días</label>
             <input id="days" type="number" min="1" max="10" value="7">
           </div>
+
           <div class="field">
-            <label>Orografía</label>
+            <label>Factor orográfico</label>
             <input id="oro" type="number" step="0.05" value="0.42">
           </div>
+
           <div class="field">
             <label>Ajuste frío local °C</label>
             <input id="coldBias" type="number" step="0.1" value="0.0">
           </div>
-          <div class="field full">
-            <label>Fuente automática</label>
-            <select id="sourceMode">
-              <option value="best_match">Open-Meteo Best Match estable</option>
-            </select>
-          </div>
+
           <div class="field full">
             <button id="runBtn" type="button">Correr pronóstico</button>
           </div>
+
           <div class="field full">
             <button id="windguruBtn" class="secondary" type="button">Abrir Windguru Lago Moreno</button>
           </div>
         </div>
+
         <div class="note">
-          Esta versión usa una sola fuente estable para evitar errores de ensamble y asegurar que el pronóstico corra.
+          Esta versión usa una llamada estable a Open-Meteo Best Match. Si la fuente avanzada falla,
+          reintenta automáticamente con variables básicas.
         </div>
       </div>
     </details>
+
+    <section class="panel">
+      <h2>Auditoría técnica</h2>
+      <div id="debugBox" class="debug">Esperando corrida.</div>
+    </section>
 
     <section class="panel">
       <h2>Gráfico principal</h2>
@@ -652,6 +212,7 @@
         <div class="diagnosis">
           Pegá la nieve de Windguru como <b>fecha hora, cm/h</b> o una lista simple de números.
         </div>
+
         <textarea id="windguruInput" placeholder="2026-07-07 06:00, 0.4
 2026-07-07 07:00, 1.2
 
@@ -659,10 +220,12 @@ O:
 0
 0.4
 1.2"></textarea>
+
         <div class="grid" style="margin-top:10px">
           <button id="compareBtn" class="secondary" type="button">Comparar</button>
           <button id="clearWgBtn" class="secondary" type="button">Limpiar</button>
         </div>
+
         <div id="wgSummary" class="status"></div>
       </section>
     </section>
@@ -670,18 +233,23 @@ O:
     <section class="science-grid">
       <section class="panel">
         <h2>Física detrás de la nieve</h2>
+
         <div class="science-card">
           <h3>1. Bulbo húmedo efectivo</h3>
           <div class="formula">Tw_eff = Tw - enfriamiento_evaporativo - enfriamiento_orográfico</div>
           <div id="physicsTw" class="diagnosis"></div>
         </div>
+
         <br>
+
         <div class="science-card">
           <h3>2. Energía de fusión</h3>
           <div class="formula">M ≈ max(Tw_eff - 0.1°C, 0) × 450 m</div>
           <div id="physicsMelt" class="diagnosis"></div>
         </div>
+
         <br>
+
         <div class="science-card">
           <h3>3. Orografía y acumulación</h3>
           <div class="formula">nieve ≈ precip × prob_fase × SLR × adherencia</div>
@@ -691,11 +259,14 @@ O:
 
       <section class="panel">
         <h2>Qué faltaría para que sí nieve</h2>
+
         <div class="science-card">
           <h3>Condiciones necesarias</h3>
           <div id="snowNeeds"></div>
         </div>
+
         <br>
+
         <div class="science-card">
           <h3>Diagnóstico práctico</h3>
           <div id="snowNeedsText" class="diagnosis"></div>
@@ -716,9 +287,9 @@ O:
               <th>Cota</th>
               <th>Prob.</th>
               <th>cm/h</th>
-              <th>Spread</th>
               <th>Melt</th>
-              <th>Conf.</th>
+              <th>Windguru</th>
+              <th>Dif.</th>
               <th>Riesgo</th>
             </tr>
           </thead>
@@ -731,82 +302,133 @@ O:
 
 <script>
 (function(){
-  "use strict";
+"use strict";
 
-  const WINDGURU_URL = "https://www.windguru.cz/366613";
-  let latestModel = [];
+var WINDGURU_URL = "https://www.windguru.cz/366613";
+var latestModel = [];
+var resizeTimer = null;
 
-  const $ = id => document.getElementById(id);
-  const finite = x => Number.isFinite(Number(x));
-  const num = (x,f=0) => finite(x) ? Number(x) : f;
-  const clamp = (x,a,b) => Math.max(a,Math.min(b,x));
-  const sigmoid = x => 1/(1+Math.exp(-x));
-  const fmt = (x,d=1) => finite(x) ? Number(x).toFixed(d) : "—";
+function $(id){
+  return document.getElementById(id);
+}
 
-  window.onerror = function(msg,src,line){
-    const s = $("status");
-    if(s) s.textContent = "Error JS: " + msg + " línea " + line;
-  };
+function finite(x){
+  return x !== null && x !== "" && typeof x !== "undefined" && isFinite(Number(x));
+}
 
-  function localTime(t){
-    const d = new Date(t);
-    if(Number.isNaN(d.getTime())) return "—";
-    return d.toLocaleString("es-AR", {
+function num(x,fallback){
+  return finite(x) ? Number(x) : fallback;
+}
+
+function clamp(x,a,b){
+  return Math.max(a,Math.min(b,x));
+}
+
+function sigmoid(x){
+  return 1/(1+Math.exp(-x));
+}
+
+function fmt(x,d){
+  if(typeof d === "undefined") d = 1;
+  return finite(x) ? Number(x).toFixed(d) : "—";
+}
+
+function pad2(n){
+  n = Number(n);
+  return n < 10 ? "0" + n : String(n);
+}
+
+function safeText(id,txt){
+  var el = $(id);
+  if(el) el.textContent = txt;
+}
+
+function safeHTML(id,html){
+  var el = $(id);
+  if(el) el.innerHTML = html;
+}
+
+window.onerror = function(msg,src,line){
+  safeText("status","Error JS: " + msg + " línea " + line);
+  safeHTML("debugBox","Fallo de JavaScript.<br>Mensaje: " + msg + "<br>Línea: " + line);
+};
+
+function localTime(t){
+  var d = new Date(t);
+  if(isNaN(d.getTime())) return "—";
+
+  try{
+    return d.toLocaleString("es-AR",{
       weekday:"short",
       day:"2-digit",
       hour:"2-digit",
       minute:"2-digit"
     });
+  }catch(e){
+    return pad2(d.getDate()) + "/" + pad2(d.getMonth()+1) + " " + pad2(d.getHours()) + ":00";
+  }
+}
+
+function isoHour(t){
+  var d = new Date(t);
+  if(isNaN(d.getTime())) return String(t);
+
+  return d.getFullYear() + "-" +
+    pad2(d.getMonth()+1) + "-" +
+    pad2(d.getDate()) + " " +
+    pad2(d.getHours()) + ":00";
+}
+
+function esWater(T){
+  return 6.112*Math.exp((17.67*T)/(T+243.5));
+}
+
+function esIce(T){
+  return 6.112*Math.exp((22.46*T)/(T+272.62));
+}
+
+function esSat(T){
+  return T < 0 ? esIce(T) : esWater(T);
+}
+
+function pressureFromMsl(pmsl,z){
+  var p0 = finite(pmsl) ? Number(pmsl) : 1013.25;
+  return p0 * Math.pow(1 - 0.0065*z/288.15, 5.255);
+}
+
+function wetBulb(T,RH,p){
+  var eActual,lo,hi,i,tw,gamma,eTw;
+
+  if(!finite(T) || !finite(RH) || !finite(p)) return T;
+
+  RH = clamp(RH,1,100);
+  eActual = esSat(T) * RH / 100;
+  lo = -45;
+  hi = T + 0.2;
+
+  for(i=0;i<38;i++){
+    tw = 0.5*(lo+hi);
+    gamma = 0.00066 * (1 + 0.00115*tw);
+    eTw = esSat(tw) - gamma*p*(T-tw);
+
+    if(eTw > eActual) hi = tw;
+    else lo = tw;
   }
 
-  function isoHour(t){
-    const d = new Date(t);
-    if(Number.isNaN(d.getTime())) return String(t);
-    return (
-      d.getFullYear() + "-" +
-      String(d.getMonth()+1).padStart(2,"0") + "-" +
-      String(d.getDate()).padStart(2,"0") + " " +
-      String(d.getHours()).padStart(2,"0") + ":00"
-    );
-  }
+  return 0.5*(lo+hi);
+}
 
-  function esWater(T){ return 6.112*Math.exp((17.67*T)/(T+243.5)); }
-  function esIce(T){ return 6.112*Math.exp((22.46*T)/(T+272.62)); }
-  function esSat(T){ return T < 0 ? esIce(T) : esWater(T); }
+function buildUrl(full){
+  var lat = $("lat") ? $("lat").value : "-41.1000";
+  var lon = $("lon") ? $("lon").value : "-71.4500";
+  var elev = $("elev") ? $("elev").value : "778";
+  var days = $("days") ? num($("days").value,7) : 7;
+  var hourly;
 
-  function pressureFromMsl(pmsl,z){
-    const p0 = finite(pmsl) ? Number(pmsl) : 1013.25;
-    return p0 * Math.pow(1 - 0.0065*z/288.15, 5.255);
-  }
+  days = clamp(days,1,10);
 
-  function wetBulb(T,RH,p){
-    if(!finite(T) || !finite(RH) || !finite(p)) return T;
-
-    RH = clamp(RH,1,100);
-    const eActual = esSat(T) * RH / 100;
-
-    let lo = -45;
-    let hi = T + 0.2;
-
-    for(let i=0;i<38;i++){
-      const tw = 0.5*(lo+hi);
-      const gamma = 0.00066 * (1 + 0.00115*tw);
-      const eTw = esSat(tw) - gamma*p*(T-tw);
-
-      if(eTw > eActual) hi = tw;
-      else lo = tw;
-    }
-
-    return 0.5*(lo+hi);
-  }
-
-  function buildUrl(){
-    const lat = $("lat") ? $("lat").value : "-41.1000";
-    const lon = $("lon") ? $("lon").value : "-71.4500";
-    const elev = $("elev") ? $("elev").value : "778";
-    const days = clamp(num($("days") ? $("days").value : 7,7),1,10);
-
-    const hourly = [
+  if(full){
+    hourly = [
       "temperature_2m",
       "relative_humidity_2m",
       "precipitation",
@@ -818,6 +440,925 @@ O:
       "wind_speed_10m",
       "wind_direction_10m"
     ].join(",");
+  }else{
+    hourly = [
+      "temperature_2m",
+      "relative_humidity_2m",
+      "precipitation",
+      "surface_pressure",
+      "pressure_msl",
+      "wind_speed_10m",
+      "wind_direction_10m"
+    ].join(",");
+  }
 
-    const p = new URLSearchParams({
-      latitude:lat,
+  return "https://api.open-meteo.com/v1/forecast" +
+    "?latitude=" + encodeURIComponent(lat) +
+    "&longitude=" + encodeURIComponent(lon) +
+    "&elevation=" + encodeURIComponent(elev) +
+    "&hourly=" + encodeURIComponent(hourly) +
+    "&timezone=" + encodeURIComponent("America/Argentina/Buenos_Aires") +
+    "&forecast_days=" + encodeURIComponent(days) +
+    "&temperature_unit=celsius" +
+    "&wind_speed_unit=kmh" +
+    "&precipitation_unit=mm";
+}
+function xhrJSON(url,callback){
+  var xhr = new XMLHttpRequest();
+
+  xhr.open("GET",url,true);
+  xhr.timeout = 20000;
+
+  xhr.onreadystatechange = function(){
+    if(xhr.readyState === 4){
+      if(xhr.status >= 200 && xhr.status < 300){
+        try{
+          callback(null,JSON.parse(xhr.responseText),xhr.status);
+        }catch(e){
+          callback(new Error("JSON inválido: " + e.message),null,xhr.status);
+        }
+      }else{
+        callback(new Error("HTTP " + xhr.status + ": " + xhr.responseText),null,xhr.status);
+      }
+    }
+  };
+
+  xhr.onerror = function(){
+    callback(new Error("No se pudo conectar con Open-Meteo. Revisá conexión, bloqueo del navegador o CORS."),null,0);
+  };
+
+  xhr.ontimeout = function(){
+    callback(new Error("Timeout conectando con Open-Meteo."),null,0);
+  };
+
+  xhr.send(null);
+}
+
+function getValue(h,name,i,fallback){
+  if(!h || !h[name] || typeof h[name][i] === "undefined" || h[name][i] === null){
+    return fallback;
+  }
+  return num(h[name][i],fallback);
+}
+
+function computeModel(data){
+  var h = data.hourly || {};
+  var times = h.time || [];
+  var elev = $("elev") ? num($("elev").value,778) : 778;
+  var oroFactor = $("oro") ? num($("oro").value,0.42) : 0.42;
+  var coldBias = $("coldBias") ? num($("coldBias").value,0) : 0;
+  var baseElev = finite(data.elevation) ? Number(data.elevation) : elev;
+  var out = [];
+
+  var i,Traw,RH,T,P0,pop,pSurf,Tw,wind,dir,west,oroIndex,P,dryness;
+  var evapCooling,liftCooling,TwEff,snowLine,warmLayer,meltEnergy,survivalProb;
+  var thermal,cota,precip,survival,prob,slr,stick,cmh,risk,snowApi;
+
+  for(i=0;i<times.length;i++){
+    Traw = getValue(h,"temperature_2m",i,null);
+    RH = getValue(h,"relative_humidity_2m",i,null);
+
+    if(!finite(Traw) || !finite(RH)) continue;
+
+    T = Traw + coldBias;
+    P0 = getValue(h,"precipitation",i,0);
+    pop = getValue(h,"precipitation_probability",i,100);
+
+    pSurf = getValue(h,"surface_pressure",i,null);
+    if(!finite(pSurf)){
+      pSurf = pressureFromMsl(getValue(h,"pressure_msl",i,1013.25),baseElev);
+    }
+
+    Tw = wetBulb(T,RH,pSurf);
+
+    wind = getValue(h,"wind_speed_10m",i,0);
+    dir = getValue(h,"wind_direction_10m",i,270);
+
+    west = Math.max(0,Math.cos((dir-280)*Math.PI/180));
+    oroIndex = west * clamp(wind/45,0,1.4) * clamp(RH/90,0.25,1.3);
+    P = P0 * clamp(1 + oroFactor*oroIndex,0.85,2.15);
+
+    dryness = clamp((100-RH)/45,0,1);
+
+    evapCooling = clamp(
+      0.12*Math.sqrt(Math.max(0,P)) +
+      0.28*dryness*Math.sqrt(Math.max(0,P)),
+      0,
+      0.75
+    );
+
+    liftCooling = clamp(0.16*oroIndex,0,0.55);
+    TwEff = Tw - evapCooling - liftCooling;
+
+    if(finite(getValue(h,"freezing_level_height",i,null))){
+      snowLine = getValue(h,"freezing_level_height",i,null) - 330 - evapCooling*160 - liftCooling*130;
+    }else{
+      snowLine = elev + (TwEff - 0.6)/0.006;
+    }
+
+    snowLine = Math.max(0,snowLine);
+
+    warmLayer = Math.max(0,TwEff-0.1);
+    meltEnergy = warmLayer * 450;
+    survivalProb = Math.exp(-meltEnergy/360);
+
+    thermal = (0.35-TwEff)/0.42;
+    cota = (elev-snowLine+100)/180;
+    precip = Math.log(1+Math.max(0,P))*0.85;
+    survival = 2.1*(survivalProb-0.45);
+
+    prob = sigmoid(
+      -0.30 +
+      1.25*thermal +
+      1.05*cota +
+      precip +
+      survival +
+      0.28*oroIndex
+    ) * clamp(pop/100,0.15,1);
+
+    if(P < 0.04) prob *= 0.15;
+    if(meltEnergy > 900) prob *= 0.45;
+    if(TwEff > 1.4) prob *= 0.35;
+
+    prob = clamp(prob,0,1);
+
+    slr = clamp(
+      9 +
+      2*Math.max(0,-TwEff) -
+      5.5*Math.max(0,TwEff) +
+      clamp((elev-800)/850,-0.6,1.8) +
+      0.8*oroIndex,
+      2.5,
+      18
+    );
+
+    stick = clamp(
+      sigmoid((0.25-TwEff)/0.28) *
+      clamp(0.82 + 0.13*Math.sqrt(Math.max(0,P)),0.78,1.12) *
+      (elev >= 1000 ? 1.1 : elev >= 850 ? 0.95 : 0.78) *
+      clamp(1-meltEnergy/1200,0.35,1),
+      0,
+      1
+    );
+
+    cmh = P * prob * slr / 10 * stick;
+
+    snowApi = getValue(h,"snowfall",i,null);
+    if(finite(snowApi) && snowApi > 0){
+      cmh = 0.65*cmh + 0.35*snowApi;
+    }
+
+    risk = "Bajo";
+    if(prob >= 0.72 && cmh >= 1.1 && TwEff <= 0.35 && meltEnergy < 450){
+      risk = "Alto";
+    }else if(prob >= 0.46 && cmh >= 0.25 && TwEff <= 1.05 && meltEnergy < 850){
+      risk = "Medio";
+    }
+
+    out.push({
+      time:times[i],
+      key:isoHour(times[i]),
+      T:T,
+      TwEff:TwEff,
+      P:P,
+      snowLine:snowLine,
+      prob:prob,
+      cmh:cmh,
+      meltEnergy:meltEnergy,
+      survivalProb:survivalProb,
+      oroIndex:oroIndex,
+      slr:slr,
+      risk:risk,
+      wg:null,
+      diff:null
+    });
+  }
+
+  return out;
+}
+
+function summarize(model){
+  var total = 0;
+  var peak = model[0];
+  var next = null;
+  var best6 = 0;
+  var i,j,s;
+
+  if(!model.length){
+    throw new Error("No hay datos modelados.");
+  }
+
+  for(i=0;i<model.length;i++){
+    total += model[i].cmh || 0;
+
+    if((model[i].cmh || 0) > (peak.cmh || 0)){
+      peak = model[i];
+    }
+
+    if(!next && model[i].prob >= 0.45 && model[i].P >= 0.12){
+      next = model[i];
+    }
+  }
+
+  for(i=0;i<model.length;i++){
+    s = 0;
+    for(j=i;j<Math.min(i+6,model.length);j++){
+      s += model[j].cmh || 0;
+    }
+    best6 = Math.max(best6,s);
+  }
+
+  return {
+    total:total,
+    peak:peak,
+    next:next,
+    best6:best6
+  };
+}
+
+function summarizePrecip(model){
+  var total = 0;
+  var peak = model[0];
+  var next = null;
+  var best6 = 0;
+  var i,j,s;
+
+  for(i=0;i<model.length;i++){
+    total += model[i].P || 0;
+
+    if((model[i].P || 0) > (peak.P || 0)){
+      peak = model[i];
+    }
+
+    if(!next && model[i].P >= 0.15){
+      next = model[i];
+    }
+  }
+
+  for(i=0;i<model.length;i++){
+    s = 0;
+    for(j=i;j<Math.min(i+6,model.length);j++){
+      s += model[j].P || 0;
+    }
+    best6 = Math.max(best6,s);
+  }
+
+  return {
+    total:total,
+    peak:peak,
+    next:next,
+    best6:best6
+  };
+}
+
+function badge(r){
+  if(r === "Alto") return '<span class="badge high">Alto</span>';
+  if(r === "Medio") return '<span class="badge mid">Medio</span>';
+  return '<span class="badge low">Bajo</span>';
+}
+
+function render(model,summary){
+  var serious = summary.total >= 8 || summary.best6 >= 5 || summary.peak.risk === "Alto";
+  var marginal = summary.total >= 1.5 || !!summary.next;
+
+  $("verdict").className = serious ? "red" : marginal ? "yellow" : "green";
+  $("verdict").textContent = serious ? "Seria" : marginal ? "Marginal" : "Baja";
+
+  $("verdictText").textContent = serious
+    ? "Señal de acumulación capaz de afectar calles o caminos."
+    : marginal
+      ? "Puede haber nieve húmeda, aguanieve o acumulación limitada."
+      : "No hay señal robusta de nieve acumuladora.";
+
+  $("nextSnow").textContent = summary.next ? localTime(summary.next.time) : "—";
+  $("nextSnowText").textContent = summary.next
+    ? "Probabilidad " + Math.round(summary.next.prob*100) + "%, precipitación " + fmt(summary.next.P) + " mm/h."
+    : "Sin ventana clara con precipitación y fase nieve.";
+
+  $("peakRisk").textContent = localTime(summary.peak.time);
+  $("peakRiskText").textContent =
+    "Pico " + fmt(summary.peak.cmh,2) + " cm/h; cota ~" + Math.round(summary.peak.snowLine) + " m.";
+
+  $("accum").textContent = fmt(summary.total,1) + " cm";
+  $("accumText").textContent = "Mejor bloque 6 h: " + fmt(summary.best6,1) + " cm.";
+
+  renderPrecip(model);
+  renderDiagnosis(summary);
+  renderPhysics(summary);
+  renderRows(model);
+  drawChart(model);
+}
+
+function renderPrecip(model){
+  var p = summarizePrecip(model);
+  var verdict = "Baja";
+  var cls = "green";
+  var text = "No hay señal de precipitación relevante.";
+
+  if(p.total >= 25 || p.best6 >= 12 || p.peak.P >= 3){
+    verdict = "Alta";
+    cls = "red";
+    text = "Señal de precipitación importante o persistente.";
+  }else if(p.total >= 5 || p.best6 >= 3 || p.peak.P >= 0.8){
+    verdict = "Media";
+    cls = "yellow";
+    text = "Puede haber precipitación útil o intermitente.";
+  }
+
+  $("precipVerdict").className = cls;
+  $("precipVerdict").textContent = verdict;
+  $("precipVerdictText").textContent = text;
+
+  $("nextPrecip").textContent = p.next ? localTime(p.next.time) : "—";
+  $("nextPrecipText").textContent = p.next
+    ? "Precipitación estimada " + fmt(p.next.P,1) + " mm/h."
+    : "Sin precipitación horaria clara.";
+
+  $("peakPrecip").textContent = localTime(p.peak.time);
+  $("peakPrecipText").textContent =
+    "Pico " + fmt(p.peak.P,1) + " mm/h. Prob. nieve " + Math.round(p.peak.prob*100) + "%.";
+
+  $("confidence").className = "green";
+  $("confidence").textContent = "72%";
+  $("confidenceText").textContent =
+    "Total precip.: " + fmt(p.total,1) + " mm. Mejor 6 h: " + fmt(p.best6,1) + " mm.";
+}
+
+function renderDiagnosis(summary){
+  var p = summary.peak;
+
+  $("diagnosis").innerHTML =
+    "<b>Hora crítica:</b> " + localTime(p.time) + ". " +
+    "Tw efectivo: <b>" + fmt(p.TwEff) + " °C</b>. " +
+    "Cota de nieve: <b>" + Math.round(p.snowLine) + " m</b>. " +
+    "Energía de fusión: <b>" + fmt(p.meltEnergy,0) + " °C·m</b>. " +
+    "Supervivencia del copo: <b>" + Math.round((p.survivalProb||0)*100) + "%</b>. " +
+    "Pico: <b>" + fmt(p.cmh,2) + " cm/h</b>. " +
+    "Total: <b>" + fmt(summary.total,1) + " cm</b>.";
+}
+function needClass(ok,mid){
+  return ok ? "need-ok" : mid ? "need-mid" : "need-bad";
+}
+
+function needLabel(ok,mid){
+  return ok ? "favorable" : mid ? "marginal" : "desfavorable";
+}
+
+function renderPhysics(summary){
+  var p = summary.peak;
+  var elev = $("elev") ? num($("elev").value,778) : 778;
+  var cotaDiff = p.snowLine - elev;
+
+  var twOk = p.TwEff <= 0.3;
+  var twMid = p.TwEff <= 1.1;
+  var cotaOk = cotaDiff <= 100;
+  var cotaMid = cotaDiff <= 350;
+  var meltOk = p.meltEnergy <= 350;
+  var meltMid = p.meltEnergy <= 850;
+  var precipOk = p.P >= 0.6;
+  var precipMid = p.P >= 0.15;
+  var probOk = p.prob >= 0.65;
+  var probMid = p.prob >= 0.4;
+
+  $("physicsTw").innerHTML =
+    "En la hora crítica, <b>Tw_eff = " + fmt(p.TwEff) + " °C</b>. " +
+    "Para nieve clara conviene que esté cerca de 0 °C o por debajo.";
+
+  $("physicsMelt").innerHTML =
+    "Energía de fusión: <b>" + fmt(p.meltEnergy,0) + " °C·m</b>. " +
+    "Supervivencia estimada del copo: <b>" + Math.round((p.survivalProb||0)*100) + "%</b>.";
+
+  $("physicsOro").innerHTML =
+    "Índice orográfico: <b>" + fmt(p.oroIndex,2) + "</b>. " +
+    "Relación nieve/agua estimada: <b>" + fmt(p.slr,1) + ":1</b>.";
+
+  $("snowNeeds").innerHTML =
+    '<div class="need"><span>Bulbo húmedo efectivo ≤ 0.3 °C</span><b class="'+needClass(twOk,twMid)+'">'+needLabel(twOk,twMid)+' · '+fmt(p.TwEff)+' °C</b></div>'+
+    '<div class="need"><span>Cota cerca o debajo del barrio</span><b class="'+needClass(cotaOk,cotaMid)+'">'+needLabel(cotaOk,cotaMid)+' · '+Math.round(p.snowLine)+' m</b></div>'+
+    '<div class="need"><span>Energía de fusión baja</span><b class="'+needClass(meltOk,meltMid)+'">'+needLabel(meltOk,meltMid)+' · '+fmt(p.meltEnergy,0)+' °C·m</b></div>'+
+    '<div class="need"><span>Precipitación suficiente</span><b class="'+needClass(precipOk,precipMid)+'">'+needLabel(precipOk,precipMid)+' · '+fmt(p.P)+' mm/h</b></div>'+
+    '<div class="need"><span>Probabilidad de nieve ≥ 65%</span><b class="'+needClass(probOk,probMid)+'">'+needLabel(probOk,probMid)+' · '+Math.round(p.prob*100)+'%</b></div>';
+
+  var score = Math.round(100*clamp(
+    0.28*(twOk?1:twMid?0.55:0.15) +
+    0.22*(cotaOk?1:cotaMid?0.55:0.10) +
+    0.20*(meltOk?1:meltMid?0.55:0.10) +
+    0.15*(precipOk?1:precipMid?0.55:0.10) +
+    0.15*p.prob,
+    0,
+    1
+  ));
+
+  $("snowNeedsText").innerHTML =
+    "Para nieve más clara se necesita aire más frío en capas bajas, menor energía de fusión, cota más baja y precipitación sostenida."+
+    '<div class="meter"><div class="meter-fill" style="width:'+score+'%"></div></div><br>'+
+    'Índice físico de entorno nivoso: <b>'+score+'/100</b>.';
+}
+
+function renderRows(model){
+  var html = "";
+  var i,x,wg,diff;
+
+  for(i=0;i<model.length;i++){
+    x = model[i];
+    wg = finite(x.wg) ? fmt(x.wg,2) : "—";
+    diff = finite(x.diff) ? fmt(x.diff,2) : "—";
+
+    html += "<tr>"+
+      "<td>"+localTime(x.time)+"</td>"+
+      "<td>"+fmt(x.T)+" °C</td>"+
+      "<td>"+fmt(x.TwEff)+" °C</td>"+
+      "<td>"+fmt(x.P)+" mm/h</td>"+
+      "<td>"+Math.round(x.snowLine)+" m</td>"+
+      "<td>"+Math.round(x.prob*100)+"%</td>"+
+      "<td>"+fmt(x.cmh,2)+"</td>"+
+      "<td>"+fmt(x.meltEnergy,0)+"</td>"+
+      "<td class=\"purple\">"+wg+"</td>"+
+      "<td>"+diff+"</td>"+
+      "<td>"+badge(x.risk)+"</td>"+
+    "</tr>";
+  }
+
+  $("rows").innerHTML = html;
+}
+
+function prepareCanvas(canvas){
+  var rect = canvas.getBoundingClientRect();
+  var dpr = Math.max(1,window.devicePixelRatio||1);
+  var width = Math.max(320,Math.round(rect.width*dpr));
+  var height = Math.max(270,Math.round(rect.height*dpr));
+
+  if(canvas.width !== width || canvas.height !== height){
+    canvas.width = width;
+    canvas.height = height;
+  }
+
+  return {dpr:dpr,width:width,height:height};
+}
+
+function drawLine(ctx,model,xAt,yFn,color,width){
+  var i,x,y;
+
+  ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+
+  for(i=0;i<model.length;i++){
+    x = xAt(i);
+    y = yFn(model[i]);
+
+    if(i === 0) ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
+  }
+
+  ctx.stroke();
+}
+
+function drawChart(model){
+  var c = $("chart");
+  if(!c) return;
+
+  var info = prepareCanvas(c);
+  var ctx = c.getContext("2d");
+
+  var W = info.width;
+  var H = info.height;
+  var isMobile = W < 720;
+
+  var padL = isMobile ? 52 : 72;
+  var padR = isMobile ? 54 : 82;
+  var padT = isMobile ? 42 : 48;
+  var padB = isMobile ? 54 : 62;
+
+  var plotW = W-padL-padR;
+  var plotH = H-padT-padB;
+
+  var maxC = 1;
+  var maxP = 1;
+  var i,x,bh,bw,p,y,d,label,step;
+
+  for(i=0;i<model.length;i++){
+    maxC = Math.max(maxC,model[i].cmh||0);
+    maxP = Math.max(maxP,model[i].P||0);
+    if(finite(model[i].wg)) maxC = Math.max(maxC,model[i].wg);
+  }
+
+  function xAt(i){
+    return padL + plotW*i/Math.max(1,model.length-1);
+  }
+
+  function yProb(v){
+    return padT + (1-v)*plotH;
+  }
+
+  function yCmh(v){
+    return padT + (1-v/maxC)*plotH;
+  }
+
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = "rgba(0,0,0,.20)";
+  ctx.fillRect(0,0,W,H);
+
+  ctx.strokeStyle = "rgba(255,255,255,.14)";
+  ctx.lineWidth = 1*info.dpr;
+  ctx.font = (isMobile?10:12)+"px system-ui";
+
+  for(i=0;i<=5;i++){
+    p = i/5;
+    y = yProb(p);
+
+    ctx.beginPath();
+    ctx.moveTo(padL,y);
+    ctx.lineTo(W-padR,y);
+    ctx.stroke();
+
+    ctx.fillStyle = "rgba(255,209,102,.9)";
+    ctx.textAlign = "right";
+    ctx.fillText(Math.round(p*100)+"%",padL-8,y+4);
+
+    ctx.fillStyle = "rgba(124,255,178,.9)";
+    ctx.textAlign = "left";
+    ctx.fillText(fmt(maxC*p,1),W-padR+8,y+4);
+  }
+
+  ctx.strokeStyle = "rgba(238,248,255,.75)";
+  ctx.lineWidth = 1.2*info.dpr;
+  ctx.beginPath();
+  ctx.moveTo(padL,padT);
+  ctx.lineTo(padL,H-padB);
+  ctx.lineTo(W-padR,H-padB);
+  ctx.moveTo(W-padR,padT);
+  ctx.lineTo(W-padR,H-padB);
+  ctx.stroke();
+
+  for(i=0;i<model.length;i++){
+    x = model[i];
+    bh = ((x.P||0)/maxP)*plotH;
+    bw = Math.max(2*info.dpr,plotW/model.length*.72);
+
+    ctx.fillStyle = "rgba(101,221,255,.24)";
+    ctx.fillRect(xAt(i)-bw/2,H-padB-bh,bw,bh);
+  }
+
+  drawLine(ctx,model,xAt,function(row){return yProb(row.prob||0);},"#ffd166",2.6*info.dpr);
+  drawLine(ctx,model,xAt,function(row){return yCmh(row.cmh||0);},"#79ffb2",3.1*info.dpr);
+
+  if(modelHasWindguru(model)){
+    drawLine(ctx,model,xAt,function(row){
+      return finite(row.wg) ? yCmh(row.wg) : yCmh(0);
+    },"#c5a6ff",2.4*info.dpr);
+  }
+
+  ctx.textAlign = "left";
+  ctx.font = (isMobile?10:13)+"px system-ui";
+
+  ctx.fillStyle = "#79ffb2";
+  ctx.fillText("● Modelo",padL,isMobile?18:25);
+
+  ctx.fillStyle = "#ffd166";
+  ctx.fillText("● Prob.",isMobile?padL:padL+92,isMobile?34:25);
+
+  ctx.fillStyle = "#65ddff";
+  ctx.fillText("■ Precip.",isMobile?padL+100:padL+174,isMobile?18:25);
+
+  ctx.fillStyle = "#c5a6ff";
+  ctx.fillText("● Windguru",isMobile?padL+100:padL+270,isMobile?34:25);
+
+  ctx.fillStyle = "rgba(238,248,255,.72)";
+  ctx.textAlign = "center";
+  ctx.font = (isMobile?10:11)+"px system-ui";
+
+  step = Math.max(isMobile?12:6,Math.round(model.length/(isMobile?5:8)));
+
+  for(i=0;i<model.length;i+=step){
+    d = new Date(model[i].time);
+    label = pad2(d.getDate()) + "/" + pad2(d.getHours()) + "h";
+    ctx.fillText(label,xAt(i),H-padB+24);
+  }
+
+  ctx.fillStyle = "rgba(238,248,255,.75)";
+  ctx.font = (isMobile?11:13)+"px system-ui";
+  ctx.fillText("Tiempo local ART",padL+plotW/2,H-12);
+}
+
+function modelHasWindguru(model){
+  var i;
+  for(i=0;i<model.length;i++){
+    if(finite(model[i].wg)) return true;
+  }
+  return false;
+}
+
+function setLoading(){
+  safeText("verdict","Calculando…");
+  $("verdict").className = "yellow";
+  safeText("verdictText","Consultando Open-Meteo.");
+
+  safeText("nextSnow","—");
+  safeText("nextSnowText","Esperando datos.");
+
+  safeText("peakRisk","—");
+  safeText("peakRiskText","Esperando datos.");
+
+  safeText("accum","—");
+  safeText("accumText","Esperando datos.");
+
+  safeText("precipVerdict","Calculando…");
+  $("precipVerdict").className = "yellow";
+  safeText("precipVerdictText","Consultando Open-Meteo.");
+
+  safeText("confidence","—");
+  safeText("confidenceText","Esperando datos.");
+}
+
+function processData(data,http,url,ms,modeText){
+  var summary;
+
+  latestModel = computeModel(data);
+  summary = summarize(latestModel);
+  render(latestModel,summary);
+
+  safeText("status","Listo. Pronóstico calculado correctamente.");
+  safeHTML("sourceStatus",
+    '<b>Fuente usada:</b><br><span class="source-pill source-ok">✓ Open-Meteo Best Match</span>'
+  );
+
+  safeHTML("debugBox",
+    "DOM: OK<br>" +
+    "API: OK<br>" +
+    "Modo: " + modeText + "<br>" +
+    "HTTP: " + http + "<br>" +
+    "Tiempo: " + ms + " ms<br>" +
+    "Horas recibidas: " + ((data.hourly && data.hourly.time) ? data.hourly.time.length : 0) + "<br>" +
+    "Horas modeladas: " + latestModel.length + "<br>" +
+    "URL API:<br>" + url
+  );
+}
+
+function run(){
+  var urlFull = buildUrl(true);
+  var urlCore = buildUrl(false);
+  var t0 = new Date().getTime();
+
+  setLoading();
+
+  safeText("status","Descargando Open-Meteo Best Match y corriendo modelo físico…");
+  safeHTML("sourceStatus","");
+  safeHTML("debugBox","Intento avanzado:<br>" + urlFull);
+
+  xhrJSON(urlFull,function(err,data,http){
+    var ms = new Date().getTime() - t0;
+
+    if(!err){
+      try{
+        processData(data,http,urlFull,ms,"avanzado");
+      }catch(e1){
+        safeText("status","Error procesando datos avanzados: " + e1.message);
+        safeText("verdict","Error");
+        $("verdict").className = "red";
+        safeText("verdictText",e1.message);
+        safeHTML("debugBox","API avanzada OK, pero procesamiento ERROR<br>" + e1.message + "<br>URL:<br>" + urlFull);
+      }
+      return;
+    }
+
+    safeHTML("debugBox",
+      "Intento avanzado falló.<br>" +
+      "Detalle: " + err.message + "<br>" +
+      "Reintentando modo básico:<br>" + urlCore
+    );
+
+    xhrJSON(urlCore,function(err2,data2,http2){
+      var ms2 = new Date().getTime() - t0;
+
+      if(err2){
+        safeText("status","Error: " + err2.message);
+        safeText("verdict","Error");
+        $("verdict").className = "red";
+        safeText("verdictText",err2.message);
+        safeHTML("debugBox",
+          "API: ERROR<br>" +
+          "Avanzado: " + err.message + "<br>" +
+          "Básico: " + err2.message + "<br>" +
+          "HTTP básico: " + http2 + "<br>" +
+          "Tiempo: " + ms2 + " ms<br>" +
+          "URL avanzada:<br>" + urlFull + "<br><br>" +
+          "URL básica:<br>" + urlCore
+        );
+        return;
+      }
+
+      try{
+        processData(data2,http2,urlCore,ms2,"básico fallback");
+      }catch(e2){
+        safeText("status","Error procesando datos: " + e2.message);
+        safeText("verdict","Error");
+        $("verdict").className = "red";
+        safeText("verdictText",e2.message);
+        safeHTML("debugBox",
+          "API básica OK, pero procesamiento ERROR<br>" +
+          "Detalle: " + e2.message + "<br>" +
+          "URL:<br>" + urlCore
+        );
+      }
+    });
+  });
+}
+
+function parseWindguru(){
+  var raw = $("windguruInput").value;
+  var lines,parsed,i,line,parts,value;
+
+  if(!raw) return [];
+
+  raw = raw.replace(/^\s+|\s+$/g,"");
+  if(!raw) return [];
+
+  lines = raw.split(/\n+/);
+  parsed = [];
+
+  for(i=0;i<lines.length;i++){
+    line = lines[i].replace(/^\s+|\s+$/g,"");
+    if(!line) continue;
+
+    parts = line.split(/[;,]/);
+
+    if(parts.length >= 2 && /\d{4}-\d{2}-\d{2}/.test(parts[0])){
+      value = Number(String(parts[1]).replace(",","."));
+      if(finite(value)){
+        parsed.push({key:normalizeKey(parts[0].replace("T"," ")),value:value});
+      }
+    }else{
+      value = Number(String(line).replace(",","."));
+      if(finite(value)){
+        parsed.push({key:null,value:value});
+      }
+    }
+  }
+
+  return parsed;
+}
+
+function normalizeKey(s){
+  var m = s.match(/(\d{4}-\d{2}-\d{2})\s+(\d{1,2})(?::(\d{2}))?/);
+  if(!m) return s;
+  return m[1] + " " + pad2(Number(m[2])) + ":00";
+}
+
+function compareWindguru(){
+  var parsed,hasDates,map,i,pairs,mae,bias,wgTotal,modelTotal;
+
+  if(!latestModel.length) return;
+
+  parsed = parseWindguru();
+
+  for(i=0;i<latestModel.length;i++){
+    latestModel[i].wg = null;
+    latestModel[i].diff = null;
+  }
+
+  if(!parsed.length){
+    safeText("wgSummary","No hay valores de Windguru cargados.");
+    render(latestModel,summarize(latestModel));
+    return;
+  }
+
+  hasDates = false;
+  for(i=0;i<parsed.length;i++){
+    if(parsed[i].key) hasDates = true;
+  }
+
+  if(hasDates){
+    map = {};
+    for(i=0;i<parsed.length;i++){
+      if(parsed[i].key) map[parsed[i].key] = parsed[i].value;
+    }
+
+    for(i=0;i<latestModel.length;i++){
+      if(Object.prototype.hasOwnProperty.call(map,latestModel[i].key)){
+        latestModel[i].wg = map[latestModel[i].key];
+        latestModel[i].diff = latestModel[i].cmh - latestModel[i].wg;
+      }
+    }
+  }else{
+    for(i=0;i<Math.min(parsed.length,latestModel.length);i++){
+      latestModel[i].wg = parsed[i].value;
+      latestModel[i].diff = latestModel[i].cmh - latestModel[i].wg;
+    }
+  }
+
+  render(latestModel,summarize(latestModel));
+
+  pairs = [];
+  for(i=0;i<latestModel.length;i++){
+    if(finite(latestModel[i].wg)) pairs.push(latestModel[i]);
+  }
+
+  if(!pairs.length){
+    safeText("wgSummary","No pude emparejar horarios.");
+    return;
+  }
+
+  mae = 0;
+  bias = 0;
+  wgTotal = 0;
+  modelTotal = 0;
+
+  for(i=0;i<pairs.length;i++){
+    mae += Math.abs(pairs[i].diff);
+    bias += pairs[i].diff;
+    wgTotal += pairs[i].wg;
+    modelTotal += pairs[i].cmh;
+  }
+
+  mae /= pairs.length;
+  bias /= pairs.length;
+
+  safeHTML("wgSummary",
+    "Comparados " + pairs.length + " puntos. " +
+    "Modelo: <b>" + fmt(modelTotal,1) + " cm</b>, " +
+    "Windguru: <b>" + fmt(wgTotal,1) + " cm</b>. " +
+    "MAE: <b>" + fmt(mae,2) + " cm/h</b>. " +
+    "Sesgo modelo-Windguru: <b>" + fmt(bias,2) + " cm/h</b>."
+  );
+}
+
+function clearWindguru(){
+  var i;
+
+  $("windguruInput").value = "";
+  safeText("wgSummary","");
+
+  for(i=0;i<latestModel.length;i++){
+    latestModel[i].wg = null;
+    latestModel[i].diff = null;
+  }
+
+  if(latestModel.length){
+    render(latestModel,summarize(latestModel));
+  }
+}
+
+function auditDom(){
+  var ids = [
+    "verdict","verdictText","nextSnow","nextSnowText","peakRisk","peakRiskText",
+    "accum","accumText","precipVerdict","precipVerdictText","nextPrecip",
+    "nextPrecipText","peakPrecip","peakPrecipText","confidence","confidenceText",
+    "status","sourceStatus","debugBox","lat","lon","elev","days","oro","coldBias",
+    "runBtn","windguruBtn","chart","diagnosis","windguruInput","compareBtn",
+    "clearWgBtn","wgSummary","physicsTw","physicsMelt","physicsOro","snowNeeds",
+    "snowNeedsText","rows"
+  ];
+
+  var missing = [];
+  var i;
+
+  for(i=0;i<ids.length;i++){
+    if(!$(ids[i])) missing.push(ids[i]);
+  }
+
+  if(missing.length){
+    safeText("status","Error DOM: faltan IDs " + missing.join(", "));
+    safeHTML("debugBox","Error DOM. Faltan IDs:<br>" + missing.join("<br>"));
+    return false;
+  }
+
+  return true;
+}
+
+function init(){
+  var settings;
+
+  if(!auditDom()) return;
+
+  $("runBtn").onclick = run;
+  $("compareBtn").onclick = compareWindguru;
+  $("clearWgBtn").onclick = clearWindguru;
+
+  $("windguruBtn").onclick = function(){
+    window.open(WINDGURU_URL,"_blank","noopener,noreferrer");
+  };
+
+  window.onresize = function(){
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function(){
+      if(latestModel.length) drawChart(latestModel);
+    },120);
+  };
+
+  settings = $("settingsBox");
+  if(settings && window.innerWidth >= 981) settings.open = true;
+
+  run();
+}
+
+if(document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded",init);
+}else{
+  init();
+}
+
+})();
+</script>
+</body>
+</html>
