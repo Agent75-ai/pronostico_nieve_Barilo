@@ -12,13 +12,10 @@
       --bg2: #102843;
       --txt: #f4fbff;
       --mut: #bfd0df;
-      --mut2: #91a8b9;
       --line: rgba(255,255,255,.15);
-      --line2: rgba(255,255,255,.09);
       --card: rgba(255,255,255,.078);
       --card2: rgba(255,255,255,.045);
       --blue: #61dcff;
-      --blue2: #2aa8ff;
       --green: #79ffb2;
       --yellow: #ffd166;
       --orange: #ff9f1c;
@@ -77,6 +74,18 @@
       margin-bottom: 14px;
     }
 
+    .brand-card,
+    .hero-card,
+    .panel,
+    .kpi,
+    .control-panel,
+    .status-strip {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(16px);
+    }
+
     .brand-card {
       min-height: 235px;
       display: flex;
@@ -84,12 +93,19 @@
       justify-content: flex-end;
       border-radius: 32px;
       padding: 24px;
-      border: 1px solid var(--line);
       background:
-        linear-gradient(135deg, rgba(97,220,255,.11), transparent 48%),
+        linear-gradient(135deg, rgba(97,220,255,.12), transparent 48%),
         linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.035));
       box-shadow: var(--shadow);
-      backdrop-filter: blur(16px);
+    }
+
+    .hero-card {
+      border-radius: 32px;
+      padding: 18px;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(197,166,255,.18), transparent 38%),
+        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      box-shadow: var(--shadow);
     }
 
     .eyebrow {
@@ -142,17 +158,6 @@
       font-size: 15.5px;
     }
 
-    .hero-card {
-      border-radius: 32px;
-      padding: 18px;
-      border: 1px solid var(--line);
-      background:
-        radial-gradient(circle at 10% 0%, rgba(197,166,255,.18), transparent 38%),
-        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(16px);
-    }
-
     .hero-title {
       margin: 0 0 10px;
       font-size: 14px;
@@ -186,16 +191,6 @@
       color: var(--mut);
       font-size: 13px;
       line-height: 1.45;
-    }
-
-    .panel,
-    .kpi,
-    .control-panel,
-    .status-strip {
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, var(--card), var(--card2));
-      box-shadow: var(--shadow-soft);
-      backdrop-filter: blur(16px);
     }
 
     .panel {
@@ -309,9 +304,17 @@
       filter: blur(2px);
     }
 
-    .kpi.hot::after { background: rgba(255,107,107,.11); }
-    .kpi.snow::after { background: rgba(121,255,178,.11); }
-    .kpi.rain::after { background: rgba(97,220,255,.12); }
+    .kpi.hot::after {
+      background: rgba(255,107,107,.11);
+    }
+
+    .kpi.snow::after {
+      background: rgba(121,255,178,.11);
+    }
+
+    .kpi.rain::after {
+      background: rgba(97,220,255,.12);
+    }
 
     .kpi span {
       position: relative;
@@ -528,7 +531,7 @@
       gap: 7px;
       padding: 6px 9px;
       border-radius: 999px;
-      border: 1px solid var(--line2);
+      border: 1px solid rgba(255,255,255,.09);
       background: rgba(255,255,255,.055);
       color: #ddecf6;
       font-size: 12px;
@@ -614,7 +617,7 @@
 
     .factor {
       display: grid;
-      grid-template-columns: 165px 1fr;
+      grid-template-columns: 170px 1fr;
       gap: 10px;
       padding: 10px;
       border-radius: 14px;
@@ -921,35 +924,35 @@
       <section class="brand-card">
         <div class="eyebrow">
           <span class="dot"></span>
-          Pronóstico experimental multimodelo de nieve y lluvia
+          Pronóstico multimodelo de nieve y lluvia
         </div>
 
         <h1>BariSnow</h1>
 
         <div class="lead">
-          Sistema probabilístico local para Bariloche. Conserva una lectura directa discretizada para nieve y lluvia,
-          pero agrega escenarios cuantitativos, tendencia 6-12 h, consenso del ensamble, percentiles, umbrales
-          y diagnóstico físico experto.
+          Sistema de postprocesamiento meteorológico para Bariloche. Integra modelos numéricos, consenso del ensamble,
+          percentiles, tendencia horaria y diagnóstico físico local para traducir datos técnicos en una lectura directa
+          de nieve, lluvia y fase probable por barrio.
         </div>
       </section>
 
       <aside class="hero-card">
-        <div class="hero-title">Capas del pronóstico</div>
+        <div class="hero-title">Motor operativo</div>
 
         <div class="chip-grid">
           <span class="chip">📍 Lago Moreno</span>
           <span class="chip">📍 Melipal</span>
           <span class="chip">📍 Centro</span>
           <span class="chip">📊 P25 / P50 / P75 / P90</span>
-          <span class="chip">🎯 Consenso, no skill</span>
+          <span class="chip">🎯 Consenso multimodelo</span>
           <span class="chip">🧊 Fase física local</span>
           <span class="chip">📈 Tendencia 12 h</span>
           <span class="chip">🟣 Windguru externo</span>
         </div>
 
         <div class="hero-note">
-          BariSnow no reemplaza una verificación observacional local. El consenso mide acuerdo entre modelos disponibles,
-          no acierto histórico calibrado.
+          BariSnow resume la información de modelos en una salida operativa: nivel de nieve, nivel de lluvia,
+          escenarios cuantitativos, fase probable y fundamentos físicos.
         </div>
       </aside>
     </header>
@@ -1008,7 +1011,7 @@
           <div class="kpi">
             <span>🎯 Consenso ensamble</span>
             <strong id="ensembleConsensus">—</strong>
-            <small id="consensusText">No es verificación histórica.</small>
+            <small id="consensusText">Acuerdo operativo entre modelos.</small>
           </div>
         </section>
       </section>
@@ -1072,15 +1075,14 @@
                   <th>P25 conservador</th>
                   <th>P50 probable</th>
                   <th>P75 alto</th>
-                  <th>P90 extremo razonable</th>
+                  <th>P90 exigente</th>
                 </tr>
               </thead>
               <tbody id="scenarioRows"></tbody>
             </table>
           </div>
-
           <div class="note">
-            Los percentiles se calculan desde los miembros disponibles del ensamble. No representan garantía ni calibración histórica.
+            Los percentiles convierten el ensamble en escenarios operativos: conservador, probable, alto y exigente.
           </div>
         </section>
 
@@ -1098,9 +1100,8 @@
               <tbody id="thresholdRows"></tbody>
             </table>
           </div>
-
           <div class="note">
-            Útil para decisiones prácticas: ver copos, acumular algo, afectar caminos o esperar lluvia importante.
+            Los umbrales permiten leer impacto potencial: copos, acumulación menor, evento acumulador o lluvia relevante.
           </div>
         </section>
       </section>
@@ -1111,7 +1112,7 @@
       </section>
 
       <section class="panel">
-        <h2>📘 Escalas BariSnow conservadas</h2>
+        <h2>📘 Escalas BariSnow</h2>
 
         <div class="science-grid">
           <div class="science-card">
@@ -1119,27 +1120,27 @@
 
             <div class="scale-level">
               <div class="scale-tag green">1<br>Sin acumulación</div>
-              <div>No se espera nieve acumuladora. Puede estar frío, pero la columna atmosférica o la precipitación no alcanzan.</div>
+              <div>No se espera nieve acumuladora.</div>
             </div>
 
             <div class="scale-level">
               <div class="scale-tag green">2<br>Señal muy débil</div>
-              <div>Puede haber indicios aislados de copos o mezcla, pero sin señal suficiente para considerar nieve acumuladora.</div>
+              <div>Puede haber indicios aislados de copos o mezcla, sin señal acumuladora robusta.</div>
             </div>
 
             <div class="scale-level">
               <div class="scale-tag yellow">3<br>Mezcla marginal</div>
-              <div>Puede alternar lluvia, aguanieve y nieve húmeda. La acumulación depende mucho de la intensidad y de la hora del día.</div>
+              <div>Puede alternar lluvia, aguanieve y nieve húmeda. Acumulación incierta.</div>
             </div>
 
             <div class="scale-level">
               <div class="scale-tag orange">4<br>Nieve acumulable</div>
-              <div>La nieve puede pegar y acumular en superficies frías: césped, techos, autos, banquinas y zonas menos transitadas.</div>
+              <div>La nieve puede pegar y acumular en superficies frías.</div>
             </div>
 
             <div class="scale-level">
               <div class="scale-tag red">5<br>Nevada importante</div>
-              <div>Señal fuerte de acumulación. Puede afectar calles internas, accesos, caminos expuestos y movilidad.</div>
+              <div>Señal fuerte de acumulación con potencial impacto operativo.</div>
             </div>
           </div>
 
@@ -1153,7 +1154,7 @@
 
             <div class="scale-level">
               <div class="scale-tag green">2<br>Débil</div>
-              <div>Puede haber lloviznas o precipitación menor, de bajo impacto operativo.</div>
+              <div>Precipitación menor, aislada o de bajo impacto.</div>
             </div>
 
             <div class="scale-level">
@@ -1163,19 +1164,14 @@
 
             <div class="scale-level">
               <div class="scale-tag orange">4<br>Persistente</div>
-              <div>Precipitación sostenida o acumulado relevante durante varias horas.</div>
+              <div>Precipitación sostenida o acumulado relevante.</div>
             </div>
 
             <div class="scale-level">
               <div class="scale-tag red">5<br>Intensa</div>
-              <div>Acumulados altos o períodos fuertes con posible impacto en circulación y escorrentía.</div>
+              <div>Acumulados altos o períodos fuertes.</div>
             </div>
           </div>
-        </div>
-
-        <div class="note">
-          Estas escalas son la salida cualitativa directa. Detrás se calculan escenarios cuantitativos, tendencia,
-          fase probable y consenso multimodelo.
         </div>
       </section>
 
@@ -1229,7 +1225,7 @@
           <h2>🟣 Comparar con Windguru</h2>
 
           <div class="diagnosis">
-            Windguru es comparación externa. <b>No modifica</b> el nivel BariSnow, la acumulación, el consenso ni la tendencia.
+            Windguru funciona como contraste externo. BariSnow conserva su propio veredicto multimodelo y permite comparar diferencias horarias.
           </div>
 
           <textarea id="windguruInput" placeholder="2026-07-07 06:00, 0.4
@@ -1253,8 +1249,8 @@ O:
         <summary>🧪 Diagnóstico físico experto</summary>
 
         <div class="note">
-          Esta sección es diagnóstica, no determinante absoluta. La versión corregida evita depender de niveles verticales
-          avanzados como requisito para calcular; usa variables robustas y deja la física como post-procesamiento local.
+          Esta sección muestra el postprocesamiento físico local: bulbo húmedo efectivo, cota estimada, supervivencia del copo,
+          realce orográfico, DGZ proxy, fase probable y adherencia. Es la capa que traduce el pronóstico numérico al nivel del barrio.
         </div>
 
         <div class="settings-content science-grid">
@@ -1285,7 +1281,7 @@ O:
 
             <div class="science-card">
               <h3>⛰️ Orografía local</h3>
-              <div class="formula">Realce proxy por viento W/NW, humedad y factor orográfico local. Límite conservador.</div>
+              <div class="formula">Realce por viento W/NW, humedad y factor orográfico local, limitado de forma conservadora.</div>
               <div id="physicsOro" class="diagnosis"></div>
             </div>
           </div>
@@ -1359,8 +1355,8 @@ O:
           </div>
 
           <div class="note">
-            Los pesos son iniciales y no calibrados contra observaciones locales. Para hablar de skill real habría que verificar
-            cada modelo contra lluvia, fase y nieve observadas por barrio y por tipo de evento.
+            Los pesos son configuraciones iniciales del ensamble. BariSnow ya entrega escenarios, consenso y diagnóstico físico local;
+            una futura capa de verificación histórica puede ajustar automáticamente esos pesos por barrio y por tipo de evento.
           </div>
         </div>
       </details>
@@ -1372,7 +1368,7 @@ O:
       "use strict";
 
       var WINDGURU_URL = "https://www.windguru.cz/366613";
-      var API_TIMEOUT_MS = 12000;
+      var API_TIMEOUT_MS = 15000;
 
       var latestModel = [];
       var latestPacks = [];
@@ -1396,7 +1392,7 @@ O:
           elev: 778,
           oro: 0.42,
           coldBias: 0.0,
-          note: "Zona oeste, influencia lacustre y orográfica marcada. Favorece realce orográfico con flujo del oeste/noroeste."
+          note: "Zona oeste, influencia lacustre y orográfica marcada. Buen punto para realce local con flujo oeste/noroeste."
         },
         melipal: {
           name: "Barrio Melipal",
@@ -1405,7 +1401,7 @@ O:
           elev: 790,
           oro: 0.34,
           coldBias: 0.0,
-          note: "Zona intermedia entre centro y oeste. Conserva señal orográfica, pero menos intensa que Lago Moreno."
+          note: "Zona intermedia entre oeste y casco urbano. Mantiene señal orográfica moderada."
         },
         centro: {
           name: "Barrio Centro",
@@ -1414,7 +1410,7 @@ O:
           elev: 770,
           oro: 0.24,
           coldBias: 0.2,
-          note: "Zona urbana próxima al Nahuel Huapi. Mayor moderación lacustre e isla térmica urbana relativa."
+          note: "Zona urbana cercana al Nahuel Huapi, con mayor moderación lacustre y urbana."
         }
       };
 
@@ -1596,13 +1592,11 @@ O:
           "temperature_2m",
           "relative_humidity_2m",
           "precipitation",
-          "precipitation_probability",
+          "wind_speed_10m",
+          "wind_direction_10m",
           "snowfall",
           "freezing_level_height",
-          "surface_pressure",
-          "pressure_msl",
-          "wind_speed_10m",
-          "wind_direction_10m"
+          "precipitation_probability"
         ].join(",");
       }
 
@@ -1655,67 +1649,106 @@ O:
         );
       }
 
-      function fetchJSON(url, timeoutMs) {
-        return new Promise(function (resolve, reject) {
-          var controller = new AbortController();
-          var timer = setTimeout(function () {
-            controller.abort();
-          }, timeoutMs);
+      function xhrJSON(url, callback) {
+        var xhr = new XMLHttpRequest();
+        var finished = false;
+        var timer;
 
-          fetch(url, {
-            method: "GET",
-            cache: "no-store",
-            signal: controller.signal
-          }).then(function (res) {
-            clearTimeout(timer);
+        function done(err, data, status) {
+          if (finished) return;
+          finished = true;
+          clearTimeout(timer);
+          callback(err, data, status || 0);
+        }
 
-            if (!res.ok) {
-              return res.text().then(function (txt) {
-                reject(new Error("HTTP " + res.status + ": " + txt.slice(0, 160)));
-              });
-            }
+        try {
+          xhr.open("GET", url, true);
+          xhr.timeout = API_TIMEOUT_MS;
 
-            return res.json().then(resolve);
-          }).catch(function (err) {
-            clearTimeout(timer);
+          timer = setTimeout(function () {
+            try {
+              xhr.abort();
+            } catch (e) {}
+            done(new Error("Timeout API"), null, 0);
+          }, API_TIMEOUT_MS + 1000);
 
-            if (err && err.name === "AbortError") {
-              reject(new Error("Timeout API"));
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState !== 4) return;
+
+            if (xhr.status >= 200 && xhr.status < 300) {
+              try {
+                done(null, JSON.parse(xhr.responseText), xhr.status);
+              } catch (e) {
+                done(new Error("JSON inválido: " + e.message), null, xhr.status);
+              }
             } else {
-              reject(err || new Error("Error de conexión"));
+              done(new Error("HTTP " + xhr.status + ": " + String(xhr.responseText || "").slice(0, 180)), null, xhr.status);
             }
-          });
-        });
+          };
+
+          xhr.onerror = function () {
+            done(new Error("Error de conexión API"), null, 0);
+          };
+
+          xhr.ontimeout = function () {
+            done(new Error("Timeout API"), null, 0);
+          };
+
+          xhr.send(null);
+        } catch (e) {
+          done(e, null, 0);
+        }
       }
 
-      function fetchSource(source) {
-        var advancedUrl = buildUrl(source, true);
-        var coreUrl = buildUrl(source, false);
+      function fetchSource(source, callback) {
+        var urlAdvanced = buildUrl(source, true);
+        var urlCore = buildUrl(source, false);
 
-        return fetchJSON(advancedUrl, API_TIMEOUT_MS).then(function (data) {
-          var model = computeModel(data, source, true);
+        xhrJSON(urlAdvanced, function (err, data) {
+          if (!err) {
+            try {
+              var model = computeModel(data, source, true);
+              if (model.length) {
+                callback(null, {
+                  source: source,
+                  model: model,
+                  mode: "avanzado",
+                  url: urlAdvanced
+                });
+                return;
+              }
+            } catch (e1) {
+              err = e1;
+            }
+          }
 
-          if (!model.length) throw new Error("Sin horas modeladas");
+          xhrJSON(urlCore, function (err2, data2) {
+            if (err2) {
+              callback({
+                source: source,
+                error: (err ? err.message : "fallo avanzado") + " / fallback: " + err2.message
+              });
+              return;
+            }
 
-          return {
-            source: source,
-            model: model,
-            mode: "avanzado",
-            url: advancedUrl
-          };
-        }).catch(function (err1) {
-          return fetchJSON(coreUrl, API_TIMEOUT_MS).then(function (data2) {
-            var model2 = computeModel(data2, source, false);
+            try {
+              var model2 = computeModel(data2, source, false);
 
-            if (!model2.length) throw new Error("Sin horas modeladas en fallback");
+              if (!model2.length) throw new Error("Sin horas modeladas en fallback");
 
-            return {
-              source: source,
-              model: model2,
-              mode: "básico",
-              url: coreUrl,
-              fallbackReason: err1.message
-            };
+              callback(null, {
+                source: source,
+                model: model2,
+                mode: "básico",
+                url: urlCore,
+                fallbackReason: err ? err.message : ""
+              });
+            } catch (e2) {
+              callback({
+                source: source,
+                error: e2.message
+              });
+            }
           });
         });
       }
@@ -2378,7 +2411,7 @@ O:
             level: 4,
             label: "4 · Nieve acumulable",
             cls: "orange",
-            text: "Puede acumular en superficies frías, césped, techos, autos y banquinas."
+            text: "La señal permite acumulación visible, especialmente en superficies frías."
           };
         }
 
@@ -2387,7 +2420,7 @@ O:
             level: 3,
             label: "3 · Mezcla marginal",
             cls: "yellow",
-            text: "Puede alternar lluvia, aguanieve y nieve húmeda. Acumulación incierta."
+            text: "Escenario compatible con lluvia, aguanieve o nieve húmeda; acumulación sensible a intensidad y horario."
           };
         }
 
@@ -2396,7 +2429,7 @@ O:
             level: 2,
             label: "2 · Señal muy débil",
             cls: "green",
-            text: "Hay indicios aislados de copos o mezcla, pero sin señal acumuladora robusta."
+            text: "Existe señal menor de copos o mezcla, sin acumulación robusta."
           };
         }
 
@@ -2404,7 +2437,7 @@ O:
           level: 1,
           label: "1 · Sin acumulación",
           cls: "green",
-          text: "No hay señal meteorológica robusta de nieve acumuladora para el barrio seleccionado."
+          text: "La señal actual favorece ausencia de acumulación de nieve."
         };
       }
 
@@ -2454,7 +2487,7 @@ O:
           level: 1,
           label: "1 · Casi seco",
           cls: "green",
-          text: "No hay señal clara de precipitación relevante."
+          text: "La señal de precipitación relevante es baja."
         };
       }
 
@@ -2489,7 +2522,7 @@ O:
         $("phaseVerdictText").textContent =
           "Hora crítica: " +
           localTime(peak.time) +
-          ". Modelos: lluvia " +
+          ". Distribución: lluvia " +
           Math.round((peak.phaseDist.lluvia / Math.max(0.001, peak.phaseDist.total)) * 100) +
           "%, mezcla " +
           Math.round((peak.phaseDist.mezcla / Math.max(0.001, peak.phaseDist.total)) * 100) +
@@ -2502,7 +2535,7 @@ O:
         $("consensusText").textContent =
           "Consenso " +
           con.txt +
-          " entre modelos disponibles. No es skill histórico.";
+          " entre modelos y postprocesamiento local.";
 
         $("trendVerdict").className = summary.trend.cls;
         $("trendVerdict").textContent = summary.trend.label;
@@ -2531,7 +2564,7 @@ O:
         $("criticalWindow").textContent = summary.next ? localTime(summary.next.time) : localTime(peak.time);
         $("criticalWindowText").textContent =
           summary.next
-            ? "Primera ventana con señal de fase nieve/mezcla."
+            ? "Primera ventana con fase nieve/mezcla."
             : "Hora de mayor tasa de nieve estimada.";
 
         renderQuickRead(summary, snow, rain);
@@ -2570,7 +2603,7 @@ O:
           "Tendencia 12 h: <b>" +
           summary.trend.label +
           "</b>. " +
-          "Consenso: <b>" +
+          "Consenso operativo: <b>" +
           Math.round(summary.consensus * 100) +
           "%</b>.";
 
@@ -2601,7 +2634,7 @@ O:
           "<tr><td>Nieve &gt; 0.5 cm</td><td>" + Math.round(summary.probSnowGt05 * 100) + "%</td><td>Copos visibles o blanqueo muy menor</td></tr>" +
           "<tr><td>Nieve &gt; 1 cm</td><td>" + Math.round(summary.probSnowGt1 * 100) + "%</td><td>Acumulación ligera detectable</td></tr>" +
           "<tr><td>Nieve &gt; 3 cm</td><td>" + Math.round(summary.probSnowGt3 * 100) + "%</td><td>Acumulación operativa en superficies frías</td></tr>" +
-          "<tr><td>Nieve &gt; 5 cm</td><td>" + Math.round(summary.probSnowGt5 * 100) + "%</td><td>Evento acumulador más relevante</td></tr>" +
+          "<tr><td>Nieve &gt; 5 cm</td><td>" + Math.round(summary.probSnowGt5 * 100) + "%</td><td>Evento acumulador relevante</td></tr>" +
           "<tr><td>Lluvia &gt; 10 mm</td><td>" + Math.round(summary.probRainGt10 * 100) + "%</td><td>Precipitación relevante</td></tr>" +
           "<tr><td>Lluvia &gt; 20 mm</td><td>" + Math.round(summary.probRainGt20 * 100) + "%</td><td>Evento húmedo importante</td></tr>"
         );
@@ -2623,12 +2656,12 @@ O:
 
         safeHTML(
           "decomposition",
-          '<div class="factor"><b>Salida directa</b><span>' + snow.label + " · " + rain.label + "</span></div>" +
+          '<div class="factor"><b>Salida operativa</b><span>' + snow.label + " · " + rain.label + "</span></div>" +
           '<div class="factor"><b>Ensamble</b><span>Consenso <b class="' + con.cls + '">' + Math.round(summary.consensus * 100) + "%</b>. Fuentes disponibles: " + summary.sources + ". " + phaseText + ".</span></div>" +
           '<div class="factor"><b>Escenario probable</b><span>Nieve P50 <b>' + fmt(summary.snowQ50, 1) + " cm</b>; lluvia P50 <b>" + fmt(summary.rainQ50, 1) + " mm</b>; nieve P90 <b>" + fmt(summary.snowQ90, 1) + " cm</b>.</span></div>" +
           '<div class="factor"><b>Tendencia</b><span>' + summary.trend.label + ". " + summary.trend.text + "</span></div>" +
           '<div class="factor"><b>Física local</b><span>Tw_eff <b>' + fmt(p.TwEff, 1) + " °C</b>; cota <b>" + fmt(p.snowLine, 0) + " m</b>; fusión <b>" + fmt(p.melt, 0) + " °C·m</b>; DGZ proxy <b>" + fmt(p.dgzScore, 2) + "</b>.</span></div>" +
-          '<div class="factor"><b>Windguru</b><span>Solo comparación externa. No entra en el veredicto, ni en escenarios, ni en consenso.</span></div>"
+          '<div class="factor"><b>Comparación externa</b><span>Windguru puede superponerse al gráfico para contraste horario, sin reescribir el diagnóstico BariSnow.</span></div>"
         );
       }
 
@@ -2709,7 +2742,7 @@ O:
         var phaseMid = phaseRankFromRow(p) >= 2;
 
         $("physicsColumn").innerHTML =
-          "Diagnóstico de superficie robusto. En hora crítica: <b>Tw_eff = " +
+          "Postprocesamiento de superficie y barrio. En hora crítica: <b>Tw_eff = " +
           fmt(p.TwEff) +
           " °C</b>, cota estimada <b>" +
           Math.round(p.snowLine) +
@@ -2733,12 +2766,12 @@ O:
           fmt(p.RH, 0) +
           "%</b>. Precipitación crítica: <b>" +
           fmt(p.P, 1) +
-          " mm/h</b>. Este proxy no reemplaza un perfil vertical real.";
+          " mm/h</b>. Este índice resume microfísica favorable con datos disponibles.";
 
         $("physicsOro").innerHTML =
           "Orografía local: <b>" +
           fmt(p.oroIndex, 2) +
-          "</b>. Multiplicador aplicado de forma conservadora: <b>" +
+          "</b>. Multiplicador aplicado: <b>" +
           fmt(p.oroMultiplier, 2) +
           "×</b>. Viento: <b>" +
           fmt(p.wind, 0) +
@@ -2807,7 +2840,7 @@ O:
         $("snowNeedsText").innerHTML =
           "Índice físico diagnóstico de entorno nivoso: <b>" +
           score +
-          "/100</b>. No es una probabilidad calibrada; resume si el entorno físico acompaña o contradice al ensamble." +
+          "/100</b>. Resume si el entorno térmico, la cota, la precipitación, la fase y la microfísica acompañan la señal del ensamble." +
           '<div class="meter"><div class="meter-fill" style="width:' +
           score +
           '%"></div></div>';
@@ -3108,15 +3141,6 @@ O:
           }, "#c5a6ff", 2.3, true, true);
         }
 
-        for (i = 0; i < model.length; i++) {
-          if ((model[i].cmh || 0) >= maxC * 0.55 && i % (isMobile ? 16 : 10) === 0) {
-            ctx.fillStyle = "rgba(121,255,178,.95)";
-            ctx.textAlign = "center";
-            ctx.font = (isMobile ? 9 : 10) + "px system-ui";
-            ctx.fillText(fmt(model[i].cmh, 2), xAt(i), yCmh(model[i].cmh) - 7);
-          }
-        }
-
         ctx.save();
         ctx.translate(17, padT + plotH / 2);
         ctx.rotate(-Math.PI / 2);
@@ -3167,17 +3191,17 @@ O:
       function setLoading() {
         safeText("snowVerdict", "Calculando…");
         $("snowVerdict").className = "yellow";
-        safeText("snowVerdictText", "Consultando ensamble multimodelo.");
+        safeText("snowVerdictText", "Ejecutando postprocesamiento multimodelo.");
 
         safeText("rainVerdict", "Calculando…");
         $("rainVerdict").className = "yellow";
-        safeText("rainVerdictText", "Consultando ensamble multimodelo.");
+        safeText("rainVerdictText", "Descargando modelos y generando escenarios.");
 
         safeText("phaseVerdict", "—");
         safeText("phaseVerdictText", "Esperando datos.");
 
         safeText("ensembleConsensus", "—");
-        safeText("consensusText", "Calculando acuerdo entre modelos.");
+        safeText("consensusText", "Calculando acuerdo operativo.");
 
         safeText("trendVerdict", "—");
         safeText("trendText", "Esperando datos.");
@@ -3217,79 +3241,91 @@ O:
 
         var sources = selectedSources();
         var t0 = new Date().getTime();
+        var ok = [];
+        var fail = [];
+        var pending = sources.length;
+        var finished = false;
 
         setLoading();
 
-        safeText("status", "Iniciando corrida multimodelo en paralelo…");
+        safeText("status", "Iniciando corrida multimodelo robusta…");
         safeHTML("sourceStatus", "");
         safeHTML("debugBox", "DOM: OK<br>Fuentes seleccionadas: " + sources.length);
 
-        Promise.allSettled(sources.map(fetchSource)).then(function (results) {
-          var ok = [];
-          var fail = [];
-          var i;
+        function finalize() {
+          if (finished) return;
+          if (pending > 0) return;
 
-          for (i = 0; i < results.length; i++) {
-            if (results[i].status === "fulfilled") ok.push(results[i].value);
-            else fail.push({
-              source: sources[i],
-              error: results[i].reason ? results[i].reason.message : "Error desconocido"
-            });
-          }
+          finished = true;
 
           var ms = new Date().getTime() - t0;
           renderSourceStatus(ok, fail);
 
           if (!ok.length) {
-            safeText("status", "Error: no respondió ninguna fuente.");
-            safeText("snowVerdict", "Error");
-            $("snowVerdict").className = "red";
-            safeText("snowVerdictText", "No respondió ninguna fuente automática.");
+            safeText("status", "Intentando fallback final Best Match…");
 
-            var failTxt = fail.map(function (f) {
-              return f.source.label + ": " + f.error;
-            }).join("<br>");
+            fetchSource(SOURCES[0], function (err, pack) {
+              if (!err && pack) {
+                ok.push(pack);
+                renderAfterOk(ok, fail, ms);
+              } else {
+                safeText("status", "Error: no respondió ninguna fuente.");
+                safeText("snowVerdict", "Error");
+                $("snowVerdict").className = "red";
+                safeText("snowVerdictText", "No se pudo obtener datos de la API.");
 
-            safeHTML(
-              "debugBox",
-              "DOM: OK<br>API: ERROR<br>Fuentes intentadas: " +
-              sources.length +
-              "<br>Fallidas: " +
-              fail.length +
-              "<br>Tiempo: " +
-              ms +
-              " ms<br><br>" +
-              failTxt
-            );
+                var failTxt = fail.map(function (f) {
+                  return f.source.label + ": " + f.error;
+                }).join("<br>");
+
+                if (err) failTxt += "<br>Fallback Best Match: " + err.error;
+
+                safeHTML(
+                  "debugBox",
+                  "DOM: OK<br>API: ERROR<br>Fuentes intentadas: " +
+                  sources.length +
+                  "<br>Fallidas: " +
+                  fail.length +
+                  "<br>Tiempo: " +
+                  ms +
+                  " ms<br><br>" +
+                  failTxt
+                );
+              }
+            });
 
             return;
           }
 
+          renderAfterOk(ok, fail, ms);
+        }
+
+        function renderAfterOk(okPacks, failPacks, ms) {
           try {
-            var model = aggregateHourly(ok);
-            var summary = summarize(model, ok);
+            var model = aggregateHourly(okPacks);
+            var summary = summarize(model, okPacks);
             latestModel = model;
-            latestPacks = ok;
+            latestPacks = okPacks;
             latestSummary = summary;
 
             render(latestModel, summary);
 
-            safeText("status", "🟢 Listo · " + ok.length + " fuente(s) · " + ms + " ms");
+            safeText("status", "🟢 Listo · " + okPacks.length + " fuente(s) · " + ms + " ms");
 
-            var urls = ok.map(function (pack) {
+            var urls = okPacks.map(function (pack) {
               return pack.source.label + " (" + pack.mode + "): " + pack.url;
             }).join("<br><br>");
 
-            var errors = fail.map(function (f) {
+            var errors = failPacks.map(function (f) {
               return f.source.label + ": " + f.error;
             }).join("<br>");
 
             safeHTML(
               "debugBox",
               "DOM: OK<br>API: OK<br>Fuentes OK: " +
-              ok.length +
+              okPacks.length +
               "<br>Fuentes fallidas: " +
-              fail.length +
+              failPacks.length +
               "<br>Tiempo total: " +
               ms +
               " ms<br>Horas modeladas: " +
@@ -3312,12 +3348,28 @@ O:
               "API respondió, pero falló procesamiento.<br>Detalle: " +
               e.message +
               "<br>Fuentes OK: " +
-              ok.length +
+              okPacks.length +
               "<br>Fuentes fallidas: " +
-              fail.length
+              failPacks.length
             );
           }
-        });
+        }
+
+        for (var i = 0; i < sources.length; i++) {
+          (function (source) {
+            fetchSource(source, function (err, pack) {
+              if (err) {
+                fail.push(err);
+              } else {
+                ok.push(pack);
+              }
+
+              pending--;
+              safeText("status", "Descarga multimodelo: " + ok.length + " OK, " + fail.length + " fallidas, " + pending + " pendientes…");
+              finalize();
+            });
+          })(sources[i]);
+        }
       }
 
       function parseWindguru() {
@@ -3460,7 +3512,7 @@ O:
           "wgSummary",
           "Comparados " +
           pairs.length +
-          " puntos. Modelo BariSnow P50: <b>" +
+          " puntos. BariSnow P50: <b>" +
           fmt(modelTotal, 1) +
           " cm</b>, Windguru: <b>" +
           fmt(wgTotal, 1) +
@@ -3468,7 +3520,7 @@ O:
           fmt(mae, 2) +
           " cm/h</b>. Sesgo BariSnow-Windguru: <b>" +
           fmt(bias, 2) +
-          " cm/h</b>. Esta comparación no modifica el pronóstico."
+          " cm/h</b>."
         );
       }
 
