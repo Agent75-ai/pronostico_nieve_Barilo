@@ -27,7 +27,6 @@
       --shadow: 0 24px 80px rgba(0,0,0,.34);
       --shadow-soft: 0 14px 44px rgba(0,0,0,.22);
       --radius: 26px;
-      --radius2: 18px;
     }
 
     * {
@@ -298,10 +297,6 @@
       padding: 15px;
     }
 
-    .kpis.compact .kpi {
-      min-height: 124px;
-    }
-
     .kpi::after {
       content: "";
       position: absolute;
@@ -314,17 +309,9 @@
       filter: blur(2px);
     }
 
-    .kpi.hot::after {
-      background: rgba(255,107,107,.11);
-    }
-
-    .kpi.snow::after {
-      background: rgba(121,255,178,.11);
-    }
-
-    .kpi.rain::after {
-      background: rgba(97,220,255,.12);
-    }
+    .kpi.hot::after { background: rgba(255,107,107,.11); }
+    .kpi.snow::after { background: rgba(121,255,178,.11); }
+    .kpi.rain::after { background: rgba(97,220,255,.12); }
 
     .kpi span {
       position: relative;
@@ -1220,7 +1207,7 @@
                 <th>Rango P25-P75</th>
                 <th>Consenso</th>
                 <th>Modelos</th>
-                <th>DGZ</th>
+                <th>DGZ proxy</th>
                 <th>Melt</th>
                 <th>Windguru</th>
                 <th>Dif.</th>
@@ -1266,39 +1253,39 @@ O:
         <summary>🧪 Diagnóstico físico experto</summary>
 
         <div class="note">
-          Esta sección es diagnóstica, no determinante absoluta. Froude, DGZ y Bourgouin simplificado ayudan a interpretar fase,
-          orografía y microfísica, pero no sustituyen el ensamble ni una verificación observacional local.
+          Esta sección es diagnóstica, no determinante absoluta. La versión corregida evita depender de niveles verticales
+          avanzados como requisito para calcular; usa variables robustas y deja la física como post-procesamiento local.
         </div>
 
         <div class="settings-content science-grid">
           <div>
             <div class="science-card">
-              <h3>🌡️ Columna termodinámica</h3>
-              <div class="formula">Tw(z), T(z), RH(z), p(z) desde superficie, 925, 850 y 700 hPa cuando están disponibles</div>
+              <h3>🌡️ Columna termodinámica simplificada</h3>
+              <div class="formula">Tw_eff = Tw_superficie - enfriamiento evaporativo - enfriamiento orográfico proxy</div>
               <div id="physicsColumn" class="diagnosis"></div>
             </div>
 
             <br>
 
             <div class="science-card">
-              <h3>🔥 Bourgouin simplificado</h3>
-              <div class="formula">M⁺ = ∫ max(Tw(z)-0.1,0) dz ; M⁻ = ∫ max(-Tw(z),0) dz</div>
+              <h3>🔥 Fusión y supervivencia</h3>
+              <div class="formula">M⁺ proxy ≈ max(Tw_eff + 0.1, 0) × 650 ; supervivencia ≈ exp(-M⁺/380)</div>
               <div id="physicsEnergy" class="diagnosis"></div>
             </div>
           </div>
 
           <div>
             <div class="science-card">
-              <h3>❄️ Capa dendrítica DGZ</h3>
-              <div class="formula">DGZ ≈ espesor saturado entre -12 °C y -18 °C × humedad × ascenso proxy</div>
+              <h3>❄️ DGZ proxy</h3>
+              <div class="formula">DGZ proxy ≈ humedad × precipitación × enfriamiento local</div>
               <div id="physicsDgz" class="diagnosis"></div>
             </div>
 
             <br>
 
             <div class="science-card">
-              <h3>⛰️ Froude orográfico instantáneo</h3>
-              <div class="formula">Fr = U⊥ / (N·H). Índice local aproximado; no explica por sí solo toda la precipitación sinóptica.</div>
+              <h3>⛰️ Orografía local</h3>
+              <div class="formula">Realce proxy por viento W/NW, humedad y factor orográfico local. Límite conservador.</div>
               <div id="physicsOro" class="diagnosis"></div>
             </div>
           </div>
@@ -1350,7 +1337,7 @@ O:
             </div>
 
             <div class="field">
-              <label>🌡️ Ajuste frío local °C</label>
+              <label>🌡️ Ajuste térmico local °C</label>
               <input id="coldBias" type="number" step="0.1" value="0.0">
             </div>
 
@@ -1385,6 +1372,8 @@ O:
       "use strict";
 
       var WINDGURU_URL = "https://www.windguru.cz/366613";
+      var API_TIMEOUT_MS = 12000;
+
       var latestModel = [];
       var latestPacks = [];
       var latestSummary = null;
@@ -1392,11 +1381,11 @@ O:
       var latestSourceLabel = "—";
 
       var SOURCES = [
-        { id: "best_match", label: "Best Match", endpoint: "https://api.open-meteo.com/v1/forecast", maxDays: 10, weight: 0.24, verified: false },
-        { id: "ecmwf", label: "ECMWF IFS", endpoint: "https://api.open-meteo.com/v1/ecmwf", maxDays: 10, weight: 0.30, verified: false },
-        { id: "gfs", label: "NOAA GFS", endpoint: "https://api.open-meteo.com/v1/gfs", maxDays: 7, weight: 0.20, verified: false },
-        { id: "gem", label: "CMC GEM", endpoint: "https://api.open-meteo.com/v1/gem", maxDays: 7, weight: 0.14, verified: false },
-        { id: "icon", label: "DWD ICON", endpoint: "https://api.open-meteo.com/v1/dwd-icon", maxDays: 7, weight: 0.12, verified: false }
+        { id: "best_match", label: "Best Match", endpoint: "https://api.open-meteo.com/v1/forecast", maxDays: 10, weight: 0.24 },
+        { id: "ecmwf", label: "ECMWF IFS", endpoint: "https://api.open-meteo.com/v1/ecmwf", maxDays: 10, weight: 0.30 },
+        { id: "gfs", label: "NOAA GFS", endpoint: "https://api.open-meteo.com/v1/gfs", maxDays: 7, weight: 0.20 },
+        { id: "gem", label: "CMC GEM", endpoint: "https://api.open-meteo.com/v1/gem", maxDays: 7, weight: 0.14 },
+        { id: "icon", label: "DWD ICON", endpoint: "https://api.open-meteo.com/v1/dwd-icon", maxDays: 7, weight: 0.12 }
       ];
 
       var PLACES = {
@@ -1517,7 +1506,7 @@ O:
             fmt(p.lon, 4) +
             ". Orografía: " +
             fmt(p.oro, 2) +
-            ". Ajuste frío: " +
+            ". Ajuste térmico: " +
             fmt(p.coldBias, 1) +
             " °C.";
         }
@@ -1590,56 +1579,19 @@ O:
         );
       }
 
-      function esWater(T) {
-        return 6.112 * Math.exp((17.67 * T) / (T + 243.5));
-      }
-
-      function esIce(T) {
-        return 6.112 * Math.exp((22.46 * T) / (T + 272.62));
-      }
-
-      function esSat(T) {
-        return T < 0 ? esIce(T) : esWater(T);
-      }
-
-      function pressureFromMsl(pmsl, z) {
-        var p0 = finite(pmsl) ? Number(pmsl) : 1013.25;
-        return p0 * Math.pow(1 - 0.0065 * z / 288.15, 5.255);
-      }
-
-      function wetBulb(T, RH, p) {
-        var eActual;
-        var lo;
-        var hi;
-        var i;
-        var tw;
-        var gamma;
-        var eTw;
-
-        if (!finite(T) || !finite(RH) || !finite(p)) return T;
-
+      function wetBulbStull(T, RH) {
         RH = clamp(RH, 1, 100);
-        eActual = esSat(T) * RH / 100;
-        lo = -45;
-        hi = T + 0.2;
 
-        for (i = 0; i < 42; i++) {
-          tw = 0.5 * (lo + hi);
-          gamma = 0.00066 * (1 + 0.00115 * tw);
-          eTw = esSat(tw) - gamma * p * (T - tw);
-
-          if (eTw > eActual) hi = tw;
-          else lo = tw;
-        }
-
-        return 0.5 * (lo + hi);
+        return (
+          T * Math.atan(0.151977 * Math.sqrt(RH + 8.313659)) +
+          Math.atan(T + RH) -
+          Math.atan(RH - 1.676331) +
+          0.00391838 * Math.pow(RH, 1.5) * Math.atan(0.023101 * RH) -
+          4.686035
+        );
       }
 
-      function thetaK(Tc, pHpa) {
-        return (Tc + 273.15) * Math.pow(1000 / pHpa, 0.286);
-      }
-
-      function hourlyFull() {
+      function hourlyAdvanced() {
         return [
           "temperature_2m",
           "relative_humidity_2m",
@@ -1650,22 +1602,7 @@ O:
           "surface_pressure",
           "pressure_msl",
           "wind_speed_10m",
-          "wind_direction_10m",
-          "temperature_925hPa",
-          "relative_humidity_925hPa",
-          "geopotential_height_925hPa",
-          "wind_speed_925hPa",
-          "wind_direction_925hPa",
-          "temperature_850hPa",
-          "relative_humidity_850hPa",
-          "geopotential_height_850hPa",
-          "wind_speed_850hPa",
-          "wind_direction_850hPa",
-          "temperature_700hPa",
-          "relative_humidity_700hPa",
-          "geopotential_height_700hPa",
-          "wind_speed_700hPa",
-          "wind_direction_700hPa"
+          "wind_direction_10m"
         ].join(",");
       }
 
@@ -1674,8 +1611,6 @@ O:
           "temperature_2m",
           "relative_humidity_2m",
           "precipitation",
-          "surface_pressure",
-          "pressure_msl",
           "wind_speed_10m",
           "wind_direction_10m"
         ].join(",");
@@ -1695,17 +1630,16 @@ O:
           if (SOURCES[i].id === mode) return [SOURCES[i]];
         }
 
-        for (i = 0; i < SOURCES.length; i++) out.push(SOURCES[i]);
-        return out;
+        return [SOURCES[0]];
       }
 
-      function buildUrl(source, full) {
+      function buildUrl(source, advanced) {
         var lat = $("lat") ? $("lat").value : "-41.1000";
         var lon = $("lon") ? $("lon").value : "-71.4500";
         var elev = $("elev") ? $("elev").value : "778";
         var requestedDays = $("days") ? num($("days").value, 7) : 7;
         var days = clamp(requestedDays, 1, source.maxDays || 7);
-        var hourly = full ? hourlyFull() : hourlyCore();
+        var hourly = advanced ? hourlyAdvanced() : hourlyCore();
 
         return (
           source.endpoint +
@@ -1721,115 +1655,68 @@ O:
         );
       }
 
-      function xhrJSON(url, callback) {
-        var xhr = new XMLHttpRequest();
+      function fetchJSON(url, timeoutMs) {
+        return new Promise(function (resolve, reject) {
+          var controller = new AbortController();
+          var timer = setTimeout(function () {
+            controller.abort();
+          }, timeoutMs);
 
-        xhr.open("GET", url, true);
-        xhr.timeout = 25000;
+          fetch(url, {
+            method: "GET",
+            cache: "no-store",
+            signal: controller.signal
+          }).then(function (res) {
+            clearTimeout(timer);
 
-        xhr.onreadystatechange = function () {
-          if (xhr.readyState === 4) {
-            if (xhr.status >= 200 && xhr.status < 300) {
-              try {
-                callback(null, JSON.parse(xhr.responseText), xhr.status);
-              } catch (e) {
-                callback(new Error("JSON inválido: " + e.message), null, xhr.status);
-              }
+            if (!res.ok) {
+              return res.text().then(function (txt) {
+                reject(new Error("HTTP " + res.status + ": " + txt.slice(0, 160)));
+              });
+            }
+
+            return res.json().then(resolve);
+          }).catch(function (err) {
+            clearTimeout(timer);
+
+            if (err && err.name === "AbortError") {
+              reject(new Error("Timeout API"));
             } else {
-              callback(new Error("HTTP " + xhr.status + ": " + xhr.responseText), null, xhr.status);
-            }
-          }
-        };
-
-        xhr.onerror = function () {
-          callback(new Error("No se pudo conectar con la API."), null, 0);
-        };
-
-        xhr.ontimeout = function () {
-          callback(new Error("Timeout conectando con la API."), null, 0);
-        };
-
-        xhr.send(null);
-      }
-
-      function fetchSource(source, done) {
-        var urlFull = buildUrl(source, true);
-        var urlCore = buildUrl(source, false);
-
-        function tryCore(reason) {
-          xhrJSON(urlCore, function (err2, data2, http2) {
-            var model2;
-
-            if (err2) {
-              done({
-                source: source,
-                error: reason + " / fallback: " + err2.message,
-                url: urlCore
-              });
-              return;
-            }
-
-            try {
-              model2 = computeModel(data2, source, false);
-
-              if (!model2.length) throw new Error("Sin horas modeladas");
-
-              done(null, {
-                source: source,
-                model: model2,
-                mode: "básico",
-                http: http2,
-                url: urlCore
-              });
-            } catch (e2) {
-              done({
-                source: source,
-                error: reason + " / fallback proceso: " + e2.message,
-                url: urlCore
-              });
+              reject(err || new Error("Error de conexión"));
             }
           });
-        }
-
-        xhrJSON(urlFull, function (err, data, http) {
-          var model;
-
-          if (err) {
-            tryCore(err.message);
-            return;
-          }
-
-          try {
-            model = computeModel(data, source, true);
-
-            if (!model.length) throw new Error("Sin horas modeladas");
-
-            done(null, {
-              source: source,
-              model: model,
-              mode: "avanzado",
-              http: http,
-              url: urlFull
-            });
-          } catch (e1) {
-            tryCore(e1.message);
-          }
         });
       }
 
-      function fetchAllSources(sources, idx, ok, fail, done) {
-        if (idx >= sources.length) {
-          done(ok, fail);
-          return;
-        }
+      function fetchSource(source) {
+        var advancedUrl = buildUrl(source, true);
+        var coreUrl = buildUrl(source, false);
 
-        safeText("status", "Descargando " + (idx + 1) + "/" + sources.length + ": " + sources[idx].label + "…");
+        return fetchJSON(advancedUrl, API_TIMEOUT_MS).then(function (data) {
+          var model = computeModel(data, source, true);
 
-        fetchSource(sources[idx], function (err, pack) {
-          if (err) fail.push(err);
-          else ok.push(pack);
+          if (!model.length) throw new Error("Sin horas modeladas");
 
-          fetchAllSources(sources, idx + 1, ok, fail, done);
+          return {
+            source: source,
+            model: model,
+            mode: "avanzado",
+            url: advancedUrl
+          };
+        }).catch(function (err1) {
+          return fetchJSON(coreUrl, API_TIMEOUT_MS).then(function (data2) {
+            var model2 = computeModel(data2, source, false);
+
+            if (!model2.length) throw new Error("Sin horas modeladas en fallback");
+
+            return {
+              source: source,
+              model: model2,
+              mode: "básico",
+              url: coreUrl,
+              fallbackReason: err1.message
+            };
+          });
         });
       }
 
@@ -1838,435 +1725,64 @@ O:
         return num(h[name][i], fallback);
       }
 
-      function addLevel(column, h, i, level) {
-        var T = getValue(h, "temperature_" + level + "hPa", i, null);
-        var RH = getValue(h, "relative_humidity_" + level + "hPa", i, null);
-        var z = getValue(h, "geopotential_height_" + level + "hPa", i, null);
-
-        if (!finite(T) || !finite(RH) || !finite(z)) return;
-
-        column.push({
-          z: z,
-          p: level,
-          T: T,
-          RH: RH,
-          Tw: wetBulb(T, RH, level),
-          wind: getValue(h, "wind_speed_" + level + "hPa", i, null),
-          dir: getValue(h, "wind_direction_" + level + "hPa", i, null)
-        });
-      }
-
-      function buildColumn(h, i, elev, baseElev, coldBias) {
-        var T2raw = getValue(h, "temperature_2m", i, null);
-        var RH2 = getValue(h, "relative_humidity_2m", i, null);
-        var pSurf;
-        var column;
-        var clean;
-        var k;
-
-        if (!finite(T2raw) || !finite(RH2)) return [];
-
-        pSurf = getValue(h, "surface_pressure", i, null);
-
-        if (!finite(pSurf)) {
-          pSurf = pressureFromMsl(getValue(h, "pressure_msl", i, 1013.25), baseElev);
-        }
-
-        column = [
-          {
-            z: elev,
-            p: pSurf,
-            T: T2raw + coldBias,
-            RH: RH2,
-            Tw: wetBulb(T2raw + coldBias, RH2, pSurf),
-            wind: getValue(h, "wind_speed_10m", i, 0),
-            dir: getValue(h, "wind_direction_10m", i, 270)
-          }
-        ];
-
-        addLevel(column, h, i, 925);
-        addLevel(column, h, i, 850);
-        addLevel(column, h, i, 700);
-
-        column.sort(function (a, b) {
-          return a.z - b.z;
-        });
-
-        clean = [];
-
-        for (k = 0; k < column.length; k++) {
-          if (!clean.length || Math.abs(clean[clean.length - 1].z - column[k].z) > 20) {
-            clean.push(column[k]);
-          }
-        }
-
-        return clean;
-      }
-
-      function interpColumn(column, z, key) {
-        var i;
-        var a;
-        var b;
-        var w;
-        var slope;
-
-        if (!column.length) return null;
-        if (column.length === 1) return column[0][key];
-
-        if (z <= column[0].z) {
-          a = column[0];
-          b = column[1];
-          slope = (b[key] - a[key]) / Math.max(1, b.z - a.z);
-          return a[key] + slope * (z - a.z);
-        }
-
-        for (i = 0; i < column.length - 1; i++) {
-          a = column[i];
-          b = column[i + 1];
-
-          if (z >= a.z && z <= b.z) {
-            w = (z - a.z) / Math.max(1, b.z - a.z);
-            return a[key] * (1 - w) + b[key] * w;
-          }
-        }
-
-        a = column[column.length - 2];
-        b = column[column.length - 1];
-        slope = (b[key] - a[key]) / Math.max(1, b.z - a.z);
-
-        return b[key] + slope * (z - b.z);
-      }
-
-      function physicalSnowLine(column, threshold, elev, TwEff) {
-        var i;
-        var a;
-        var b;
-        var w;
-
-        if (typeof threshold === "undefined") threshold = 0.45;
-
-        if (column.length < 2) return Math.max(0, elev + (TwEff - 0.6) / 0.006);
-        if (column[0].Tw <= threshold) return column[0].z;
-
-        for (i = 0; i < column.length - 1; i++) {
-          a = column[i];
-          b = column[i + 1];
-
-          if (a.Tw > threshold && b.Tw <= threshold) {
-            w = (threshold - a.Tw) / (b.Tw - a.Tw);
-            return a.z + clamp(w, 0, 1) * (b.z - a.z);
-          }
-        }
-
-        return Math.max(0, elev + (TwEff - 0.6) / 0.006);
-      }
-
-      function bruntVaisala(h, i) {
-        var T850 = getValue(h, "temperature_850hPa", i, null);
-        var T700 = getValue(h, "temperature_700hPa", i, null);
-        var z850 = getValue(h, "geopotential_height_850hPa", i, null);
-        var z700 = getValue(h, "geopotential_height_700hPa", i, null);
-        var th850;
-        var th700;
-        var dz;
-        var dThetaDz;
-        var thetaMean;
-
-        if (!finite(T850) || !finite(T700) || !finite(z850) || !finite(z700)) return 0.011;
-
-        th850 = thetaK(T850, 850);
-        th700 = thetaK(T700, 700);
-        dz = Math.max(100, z700 - z850);
-        dThetaDz = Math.max(0.000003, (th700 - th850) / dz);
-        thetaMean = 0.5 * (th850 + th700);
-
-        return Math.sqrt((9.80665 / thetaMean) * dThetaDz);
-      }
-
-      function orographicDiagnostics(h, i, oroFactor) {
-        var dir850 = getValue(h, "wind_direction_850hPa", i, getValue(h, "wind_direction_10m", i, 270));
-        var wind850 = getValue(h, "wind_speed_850hPa", i, getValue(h, "wind_speed_10m", i, 0));
-        var RH850 = getValue(h, "relative_humidity_850hPa", i, getValue(h, "relative_humidity_2m", i, 75));
-        var windward = Math.max(0, Math.cos(rad(dir850 - 280)));
-        var Uperp = Math.max(0, wind850 * windward);
-        var Ums = Uperp / 3.6;
-        var N = bruntVaisala(h, i);
-        var Fr = clamp(Ums / Math.max(0.001, N * 1200), 0.05, 2.2);
-        var moisture = clamp(RH850 / 90, 0.25, 1.35);
-        var windTerm = clamp(Uperp / 45, 0, 1.6);
-        var froudeTerm = clamp(0.45 + 0.55 * Fr, 0.25, 1.55);
-        var blocking = Fr < 0.35 ? clamp((0.35 - Fr) / 0.35, 0, 1) : 0;
-        var oroIndex = windward * moisture * windTerm * froudeTerm;
+      function orographicDiagnostics(wind, dir, RH, oroFactor) {
+        var windward = Math.max(0, Math.cos(rad(dir - 280)));
+        var moisture = clamp(RH / 90, 0.3, 1.3);
+        var windTerm = clamp(wind / 45, 0, 1.5);
+        var oroIndex = windward * moisture * windTerm;
+        var multiplier = clamp(1 + oroFactor * oroIndex, 0.85, 1.55);
+        var cooling = clamp(0.13 * oroIndex, 0, 0.45);
 
         return {
           oroIndex: oroIndex,
-          Uperp: Uperp,
-          Fr: Fr,
-          N: N,
-          blocking: blocking,
-          precipMultiplier: clamp(1 + oroFactor * oroIndex - 0.08 * blocking, 0.85, 1.55),
-          liftCooling: clamp(0.13 * oroIndex, 0, 0.45)
+          multiplier: multiplier,
+          cooling: cooling,
+          windward: windward
         };
       }
 
-      function columnPhysics(column, elev, TwEff, P, oro, time) {
-        var dz = 25;
-        var maxZ = elev + 100;
-        var i;
-        var z;
-        var T;
-        var Tw;
-        var RH;
-
-        var warmEnergy = 0;
-        var refreezeEnergy = 0;
-        var warmDepth = 0;
-        var coldDepth = 0;
-        var lowWarmEnergy = 0;
-        var dgzDepth = 0;
-        var dgzRHsum = 0;
-        var dgzSamples = 0;
-        var satDepth = 0;
-        var coldSatDepth = 0;
-
-        var d;
-        var hour;
-        var nightBonus;
-        var dayPenalty;
-        var dgzRH;
-        var dgzScore;
-        var satScore;
-        var omegaProxy;
-        var microSnowScore;
-        var surfaceAccumIndex;
-
-        if (column.length < 2) {
-          warmEnergy = TwEff > 0.1 ? (TwEff - 0.1) * 450 : 0;
-          refreezeEnergy = TwEff < 0 ? (-TwEff) * 300 : 0;
-
-          return {
-            meltEnergy: warmEnergy,
-            refreezeEnergy: refreezeEnergy,
-            warmDepth: TwEff > 0.1 ? 450 : 0,
-            coldDepth: TwEff < 0 ? 300 : 0,
-            lowWarmEnergy: warmEnergy,
-            dgzDepth: 0,
-            dgzRH: 0,
-            dgzScore: 0,
-            satDepth: 0,
-            coldSatDepth: 0,
-            omegaProxy: 0,
-            microSnowScore: 0,
-            surfaceAccumIndex: clamp((0.7 - TwEff) / 1.7, 0, 1)
-          };
-        }
-
-        for (i = 0; i < column.length; i++) {
-          maxZ = Math.max(maxZ, column[i].z);
-        }
-
-        maxZ = Math.min(3800, maxZ);
-
-        for (z = elev; z < maxZ; z += dz) {
-          T = interpColumn(column, z + dz / 2, "T");
-          Tw = interpColumn(column, z + dz / 2, "Tw");
-          RH = interpColumn(column, z + dz / 2, "RH");
-
-          if (!finite(T) || !finite(Tw) || !finite(RH)) continue;
-
-          if (Tw > 0.1) {
-            warmEnergy += (Tw - 0.1) * dz;
-            warmDepth += dz;
-
-            if (z < elev + 700) {
-              lowWarmEnergy += (Tw - 0.1) * dz;
-            }
-          }
-
-          if (Tw < 0) {
-            refreezeEnergy += (-Tw) * dz;
-            coldDepth += dz;
-          }
-
-          if (RH >= 85) {
-            satDepth += dz;
-
-            if (T < 0) {
-              coldSatDepth += dz;
-            }
-          }
-
-          if (T <= -12 && T >= -18) {
-            dgzDepth += dz;
-            dgzRHsum += RH;
-            dgzSamples++;
-          }
-        }
-
-        dgzRH = dgzSamples ? dgzRHsum / dgzSamples : 0;
-
-        omegaProxy = clamp(
-          0.30 * Math.log(1 + Math.max(0, P)) +
-          0.22 * clamp(oro.oroIndex, 0, 1.4) +
-          0.18 * clamp((oro.Uperp || 0) / 35, 0, 1) +
-          0.30 * clamp(coldSatDepth / 1200, 0, 1),
-          0,
-          1.7
-        );
-
-        if (dgzSamples > 0) {
-          dgzScore = clamp(
-            (dgzDepth / 600) *
-            (dgzRH / 90) *
-            (0.65 + 0.55 * omegaProxy),
-            0,
-            1.7
-          );
-        } else {
-          dgzScore = 0;
-        }
-
-        satScore = clamp(coldSatDepth / 1400, 0, 1.4);
-
-        microSnowScore = clamp(
-          0.42 * dgzScore +
-          0.24 * satScore +
-          0.22 * omegaProxy +
-          0.12 * clamp(P / 1.2, 0, 1),
-          0,
-          1.7
-        );
-
-        d = new Date(time);
-        hour = isNaN(d.getTime()) ? 0 : d.getHours();
-
-        nightBonus = hour >= 20 || hour <= 8 ? 0.12 : 0;
-        dayPenalty = hour >= 11 && hour <= 17 ? 0.12 : 0;
-
-        surfaceAccumIndex = clamp(
-          0.42 * clamp((0.55 - TwEff) / 1.4, 0, 1) +
-          0.22 * clamp(P / 0.8, 0, 1) +
-          0.18 * clamp(1 - lowWarmEnergy / 850, 0, 1) +
-          0.10 * clamp(elev / 1000, 0.5, 1.2) +
-          nightBonus -
-          dayPenalty,
-          0,
-          1
-        );
-
-        return {
-          meltEnergy: warmEnergy,
-          refreezeEnergy: refreezeEnergy,
-          warmDepth: warmDepth,
-          coldDepth: coldDepth,
-          lowWarmEnergy: lowWarmEnergy,
-          dgzDepth: dgzDepth,
-          dgzRH: dgzRH,
-          dgzScore: dgzScore,
-          satDepth: satDepth,
-          coldSatDepth: coldSatDepth,
-          omegaProxy: omegaProxy,
-          microSnowScore: microSnowScore,
-          surfaceAccumIndex: surfaceAccumIndex
-        };
-      }
-
-      function snowLiquidRatio(TwEff, T850, wind850, elev, oroIndex, dgzScore, microSnowScore, meltEnergy, ptypeIdx) {
-        var slr =
-          8.5 +
-          2.2 * Math.max(0, -TwEff) -
-          6.2 * Math.max(0, TwEff) +
-          clamp((elev - 800) / 850, -0.8, 1.8) +
-          2.5 * clamp(dgzScore, 0, 1.4) +
-          1.4 * clamp(microSnowScore, 0, 1.4) +
-          (finite(T850) ? clamp(1.4 - Math.abs(T850 + 5.5) / 7.5, -1, 1.4) : 0) +
-          0.5 * oroIndex -
-          clamp((wind850 - 42) / 32, 0, 1.8) -
-          clamp(meltEnergy / 700, 0, 2.2);
-
-        if (ptypeIdx <= 1) slr = Math.min(slr, 2.5);
-        if (ptypeIdx === 2) slr = Math.min(slr, 4.0);
-        if (ptypeIdx === 3) slr = Math.min(slr, 7.0);
-
-        return clamp(slr, 1.2, 22);
-      }
-
-      function stickingFactor(TwEff, P, elev, meltEnergy, ptypeIdx, surfaceAccumIndex, time) {
-        var d = new Date(time);
-        var hour = isNaN(d.getTime()) ? 0 : d.getHours();
-        var night = hour >= 20 || hour <= 8 ? 1.08 : 1.0;
-        var midday = hour >= 11 && hour <= 17 ? 0.88 : 1.0;
-        var thermal = sigmoid((0.25 - TwEff) / 0.30);
-        var intensity = clamp(0.78 + 0.18 * Math.sqrt(Math.max(0, P)), 0.70, 1.22);
-        var elevation = elev >= 1000 ? 1.12 : elev >= 850 ? 0.98 : 0.78;
-        var meltPenalty = clamp(1 - meltEnergy / 1300, 0.22, 1);
-        var phase = ptypeIdx >= 5 ? 1.05 : ptypeIdx === 4 ? 0.90 : ptypeIdx === 3 ? 0.62 : ptypeIdx === 2 ? 0.30 : 0.08;
-
-        return clamp(
-          thermal *
-          intensity *
-          elevation *
-          meltPenalty *
-          phase *
-          night *
-          midday *
-          clamp(0.55 + 0.65 * surfaceAccumIndex, 0.35, 1.15),
-          0,
-          1
-        );
-      }
-
-      function classifyPrecipType(o) {
-        var phaseScore;
+      function classifyPhase(o) {
+        var score;
 
         if (o.P < 0.04) return { idx: 0, label: "Sin precip." };
 
-        phaseScore =
-          1.25 * clamp((0.75 - o.TwEff) / 1.75, 0, 1) +
-          1.05 * clamp((700 - o.meltEnergy) / 700, 0, 1) +
-          0.70 * clamp(o.refreezeEnergy / 550, 0, 1) +
-          0.85 * clamp((o.elev - o.snowLine + 250) / 500, 0, 1) +
-          0.75 * clamp(o.dgzScore, 0, 1.2) +
-          0.55 * clamp(o.microSnowScore, 0, 1.4) +
-          0.55 * clamp(o.survivalProb, 0, 1) +
-          0.35 * clamp(o.P / 0.8, 0, 1) -
-          0.55 * clamp(o.lowWarmEnergy / 800, 0, 1) -
-          0.45 * clamp(o.warmDepth / 1000, 0, 1);
+        score =
+          1.55 * clamp((0.75 - o.TwEff) / 1.6, 0, 1) +
+          1.15 * clamp((o.elev - o.snowLine + 260) / 540, 0, 1) +
+          0.85 * clamp(o.survival / 0.75, 0, 1) +
+          0.55 * clamp(o.dgzScore, 0, 1) +
+          0.35 * clamp(o.P / 1.2, 0, 1) -
+          0.85 * clamp(o.melt / 900, 0, 1);
 
-        if (o.TwEff > 2.3 || o.meltEnergy > 1500) phaseScore -= 1.4;
-        if (o.TwEff > 1.4 && o.lowWarmEnergy > 500) phaseScore -= 0.8;
+        if (o.TwEff > 2.2) score -= 1.2;
+        if (o.snowLine > o.elev + 650) score -= 1.0;
 
-        if (phaseScore >= 4.55) return { idx: 5, label: "Nieve acum." };
-        if (phaseScore >= 3.70) return { idx: 4, label: "Nieve marginal" };
-        if (phaseScore >= 2.85) return { idx: 3, label: "Nieve húmeda" };
-        if (phaseScore >= 1.95) return { idx: 2, label: "Aguanieve" };
-        if (phaseScore >= 1.05) return { idx: 1, label: "Lluvia/copos" };
+        if (score >= 3.75) return { idx: 5, label: "Nieve acum." };
+        if (score >= 3.05) return { idx: 4, label: "Nieve marginal" };
+        if (score >= 2.25) return { idx: 3, label: "Nieve húmeda" };
+        if (score >= 1.45) return { idx: 2, label: "Aguanieve" };
+        if (score >= 0.75) return { idx: 1, label: "Lluvia/copos" };
 
         return { idx: 0, label: "Lluvia" };
       }
 
-      function snowProbability(o) {
+      function snowProb(o) {
         var score =
-          -0.70 +
-          1.18 * ((0.35 - o.TwEff) / 0.44) +
-          0.96 * ((o.elev - o.snowLine + 100) / 190) +
-          Math.log(1 + Math.max(0, o.P)) * 0.86 +
-          1.95 * (o.survivalProb - 0.45) +
-          0.50 * clamp(o.refreezeEnergy / 550, 0, 1) +
-          0.72 * clamp(o.dgzScore, 0, 1.3) +
-          0.55 * clamp(o.microSnowScore, 0, 1.4) +
-          0.16 * o.oroIndex -
-          0.76 * (o.warmDepth / 560) -
-          0.42 * (o.lowWarmEnergy / 800);
+          -1.10 +
+          1.55 * ((0.45 - o.TwEff) / 0.55) +
+          1.05 * ((o.elev - o.snowLine + 140) / 240) +
+          0.85 * Math.log(1 + Math.max(0, o.P)) +
+          1.15 * (o.survival - 0.45) +
+          0.55 * clamp(o.dgzScore, 0, 1.3) -
+          0.65 * clamp(o.melt / 950, 0, 1);
 
-        var prob = sigmoid(score) * clamp(o.pop / 100, 0.15, 1);
+        var p = sigmoid(score);
 
-        if (o.P < 0.04) prob *= 0.12;
-        if (o.meltEnergy > 1300) prob *= 0.32;
-        if (o.TwEff > 1.8) prob *= 0.28;
-        if (o.dgzScore < 0.10 && o.TwEff > 0.8) prob *= 0.75;
+        if (o.P < 0.04) p *= 0.10;
+        if (o.TwEff > 1.8) p *= 0.35;
+        if (o.snowLine > o.elev + 700) p *= 0.25;
 
-        return clamp(prob, 0, 1);
+        return clamp(p, 0, 1);
       }
 
       function computeModel(data, source, advanced) {
@@ -2274,177 +1790,103 @@ O:
         var times = h.time || [];
         var elev = $("elev") ? num($("elev").value, 778) : 778;
         var oroFactor = $("oro") ? num($("oro").value, 0.42) : 0.42;
-        var coldBias = $("coldBias") ? num($("coldBias").value, 0) : 0;
-        var baseElev = finite(data.elevation) ? Number(data.elevation) : elev;
+        var tempAdjust = $("coldBias") ? num($("coldBias").value, 0) : 0;
         var out = [];
-
         var i;
-        var Traw;
-        var RH;
-        var column;
-        var T;
-        var TwSurface;
-        var Pbase;
-        var pop;
-        var oro;
-        var P;
-        var dryness;
-        var evapCooling;
-        var TwEff;
-        var phys;
-        var meltEnergy;
-        var refreezeEnergy;
-        var survivalProb;
-        var snowLine;
-        var FL;
-        var prob;
-        var T850;
-        var wind850;
-        var slr;
-        var ptype;
-        var stick;
-        var cmh;
-        var snowApi;
-        var risk;
 
         for (i = 0; i < times.length; i++) {
-          Traw = getValue(h, "temperature_2m", i, null);
-          RH = getValue(h, "relative_humidity_2m", i, null);
+          var Traw = getValue(h, "temperature_2m", i, null);
+          var RH = getValue(h, "relative_humidity_2m", i, null);
+          var Pbase = getValue(h, "precipitation", i, 0);
+          var wind = getValue(h, "wind_speed_10m", i, 0);
+          var dir = getValue(h, "wind_direction_10m", i, 270);
+          var pop = getValue(h, "precipitation_probability", i, 100);
+          var FL = getValue(h, "freezing_level_height", i, null);
+          var snowApi = getValue(h, "snowfall", i, null);
 
           if (!finite(Traw) || !finite(RH)) continue;
 
-          column = buildColumn(h, i, elev, baseElev, coldBias);
-          if (!column.length) continue;
+          var T = Traw + tempAdjust;
+          var Tw = wetBulbStull(T, RH);
+          var oro = orographicDiagnostics(wind, dir, RH, oroFactor);
+          var P = Pbase * oro.multiplier;
 
-          T = interpColumn(column, elev, "T");
-          TwSurface = interpColumn(column, elev, "Tw");
-
-          Pbase = getValue(h, "precipitation", i, 0);
-          pop = getValue(h, "precipitation_probability", i, 100);
-
-          oro = orographicDiagnostics(h, i, oroFactor);
-          P = Pbase * oro.precipMultiplier;
-
-          dryness = clamp((100 - RH) / 45, 0, 1);
-          evapCooling = clamp(
+          var evapCooling = clamp(
             0.12 * Math.sqrt(Math.max(0, P)) +
-            0.30 * dryness * Math.sqrt(Math.max(0, P)),
+            0.28 * clamp((100 - RH) / 50, 0, 1) * Math.sqrt(Math.max(0, P)),
             0,
-            0.85
+            0.75
           );
 
-          TwEff = TwSurface - evapCooling - oro.liftCooling;
-          phys = columnPhysics(column, elev, TwEff, P, oro, times[i]);
+          var TwEff = Tw - evapCooling - oro.cooling;
 
-          meltEnergy = Math.max(
-            0,
-            phys.meltEnergy -
-            95 * evapCooling -
-            65 * oro.liftCooling
-          );
-
-          refreezeEnergy = phys.refreezeEnergy;
-
-          survivalProb =
-            Math.exp(-meltEnergy / 360) *
-            clamp(1 + refreezeEnergy / 1400, 0.65, 1.45) *
-            clamp(1 - phys.lowWarmEnergy / 1350, 0.20, 1.00);
-
-          survivalProb = clamp(survivalProb, 0, 1);
-
-          snowLine = physicalSnowLine(column, 0.45, elev, TwEff);
-          FL = getValue(h, "freezing_level_height", i, null);
-
+          var snowLine;
           if (finite(FL)) {
-            snowLine = 0.72 * snowLine + 0.28 * (FL - 330);
+            snowLine = Math.max(0, FL - 330 - evapCooling * 140 - oro.cooling * 120);
+          } else {
+            snowLine = Math.max(0, elev + (TwEff - 0.15) * 230);
           }
 
-          snowLine = Math.max(
-            0,
-            snowLine -
-            evapCooling * 170 -
-            oro.liftCooling * 135
-          );
+          var melt = Math.max(0, TwEff + 0.1) * 650;
+          var refreeze = Math.max(0, -TwEff) * 420;
+          var survival = clamp(Math.exp(-melt / 380) * (1 + refreeze / 1400), 0, 1);
+          var dgzScore = clamp((RH - 72) / 26, 0, 1.25) * clamp(P / 0.9, 0, 1.3) * clamp((0.9 - TwEff) / 1.7, 0, 1.2);
 
-          prob = snowProbability({
-            TwEff: TwEff,
-            snowLine: snowLine,
-            elev: elev,
+          var phase = classifyPhase({
             P: P,
-            pop: pop,
-            meltEnergy: meltEnergy,
-            refreezeEnergy: refreezeEnergy,
-            warmDepth: phys.warmDepth,
-            lowWarmEnergy: phys.lowWarmEnergy,
-            survivalProb: survivalProb,
-            oroIndex: oro.oroIndex,
-            dgzScore: phys.dgzScore,
-            microSnowScore: phys.microSnowScore
-          });
-
-          ptype = classifyPrecipType({
             TwEff: TwEff,
-            P: P,
             elev: elev,
             snowLine: snowLine,
-            meltEnergy: meltEnergy,
-            refreezeEnergy: refreezeEnergy,
-            warmDepth: phys.warmDepth,
-            lowWarmEnergy: phys.lowWarmEnergy,
-            dgzScore: phys.dgzScore,
-            microSnowScore: phys.microSnowScore,
-            survivalProb: survivalProb
+            melt: melt,
+            survival: survival,
+            dgzScore: dgzScore
           });
 
-          T850 = getValue(h, "temperature_850hPa", i, null);
-          wind850 = getValue(h, "wind_speed_850hPa", i, getValue(h, "wind_speed_10m", i, 0));
+          var prob = snowProb({
+            P: P,
+            TwEff: TwEff,
+            elev: elev,
+            snowLine: snowLine,
+            melt: melt,
+            survival: survival,
+            dgzScore: dgzScore
+          }) * clamp(pop / 100, 0.25, 1);
 
-          slr = snowLiquidRatio(
-            TwEff,
-            T850,
-            wind850,
-            elev,
-            oro.oroIndex,
-            phys.dgzScore,
-            phys.microSnowScore,
-            meltEnergy,
-            ptype.idx
-          );
+          var slr =
+            8.5 +
+            2.6 * Math.max(0, -TwEff) -
+            6.0 * Math.max(0, TwEff) +
+            1.8 * dgzScore +
+            0.4 * oro.oroIndex;
 
-          stick = stickingFactor(
-            TwEff,
-            P,
-            elev,
-            meltEnergy,
-            ptype.idx,
-            phys.surfaceAccumIndex,
-            times[i]
-          );
+          if (phase.idx <= 1) slr = Math.min(slr, 2.5);
+          if (phase.idx === 2) slr = Math.min(slr, 4.0);
+          if (phase.idx === 3) slr = Math.min(slr, 7.0);
 
-          cmh = P * prob * slr / 10 * stick;
-          snowApi = getValue(h, "snowfall", i, null);
+          slr = clamp(slr, 1.2, 20);
+
+          var stick =
+            sigmoid((0.25 - TwEff) / 0.32) *
+            clamp(0.75 + 0.18 * Math.sqrt(Math.max(0, P)), 0.70, 1.22) *
+            clamp(1 - melt / 1300, 0.22, 1);
+
+          if (phase.idx <= 1) stick *= 0.10;
+          if (phase.idx === 2) stick *= 0.32;
+          if (phase.idx === 3) stick *= 0.62;
+          if (phase.idx >= 4) stick *= 0.90;
+
+          stick = clamp(stick, 0, 1);
+
+          var cmh = P * prob * slr / 10 * stick;
 
           if (finite(snowApi) && snowApi > 0) {
-            cmh = 0.70 * cmh + 0.30 * snowApi;
+            cmh = 0.72 * cmh + 0.28 * snowApi;
           }
 
-          risk = "Bajo";
-
-          if (
-            prob >= 0.72 &&
-            cmh >= 1.1 &&
-            TwEff <= 0.35 &&
-            meltEnergy < 500 &&
-            ptype.idx >= 4
-          ) {
+          var risk = "Bajo";
+          if (prob >= 0.70 && cmh >= 1.0 && TwEff <= 0.35 && phase.idx >= 4) {
             risk = "Alto";
-          } else if (
-            prob >= 0.46 &&
-            cmh >= 0.25 &&
-            TwEff <= 1.15 &&
-            meltEnergy < 900 &&
-            ptype.idx >= 2
-          ) {
+          } else if (prob >= 0.42 && cmh >= 0.22 && TwEff <= 1.15 && phase.idx >= 2) {
             risk = "Medio";
           }
 
@@ -2452,34 +1894,24 @@ O:
             time: times[i],
             key: isoHour(times[i]),
             T: T,
+            RH: RH,
             TwEff: TwEff,
             Pbase: Pbase,
             P: P,
-            oroMultiplier: oro.precipMultiplier,
             snowLine: snowLine,
             prob: prob,
             cmh: cmh,
-            meltEnergy: meltEnergy,
-            refreezeEnergy: refreezeEnergy,
-            warmDepth: phys.warmDepth,
-            coldDepth: phys.coldDepth,
-            lowWarmEnergy: phys.lowWarmEnergy,
-            survivalProb: survivalProb,
+            melt: melt,
+            refreeze: refreeze,
+            survival: survival,
+            dgzScore: dgzScore,
             oroIndex: oro.oroIndex,
-            froude: oro.Fr,
-            blocking: oro.blocking,
-            Uperp: oro.Uperp,
-            dgzDepth: phys.dgzDepth,
-            dgzRH: phys.dgzRH,
-            dgzScore: phys.dgzScore,
-            satDepth: phys.satDepth,
-            coldSatDepth: phys.coldSatDepth,
-            omegaProxy: phys.omegaProxy,
-            microSnowScore: phys.microSnowScore,
-            surfaceAccumIndex: phys.surfaceAccumIndex,
+            oroMultiplier: oro.multiplier,
+            wind: wind,
+            dir: dir,
             slr: slr,
-            ptypeIdx: ptype.idx,
-            ptypeLabel: ptype.label,
+            ptypeIdx: phase.idx,
+            ptypeLabel: phase.label,
             risk: risk,
             sourceId: source.id,
             sourceName: source.label,
@@ -2530,15 +1962,13 @@ O:
         var sw = 0;
         var sx = 0;
         var i;
-        var v;
-        var w;
 
         for (i = 0; i < rows.length; i++) {
-          v = rows[i][key];
+          var v = rows[i][key];
 
           if (!finite(v)) continue;
 
-          w = rows[i].sourceWeight || 1;
+          var w = rows[i].sourceWeight || 1;
           sw += w;
           sx += w * v;
         }
@@ -2586,13 +2016,11 @@ O:
         };
 
         var i;
-        var w;
-        var b;
         var k;
 
         for (i = 0; i < rows.length; i++) {
-          w = rows[i].sourceWeight || 1;
-          b = phaseBucket(rows[i].ptypeIdx);
+          var w = rows[i].sourceWeight || 1;
+          var b = phaseBucket(rows[i].ptypeIdx);
           out[b] += w;
           out.total += w;
         }
@@ -2613,18 +2041,16 @@ O:
         var sw = 0;
         var sx = 0;
         var i;
-        var w;
-        var score;
 
         for (i = 0; i < rows.length; i++) {
-          w = rows[i].sourceWeight || 1;
+          var w = rows[i].sourceWeight || 1;
           sw += w;
 
           if (rows[i].risk === "Alto") sx += 2 * w;
           else if (rows[i].risk === "Medio") sx += w;
         }
 
-        score = sw > 0 ? sx / sw : 0;
+        var score = sw > 0 ? sx / sw : 0;
 
         if (score >= 1.35) return "Alto";
         if (score >= 0.55) return "Medio";
@@ -2640,9 +2066,19 @@ O:
         var p75 = qRows(rows, "P", 0.75);
         var tw25 = qRows(rows, "TwEff", 0.25);
         var tw75 = qRows(rows, "TwEff", 0.75);
-        var cmhSpread = finite(cmh25) && finite(cmh75) ? clamp(1 - (cmh75 - cmh25) / Math.max(0.25, avg.cmhP75 || avg.cmh || 0.25), 0, 1) : 0.5;
-        var pSpread = finite(p25) && finite(p75) ? clamp(1 - (p75 - p25) / Math.max(0.4, avg.PP75 || avg.P || 0.4), 0, 1) : 0.5;
-        var twSpread = finite(tw25) && finite(tw75) ? clamp(1 - (tw75 - tw25) / 3.0, 0, 1) : 0.5;
+
+        var cmhSpread = finite(cmh25) && finite(cmh75)
+          ? clamp(1 - (cmh75 - cmh25) / Math.max(0.25, avg.cmhP75 || avg.cmh || 0.25), 0, 1)
+          : 0.5;
+
+        var pSpread = finite(p25) && finite(p75)
+          ? clamp(1 - (p75 - p25) / Math.max(0.4, avg.PP75 || avg.P || 0.4), 0, 1)
+          : 0.5;
+
+        var twSpread = finite(tw25) && finite(tw75)
+          ? clamp(1 - (tw75 - tw25) / 3.0, 0, 1)
+          : 0.5;
+
         var nScore = clamp(rows.length / 5, 0.2, 1);
 
         return clamp(
@@ -2662,16 +2098,11 @@ O:
         var p;
         var i;
         var key;
-        var rows;
-        var first;
-        var avg;
-        var phase;
-        var fields;
-        var f;
 
         for (p = 0; p < packs.length; p++) {
           for (i = 0; i < packs[p].model.length; i++) {
             key = packs[p].model[i].key;
+
             if (!byKey[key]) byKey[key] = [];
             byKey[key].push(packs[p].model[i]);
           }
@@ -2680,18 +2111,17 @@ O:
         for (key in byKey) {
           if (!Object.prototype.hasOwnProperty.call(byKey, key)) continue;
 
-          rows = byKey[key];
-          first = rows[0];
-          phase = phaseDist(rows);
+          var rows = byKey[key];
+          var first = rows[0];
+          var phase = phaseDist(rows);
 
-          avg = {
+          var avg = {
             time: first.time,
             key: key,
             members: rows.length,
             sourceNames: rows.map(function (r) { return r.sourceName; }).join(", "),
             phaseDist: phase,
             phaseLabel: phaseLabelFromBucket(phase.dominant),
-            ptypeLabel: phaseLabelFromBucket(phase.dominant),
             ptypeIdx: qRows(rows, "ptypeIdx", 0.50),
             risk: weightedRisk(rows),
             wg: null,
@@ -2699,38 +2129,14 @@ O:
             memberRows: rows
           };
 
-          fields = [
-            "T",
-            "TwEff",
-            "Pbase",
-            "P",
-            "oroMultiplier",
-            "snowLine",
-            "prob",
-            "cmh",
-            "meltEnergy",
-            "refreezeEnergy",
-            "warmDepth",
-            "coldDepth",
-            "lowWarmEnergy",
-            "survivalProb",
-            "oroIndex",
-            "froude",
-            "blocking",
-            "Uperp",
-            "dgzDepth",
-            "dgzRH",
-            "dgzScore",
-            "satDepth",
-            "coldSatDepth",
-            "omegaProxy",
-            "microSnowScore",
-            "surfaceAccumIndex",
-            "slr"
+          var fields = [
+            "T", "RH", "TwEff", "Pbase", "P", "snowLine", "prob", "cmh",
+            "melt", "refreeze", "survival", "dgzScore", "oroIndex",
+            "oroMultiplier", "wind", "dir", "slr"
           ];
 
-          for (f = 0; f < fields.length; f++) {
-            avg[fields[f]] = weightedMean(rows, fields[f]);
+          for (i = 0; i < fields.length; i++) {
+            avg[fields[i]] = weightedMean(rows, fields[i]);
           }
 
           avg.cmhP10 = qRows(rows, "cmh", 0.10);
@@ -2739,7 +2145,6 @@ O:
           avg.cmhP75 = qRows(rows, "cmh", 0.75);
           avg.cmhP90 = qRows(rows, "cmh", 0.90);
 
-          avg.PP10 = qRows(rows, "P", 0.10);
           avg.PP25 = qRows(rows, "P", 0.25);
           avg.PP50 = qRows(rows, "P", 0.50);
           avg.PP75 = qRows(rows, "P", 0.75);
@@ -2764,10 +2169,9 @@ O:
         var out = [];
         var p;
         var i;
-        var total;
 
         for (p = 0; p < packs.length; p++) {
-          total = 0;
+          var total = 0;
 
           for (i = 0; i < packs[p].model.length; i++) {
             total += finite(packs[p].model[i][key]) ? Number(packs[p].model[i][key]) : 0;
@@ -2790,7 +2194,9 @@ O:
 
         for (i = 0; i < items.length; i++) {
           if (!finite(items[i].v)) continue;
+
           sw += items[i].w || 1;
+
           if (items[i].v >= threshold) sx += items[i].w || 1;
         }
 
@@ -2846,7 +2252,6 @@ O:
         var phaseEnd = phaseRankFromRow(rows[rows.length - 1]);
         var label = "Estable";
         var cls = "green";
-        var text = "";
 
         if (finite(snow.delta) && snow.delta > 0.12) {
           label = "Nieve subiendo";
@@ -2862,21 +2267,19 @@ O:
           cls = "green";
         }
 
-        text =
-          "Δ nieve " +
-          fmt(snow.delta, 2) +
-          " cm/h; Δ precip. " +
-          fmt(rain.delta, 1) +
-          " mm/h; Δ Tw " +
-          fmt(tw.delta, 1) +
-          " °C; Δ cota " +
-          fmt(cota.delta, 0) +
-          " m.";
-
         return {
           label: label,
           cls: cls,
-          text: text,
+          text:
+            "Δ nieve " +
+            fmt(snow.delta, 2) +
+            " cm/h; Δ precip. " +
+            fmt(rain.delta, 1) +
+            " mm/h; Δ Tw " +
+            fmt(tw.delta, 1) +
+            " °C; Δ cota " +
+            fmt(cota.delta, 0) +
+            " m.",
           snowDelta: snow.delta,
           rainDelta: rain.delta,
           twDelta: tw.delta,
@@ -2895,8 +2298,6 @@ O:
         var consensusCount = 0;
         var i;
         var j;
-        var s;
-        var trend;
 
         if (!model.length) throw new Error("No hay datos modelados.");
 
@@ -2914,7 +2315,7 @@ O:
         }
 
         for (i = 0; i < model.length; i++) {
-          s = 0;
+          var s = 0;
 
           for (j = i; j < Math.min(i + 6, model.length); j++) {
             s += model[j].cmh || 0;
@@ -2922,8 +2323,6 @@ O:
 
           best6 = Math.max(best6, s);
         }
-
-        trend = calcTrend(model);
 
         return {
           snowQ10: weightedQuantile(snowTotals, 0.10),
@@ -2951,7 +2350,7 @@ O:
           next: next,
           best6: best6,
           consensus: consensusCount ? meanConsensus / consensusCount : 0.5,
-          trend: trend,
+          trend: calcTrend(model),
           sources: packs.length
         };
       }
@@ -3228,7 +2627,7 @@ O:
           '<div class="factor"><b>Ensamble</b><span>Consenso <b class="' + con.cls + '">' + Math.round(summary.consensus * 100) + "%</b>. Fuentes disponibles: " + summary.sources + ". " + phaseText + ".</span></div>" +
           '<div class="factor"><b>Escenario probable</b><span>Nieve P50 <b>' + fmt(summary.snowQ50, 1) + " cm</b>; lluvia P50 <b>" + fmt(summary.rainQ50, 1) + " mm</b>; nieve P90 <b>" + fmt(summary.snowQ90, 1) + " cm</b>.</span></div>" +
           '<div class="factor"><b>Tendencia</b><span>' + summary.trend.label + ". " + summary.trend.text + "</span></div>" +
-          '<div class="factor"><b>Física local</b><span>Tw_eff <b>' + fmt(p.TwEff, 1) + " °C</b>; cota <b>" + fmt(p.snowLine, 0) + " m</b>; fusión <b>" + fmt(p.meltEnergy, 0) + " °C·m</b>; DGZ <b>" + fmt(p.dgzScore, 2) + "</b>.</span></div>" +
+          '<div class="factor"><b>Física local</b><span>Tw_eff <b>' + fmt(p.TwEff, 1) + " °C</b>; cota <b>" + fmt(p.snowLine, 0) + " m</b>; fusión <b>" + fmt(p.melt, 0) + " °C·m</b>; DGZ proxy <b>" + fmt(p.dgzScore, 2) + "</b>.</span></div>" +
           '<div class="factor"><b>Windguru</b><span>Solo comparación externa. No entra en el veredicto, ni en escenarios, ni en consenso.</span></div>"
         );
       }
@@ -3262,14 +2661,14 @@ O:
           fmt(p.TwEff) +
           " °C</b>. Cota de nieve: <b>" +
           Math.round(p.snowLine) +
-          " m</b>. Melt: <b>" +
-          fmt(p.meltEnergy, 0) +
-          " °C·m</b>. Recongelamiento: <b>" +
-          fmt(p.refreezeEnergy, 0) +
-          " °C·m</b>. DGZ: <b>" +
+          " m</b>. Fusión proxy: <b>" +
+          fmt(p.melt, 0) +
+          " °C·m</b>. Recongelamiento proxy: <b>" +
+          fmt(p.refreeze, 0) +
+          " °C·m</b>. DGZ proxy: <b>" +
           fmt(p.dgzScore, 2) +
           "</b>. Supervivencia estimada: <b>" +
-          Math.round((p.survivalProb || 0) * 100) +
+          Math.round((p.survival || 0) * 100) +
           "%</b>. SLR: <b>" +
           fmt(p.slr, 1) +
           ":1</b>. Pico nieve P50: <b>" +
@@ -3300,8 +2699,8 @@ O:
         var twMid = p.TwEff <= 1.1;
         var cotaOk = cotaDiff <= 100;
         var cotaMid = cotaDiff <= 350;
-        var meltOk = p.meltEnergy <= 350;
-        var meltMid = p.meltEnergy <= 850;
+        var meltOk = p.melt <= 350;
+        var meltMid = p.melt <= 850;
         var precipOk = p.P >= 0.6;
         var precipMid = p.P >= 0.15;
         var dgzOk = p.dgzScore >= 0.65;
@@ -3310,7 +2709,7 @@ O:
         var phaseMid = phaseRankFromRow(p) >= 2;
 
         $("physicsColumn").innerHTML =
-          "Columna evaluada con superficie y niveles de presión cuando están disponibles. En hora crítica: <b>Tw_eff = " +
+          "Diagnóstico de superficie robusto. En hora crítica: <b>Tw_eff = " +
           fmt(p.TwEff) +
           " °C</b>, cota estimada <b>" +
           Math.round(p.snowLine) +
@@ -3319,39 +2718,33 @@ O:
           " m</b>.";
 
         $("physicsEnergy").innerHTML =
-          "Fusión: <b>" +
-          fmt(p.meltEnergy, 0) +
-          " °C·m</b>. Recongelamiento: <b>" +
-          fmt(p.refreezeEnergy, 0) +
-          " °C·m</b>. Capa cálida: <b>" +
-          fmt(p.warmDepth, 0) +
-          " m</b>. Capa cálida baja: <b>" +
-          fmt(p.lowWarmEnergy, 0) +
-          " °C·m</b>. Supervivencia: <b>" +
-          Math.round((p.survivalProb || 0) * 100) +
+          "Fusión proxy: <b>" +
+          fmt(p.melt, 0) +
+          " °C·m</b>. Recongelamiento proxy: <b>" +
+          fmt(p.refreeze, 0) +
+          " °C·m</b>. Supervivencia estimada del copo: <b>" +
+          Math.round((p.survival || 0) * 100) +
           "%</b>.";
 
         $("physicsDgz").innerHTML =
-          "DGZ: <b>" +
+          "DGZ proxy: <b>" +
           fmt(p.dgzScore, 2) +
-          "</b>. Espesor: <b>" +
-          fmt(p.dgzDepth, 0) +
-          " m</b>. RH DGZ: <b>" +
-          fmt(p.dgzRH, 0) +
-          "%</b>. Microfísica nieve: <b>" +
-          fmt(p.microSnowScore, 2) +
-          "</b>.";
+          "</b>. Humedad: <b>" +
+          fmt(p.RH, 0) +
+          "%</b>. Precipitación crítica: <b>" +
+          fmt(p.P, 1) +
+          " mm/h</b>. Este proxy no reemplaza un perfil vertical real.";
 
         $("physicsOro").innerHTML =
-          "Froude instantáneo: <b>" +
-          fmt(p.froude, 2) +
-          "</b>. Orografía local: <b>" +
+          "Orografía local: <b>" +
           fmt(p.oroIndex, 2) +
-          "</b>. Viento perpendicular: <b>" +
-          fmt(p.Uperp, 1) +
-          " km/h</b>. Multiplicador orográfico aplicado de forma conservadora: <b>" +
+          "</b>. Multiplicador aplicado de forma conservadora: <b>" +
           fmt(p.oroMultiplier, 2) +
-          "×</b>. Este índice no representa todo el forzante sinóptico.";
+          "×</b>. Viento: <b>" +
+          fmt(p.wind, 0) +
+          " km/h</b>. Dirección: <b>" +
+          fmt(p.dir, 0) +
+          "°</b>.";
 
         $("snowNeeds").innerHTML =
           '<div class="need"><span>Fase dominante cercana a nieve</span><b class="' +
@@ -3380,7 +2773,7 @@ O:
           '">' +
           needLabel(meltOk, meltMid) +
           " · " +
-          fmt(p.meltEnergy, 0) +
+          fmt(p.melt, 0) +
           " °C·m</b></div>" +
           '<div class="need"><span>Precipitación suficiente</span><b class="' +
           needClass(precipOk, precipMid) +
@@ -3389,7 +2782,7 @@ O:
           " · " +
           fmt(p.P) +
           " mm/h</b></div>" +
-          '<div class="need"><span>DGZ húmeda y activa</span><b class="' +
+          '<div class="need"><span>DGZ proxy favorable</span><b class="' +
           needClass(dgzOk, dgzMid) +
           '">' +
           needLabel(dgzOk, dgzMid) +
@@ -3423,14 +2816,11 @@ O:
       function renderRows(model) {
         var html = "";
         var i;
-        var x;
-        var wg;
-        var diff;
 
         for (i = 0; i < model.length; i++) {
-          x = model[i];
-          wg = finite(x.wg) ? fmt(x.wg, 2) : "—";
-          diff = finite(x.diff) ? fmt(x.diff, 2) : "—";
+          var x = model[i];
+          var wg = finite(x.wg) ? fmt(x.wg, 2) : "—";
+          var diff = finite(x.diff) ? fmt(x.diff, 2) : "—";
 
           html +=
             "<tr>" +
@@ -3446,7 +2836,7 @@ O:
             "<td>" + Math.round((x.consensus || 0) * 100) + "%</td>" +
             "<td>" + x.members + "</td>" +
             "<td>" + fmt(x.dgzScore, 2) + "</td>" +
-            "<td>" + fmt(x.meltEnergy, 0) + "</td>" +
+            "<td>" + fmt(x.melt, 0) + "</td>" +
             '<td class="purple">' + wg + "</td>" +
             "<td>" + diff + "</td>" +
             "<td>" + badge(x.risk) + "</td>" +
@@ -3467,10 +2857,14 @@ O:
           canvas.height = height;
         }
 
+        var ctx = canvas.getContext("2d");
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
         return {
+          ctx: ctx,
           dpr: dpr,
-          width: width,
-          height: height
+          width: width / dpr,
+          height: height / dpr
         };
       }
 
@@ -3492,8 +2886,6 @@ O:
 
       function drawLine(ctx, model, xAt, yFn, color, width, skipMissing, dashed) {
         var i;
-        var x;
-        var y;
         var started = false;
 
         ctx.save();
@@ -3503,15 +2895,13 @@ O:
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
 
-        if (dashed) {
-          ctx.setLineDash([7 * (window.devicePixelRatio || 1), 6 * (window.devicePixelRatio || 1)]);
-        }
+        if (dashed) ctx.setLineDash([7, 6]);
 
         for (i = 0; i < model.length; i++) {
           if (skipMissing && !finite(model[i].wg)) continue;
 
-          x = xAt(i);
-          y = yFn(model[i]);
+          var x = xAt(i);
+          var y = yFn(model[i]);
 
           if (!started) {
             ctx.moveTo(x, y);
@@ -3528,7 +2918,6 @@ O:
       function drawBand(ctx, model, xAt, yCmh, color) {
         var pts = [];
         var i;
-        var p;
 
         for (i = 0; i < model.length; i++) {
           if (finite(model[i].cmhP25) && finite(model[i].cmhP75)) {
@@ -3546,14 +2935,12 @@ O:
         ctx.fillStyle = color;
 
         for (i = 0; i < pts.length; i++) {
-          p = pts[i];
-          if (i === 0) ctx.moveTo(p.x, p.high);
-          else ctx.lineTo(p.x, p.high);
+          if (i === 0) ctx.moveTo(pts[i].x, pts[i].high);
+          else ctx.lineTo(pts[i].x, pts[i].high);
         }
 
         for (i = pts.length - 1; i >= 0; i--) {
-          p = pts[i];
-          ctx.lineTo(p.x, p.low);
+          ctx.lineTo(pts[i].x, pts[i].low);
         }
 
         ctx.closePath();
@@ -3573,19 +2960,18 @@ O:
       function drawChart(model) {
         var c = $("chart");
 
-        if (!c) return;
+        if (!c || !model.length) return;
 
         var info = prepareCanvas(c);
-        var ctx = c.getContext("2d");
+        var ctx = info.ctx;
         var W = info.width;
         var H = info.height;
-        var dpr = info.dpr;
         var isMobile = W < 720;
 
-        var padL = isMobile ? 58 * dpr : 78 * dpr;
-        var padR = isMobile ? 58 * dpr : 84 * dpr;
-        var padT = isMobile ? 42 * dpr : 50 * dpr;
-        var padB = isMobile ? 58 * dpr : 68 * dpr;
+        var padL = isMobile ? 58 : 78;
+        var padR = isMobile ? 58 : 84;
+        var padT = isMobile ? 42 : 50;
+        var padB = isMobile ? 58 : 68;
 
         var plotW = W - padL - padR;
         var plotH = H - padT - padB;
@@ -3593,38 +2979,19 @@ O:
         var maxC = 0.25;
         var maxP = 0.25;
         var i;
-        var x;
-        var bh;
-        var bw;
-        var p;
-        var y;
-        var d;
-        var label;
-        var step;
-        var barTop;
-        var barGrad;
-        var barAlpha;
-        var tickValue;
-        var snowTick;
-        var precipTick;
-        var zoneY;
-        var bottom;
-        var nowX;
 
         for (i = 0; i < model.length; i++) {
           maxC = Math.max(maxC, model[i].cmh || 0, model[i].cmhP75 || 0, model[i].cmhP90 || 0);
           maxP = Math.max(maxP, model[i].P || 0, model[i].PP75 || 0);
 
-          if (finite(model[i].wg)) {
-            maxC = Math.max(maxC, model[i].wg);
-          }
+          if (finite(model[i].wg)) maxC = Math.max(maxC, model[i].wg);
         }
 
         maxC = Math.max(0.2, Math.ceil(maxC * 10) / 10);
         maxP = Math.max(0.2, Math.ceil(maxP * 10) / 10);
 
-        function xAt(i) {
-          return padL + plotW * i / Math.max(1, model.length - 1);
+        function xAt(idx) {
+          return padL + plotW * idx / Math.max(1, model.length - 1);
         }
 
         function yProb(v) {
@@ -3644,54 +3011,54 @@ O:
         ctx.fillStyle = bg;
         ctx.fillRect(0, 0, W, H);
 
-        drawRoundRect(ctx, padL, padT, plotW, plotH, 16 * dpr);
+        drawRoundRect(ctx, padL, padT, plotW, plotH, 16);
         ctx.fillStyle = "rgba(255,255,255,.028)";
         ctx.fill();
 
-        zoneY = yProb(0.65);
-        drawRoundRect(ctx, padL, padT, plotW, zoneY - padT, 16 * dpr);
+        var zoneY = yProb(0.65);
+        drawRoundRect(ctx, padL, padT, plotW, zoneY - padT, 16);
         ctx.fillStyle = "rgba(121,255,178,.045)";
         ctx.fill();
 
         zoneY = yProb(0.35);
-        bottom = padT + plotH;
+        var bottom = padT + plotH;
         ctx.fillStyle = "rgba(255,209,102,.035)";
         ctx.fillRect(padL, zoneY, plotW, bottom - zoneY);
 
         ctx.strokeStyle = "rgba(255,255,255,.12)";
-        ctx.lineWidth = 1 * dpr;
-        ctx.font = (isMobile ? 10 : 12) * dpr + "px system-ui";
+        ctx.lineWidth = 1;
+        ctx.font = (isMobile ? 10 : 12) + "px system-ui";
 
         for (i = 0; i <= 5; i++) {
-          p = i / 5;
-          y = yProb(p);
+          var p = i / 5;
+          var y = yProb(p);
 
           ctx.beginPath();
           ctx.moveTo(padL, y);
           ctx.lineTo(W - padR, y);
           ctx.stroke();
 
-          tickValue = Math.round(p * 100);
-          snowTick = maxC * p;
-          precipTick = maxP * p;
+          var tickValue = Math.round(p * 100);
+          var snowTick = maxC * p;
+          var precipTick = maxP * p;
 
           ctx.fillStyle = "rgba(255,209,102,.95)";
           ctx.textAlign = "right";
-          ctx.fillText(tickValue + "%", padL - 9 * dpr, y + 4 * dpr);
+          ctx.fillText(tickValue + "%", padL - 9, y + 4);
 
           ctx.fillStyle = "rgba(121,255,178,.95)";
           ctx.textAlign = "left";
-          ctx.fillText(fmt(snowTick, 1), W - padR + 9 * dpr, y + 4 * dpr);
+          ctx.fillText(fmt(snowTick, 1), W - padR + 9, y + 4);
 
           if (!isMobile && i > 0) {
             ctx.fillStyle = "rgba(101,221,255,.55)";
             ctx.textAlign = "center";
-            ctx.fillText(fmt(precipTick, 1), padL + plotW * 0.50, y - 4 * dpr);
+            ctx.fillText(fmt(precipTick, 1), padL + plotW * 0.50, y - 4);
           }
         }
 
         ctx.strokeStyle = "rgba(238,248,255,.78)";
-        ctx.lineWidth = 1.15 * dpr;
+        ctx.lineWidth = 1.15;
         ctx.beginPath();
         ctx.moveTo(padL, padT);
         ctx.lineTo(padL, H - padB);
@@ -3700,28 +3067,28 @@ O:
         ctx.lineTo(W - padR, H - padB);
         ctx.stroke();
 
-        bw = Math.max(3 * dpr, plotW / Math.max(1, model.length) * 0.66);
+        var bw = Math.max(3, plotW / Math.max(1, model.length) * 0.66);
 
         for (i = 0; i < model.length; i++) {
-          x = xAt(i);
-          bh = ((model[i].P || 0) / maxP) * plotH;
-          barTop = H - padB - bh;
-          barAlpha = clamp(0.18 + ((model[i].P || 0) / maxP) * 0.62, 0.18, 0.82);
+          var x = xAt(i);
+          var bh = ((model[i].P || 0) / maxP) * plotH;
+          var barTop = H - padB - bh;
+          var barAlpha = clamp(0.18 + ((model[i].P || 0) / maxP) * 0.62, 0.18, 0.82);
 
-          barGrad = ctx.createLinearGradient(0, barTop, 0, H - padB);
+          var barGrad = ctx.createLinearGradient(0, barTop, 0, H - padB);
           barGrad.addColorStop(0, "rgba(97,220,255," + barAlpha + ")");
           barGrad.addColorStop(.75, "rgba(42,168,255,.18)");
           barGrad.addColorStop(1, "rgba(97,220,255,.05)");
 
-          drawRoundRect(ctx, x - bw / 2, barTop, bw, bh, 4 * dpr);
+          drawRoundRect(ctx, x - bw / 2, barTop, bw, bh, 4);
           ctx.fillStyle = barGrad;
           ctx.fill();
 
           if ((model[i].P || 0) >= maxP * 0.72 && !isMobile) {
             ctx.fillStyle = "rgba(101,221,255,.90)";
             ctx.textAlign = "center";
-            ctx.font = 10 * dpr + "px system-ui";
-            ctx.fillText(fmt(model[i].P, 1), x, Math.max(padT + 12 * dpr, barTop - 5 * dpr));
+            ctx.font = "10px system-ui";
+            ctx.fillText(fmt(model[i].P, 1), x, Math.max(padT + 12, barTop - 5));
           }
         }
 
@@ -3729,73 +3096,72 @@ O:
 
         drawLine(ctx, model, xAt, function (row) {
           return yProb(row.prob || 0);
-        }, "#ffd166", 2.5 * dpr, false, false);
+        }, "#ffd166", 2.5, false, false);
 
         drawLine(ctx, model, xAt, function (row) {
           return yCmh(row.cmh || 0);
-        }, "#79ffb2", 3.15 * dpr, false, false);
+        }, "#79ffb2", 3.15, false, false);
 
         if (modelHasWindguru(model)) {
           drawLine(ctx, model, xAt, function (row) {
             return yCmh(row.wg);
-          }, "#c5a6ff", 2.3 * dpr, true, true);
+          }, "#c5a6ff", 2.3, true, true);
         }
 
         for (i = 0; i < model.length; i++) {
           if ((model[i].cmh || 0) >= maxC * 0.55 && i % (isMobile ? 16 : 10) === 0) {
             ctx.fillStyle = "rgba(121,255,178,.95)";
             ctx.textAlign = "center";
-            ctx.font = (isMobile ? 9 : 10) * dpr + "px system-ui";
-            ctx.fillText(fmt(model[i].cmh, 2), xAt(i), yCmh(model[i].cmh) - 7 * dpr);
+            ctx.font = (isMobile ? 9 : 10) + "px system-ui";
+            ctx.fillText(fmt(model[i].cmh, 2), xAt(i), yCmh(model[i].cmh) - 7);
           }
         }
 
         ctx.save();
-        ctx.translate(17 * dpr, padT + plotH / 2);
+        ctx.translate(17, padT + plotH / 2);
         ctx.rotate(-Math.PI / 2);
         ctx.fillStyle = "#ffd166";
         ctx.textAlign = "center";
-        ctx.font = (isMobile ? 10 : 12) * dpr + "px system-ui";
+        ctx.font = (isMobile ? 10 : 12) + "px system-ui";
         ctx.fillText("Probabilidad de nieve (%)", 0, 0);
         ctx.restore();
 
         ctx.save();
-        ctx.translate(W - 20 * dpr, padT + plotH / 2);
+        ctx.translate(W - 20, padT + plotH / 2);
         ctx.rotate(Math.PI / 2);
         ctx.fillStyle = "#79ffb2";
         ctx.textAlign = "center";
-        ctx.font = (isMobile ? 10 : 12) * dpr + "px system-ui";
+        ctx.font = (isMobile ? 10 : 12) + "px system-ui";
         ctx.fillText("Nieve (cm/h)", 0, 0);
         ctx.restore();
 
         ctx.fillStyle = "rgba(101,221,255,.72)";
         ctx.textAlign = "center";
-        ctx.font = (isMobile ? 9 : 11) * dpr + "px system-ui";
-        ctx.fillText("Precipitación máx. " + fmt(maxP, 1) + " mm/h · Nieve máx. " + fmt(maxC, 1) + " cm/h", padL + plotW / 2, padT - 15 * dpr);
+        ctx.font = (isMobile ? 9 : 11) + "px system-ui";
+        ctx.fillText("Precipitación máx. " + fmt(maxP, 1) + " mm/h · Nieve máx. " + fmt(maxC, 1) + " cm/h", padL + plotW / 2, padT - 15);
 
         ctx.fillStyle = "rgba(238,248,255,.72)";
         ctx.textAlign = "center";
-        ctx.font = (isMobile ? 10 : 11) * dpr + "px system-ui";
+        ctx.font = (isMobile ? 10 : 11) + "px system-ui";
 
-        step = Math.max(isMobile ? 12 : 6, Math.round(model.length / (isMobile ? 5 : 9)));
+        var step = Math.max(isMobile ? 12 : 6, Math.round(model.length / (isMobile ? 5 : 9)));
 
         for (i = 0; i < model.length; i += step) {
-          d = new Date(model[i].time);
-          label = pad2(d.getDate()) + "/" + pad2(d.getHours()) + "h";
-          ctx.fillText(label, xAt(i), H - padB + 23 * dpr);
+          var d = new Date(model[i].time);
+          var label = pad2(d.getDate()) + "/" + pad2(d.getHours()) + "h";
+          ctx.fillText(label, xAt(i), H - padB + 23);
         }
 
-        nowX = xAt(0);
         ctx.strokeStyle = "rgba(255,255,255,.30)";
-        ctx.lineWidth = 1 * dpr;
+        ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(nowX, padT);
-        ctx.lineTo(nowX, H - padB);
+        ctx.moveTo(xAt(0), padT);
+        ctx.lineTo(xAt(0), H - padB);
         ctx.stroke();
 
         ctx.fillStyle = "rgba(238,248,255,.85)";
-        ctx.font = (isMobile ? 11 : 13) * dpr + "px system-ui";
-        ctx.fillText("Hora local ART", padL + plotW / 2, H - 16 * dpr);
+        ctx.font = (isMobile ? 11 : 13) + "px system-ui";
+        ctx.fillText("Hora local ART", padL + plotW / 2, H - 16);
       }
 
       function setLoading() {
@@ -3854,28 +3220,35 @@ O:
 
         setLoading();
 
-        safeText("status", "Iniciando corrida multimodelo…");
+        safeText("status", "Iniciando corrida multimodelo en paralelo…");
         safeHTML("sourceStatus", "");
         safeHTML("debugBox", "DOM: OK<br>Fuentes seleccionadas: " + sources.length);
 
-        fetchAllSources(sources, 0, [], [], function (ok, fail) {
-          var ms = new Date().getTime() - t0;
-          var model;
-          var summary;
+        Promise.allSettled(sources.map(fetchSource)).then(function (results) {
+          var ok = [];
+          var fail = [];
           var i;
-          var urls = "";
 
-          renderSourceStatus(ok, fail);
-
-          for (i = 0; i < ok.length; i++) {
-            urls += ok[i].source.label + " (" + ok[i].mode + "): " + ok[i].url + "<br><br>";
+          for (i = 0; i < results.length; i++) {
+            if (results[i].status === "fulfilled") ok.push(results[i].value);
+            else fail.push({
+              source: sources[i],
+              error: results[i].reason ? results[i].reason.message : "Error desconocido"
+            });
           }
+
+          var ms = new Date().getTime() - t0;
+          renderSourceStatus(ok, fail);
 
           if (!ok.length) {
             safeText("status", "Error: no respondió ninguna fuente.");
             safeText("snowVerdict", "Error");
             $("snowVerdict").className = "red";
             safeText("snowVerdictText", "No respondió ninguna fuente automática.");
+
+            var failTxt = fail.map(function (f) {
+              return f.source.label + ": " + f.error;
+            }).join("<br>");
 
             safeHTML(
               "debugBox",
@@ -3885,15 +3258,16 @@ O:
               fail.length +
               "<br>Tiempo: " +
               ms +
-              " ms"
+              " ms<br><br>" +
+              failTxt
             );
 
             return;
           }
 
           try {
-            model = aggregateHourly(ok);
-            summary = summarize(model, ok);
+            var model = aggregateHourly(ok);
+            var summary = summarize(model, ok);
             latestModel = model;
             latestPacks = ok;
             latestSummary = summary;
@@ -3901,6 +3275,14 @@ O:
             render(latestModel, summary);
 
             safeText("status", "🟢 Listo · " + ok.length + " fuente(s) · " + ms + " ms");
+
+            var urls = ok.map(function (pack) {
+              return pack.source.label + " (" + pack.mode + "): " + pack.url;
+            }).join("<br><br>");
+
+            var errors = fail.map(function (f) {
+              return f.source.label + ": " + f.error;
+            }).join("<br>");
 
             safeHTML(
               "debugBox",
@@ -3915,7 +3297,9 @@ O:
               "<br>Consenso medio: " +
               Math.round((summary.consensus || 0) * 100) +
               "%<br><br>" +
-              urls
+              urls +
+              "<br><br>Fallos:<br>" +
+              (errors || "—")
             );
           } catch (e) {
             safeText("status", "Error procesando ensamble: " + e.message);
@@ -3925,7 +3309,7 @@ O:
 
             safeHTML(
               "debugBox",
-              "API: OK, pero falló procesamiento.<br>Detalle: " +
+              "API respondió, pero falló procesamiento.<br>Detalle: " +
               e.message +
               "<br>Fuentes OK: " +
               ok.length +
@@ -3941,9 +3325,6 @@ O:
         var lines;
         var parsed;
         var i;
-        var line;
-        var parts;
-        var value;
 
         if (!raw) return [];
 
@@ -3955,11 +3336,12 @@ O:
         parsed = [];
 
         for (i = 0; i < lines.length; i++) {
-          line = lines[i].replace(/^\s+|\s+$/g, "");
+          var line = lines[i].replace(/^\s+|\s+$/g, "");
 
           if (!line) continue;
 
-          parts = line.split(/[;,]/);
+          var parts = line.split(/[;,]/);
+          var value;
 
           if (parts.length >= 2 && /\d{4}-\d{2}-\d{2}/.test(parts[0])) {
             value = Number(String(parts[1]).replace(",", "."));
@@ -4200,6 +3582,14 @@ O:
           el = $(manualIds[i]);
 
           if (el) el.onchange = markCustomFromManual;
+        }
+
+        if ($("sourceMode")) {
+          $("sourceMode").onchange = run;
+        }
+
+        if ($("days")) {
+          $("days").onchange = run;
         }
 
         window.onresize = function () {
