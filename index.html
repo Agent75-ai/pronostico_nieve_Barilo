@@ -9,7 +9,8 @@
 :root{
   --bg0:#020712;--bg1:#071426;--bg2:#102843;--txt:#eff9ff;--mut:#a9bdd1;
   --line:rgba(255,255,255,.16);--blue:#61dcff;--green:#79ffb2;
-  --yellow:#ffd166;--red:#ff6b6b;--purple:#c5a6ff;--shadow:0 24px 80px rgba(0,0,0,.34)
+  --yellow:#ffd166;--orange:#ff9f1c;--red:#ff6b6b;--purple:#c5a6ff;
+  --shadow:0 24px 80px rgba(0,0,0,.34)
 }
 *{box-sizing:border-box}
 body{
@@ -29,7 +30,7 @@ body:before{
   mask-image:linear-gradient(to bottom,rgba(0,0,0,.70),transparent 75%)
 }
 .wrap{position:relative;z-index:1;width:min(1240px,calc(100% - 28px));margin:auto;padding:24px 0 48px}
-header{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;align-items:end;margin-bottom:16px}
+header{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;align-items:end;margin-bottom:16px}
 .eyebrow{
   display:inline-flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 12px;
   border-radius:999px;border:1px solid rgba(97,220,255,.28);
@@ -39,7 +40,7 @@ header{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;align-items:end;ma
 h1{margin:0;font-size:clamp(52px,8vw,98px);line-height:.88;letter-spacing:-.075em}
 h2{margin:0 0 14px;font-size:18px;letter-spacing:-.025em}
 h3{margin:0 0 10px;font-size:15px}
-.lead{max-width:800px;margin-top:14px;color:var(--mut);line-height:1.48;font-size:15.5px}
+.lead{max-width:830px;margin-top:14px;color:var(--mut);line-height:1.48;font-size:15.5px}
 .panel,.kpi,.hero-card{
   border:1px solid var(--line);
   background:linear-gradient(180deg,rgba(255,255,255,.105),rgba(255,255,255,.048));
@@ -62,11 +63,11 @@ h3{margin:0 0 10px;font-size:15px}
   text-transform:uppercase;letter-spacing:.055em
 }
 .kpi strong{
-  position:relative;z-index:1;display:block;margin:9px 0 5px;font-size:31px;
-  line-height:1;letter-spacing:-.055em;word-break:break-word
+  position:relative;z-index:1;display:block;margin:9px 0 5px;font-size:30px;
+  line-height:1.02;letter-spacing:-.055em;word-break:break-word
 }
 .kpi small{position:relative;z-index:1;color:var(--mut);line-height:1.35}
-.green{color:var(--green)}.yellow{color:var(--yellow)}.red{color:var(--red)}.purple{color:var(--purple)}
+.green{color:var(--green)}.yellow{color:var(--yellow)}.orange{color:var(--orange)}.red{color:var(--red)}.purple{color:var(--purple)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
 .field{display:flex;flex-direction:column;gap:6px}.full{grid-column:1/-1}
@@ -108,7 +109,7 @@ canvas{display:block;width:100%;height:370px;border-radius:20px;border:1px solid
 .need-ok{color:var(--green)!important}.need-mid{color:var(--yellow)!important}.need-bad{color:var(--red)!important}
 .meter{height:10px;margin-top:12px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
 .meter-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--red),var(--yellow),var(--green))}
-.tablebox{max-height:470px;overflow:auto;margin-top:16px;border-radius:20px;border:1px solid var(--line)}
+.tablebox{max-height:500px;overflow:auto;margin-top:16px;border-radius:20px;border:1px solid var(--line)}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,.10);white-space:nowrap;text-align:left}
 th{position:sticky;top:0;z-index:1;background:#101b2c;color:#c5d8e8}
@@ -135,7 +136,7 @@ th{position:sticky;top:0;z-index:1;background:#101b2c;color:#c5d8e8}
   h1{font-size:48px;line-height:.92}.lead{font-size:13.5px;line-height:1.42}
   .panel{border-radius:20px;padding:14px}.kpis{grid-template-columns:1fr;gap:10px;margin-bottom:10px}
   .grid,.grid3{grid-template-columns:1fr}.kpi{min-height:auto;border-radius:18px;padding:14px}
-  .kpi span{font-size:11px}.kpi strong{font-size:28px}.kpi small{font-size:13px}
+  .kpi span{font-size:11px}.kpi strong{font-size:27px}.kpi small{font-size:13px}
   canvas{height:260px}.need{flex-direction:column;gap:4px}.need b{text-align:left}
   .scale-level{grid-template-columns:1fr}
   th,td{padding:8px;font-size:12px}
@@ -150,9 +151,9 @@ th{position:sticky;top:0;z-index:1;background:#101b2c;color:#c5d8e8}
     <div class="eyebrow"><span class="dot"></span> Modelo experimental de nieve local</div>
     <h1>BariSnow</h1>
     <div class="lead">
-      Pronóstico físico-matemático avanzado para Barrio Lago Moreno, Barrio Melipal o Barrio Centro.
-      Calcula bulbo húmedo, cota física, energía de fusión, supervivencia del copo, orografía,
-      acumulación horaria, dispersión entre fuentes y confianza interna.
+      Modelo físico-matemático de nieve para Barrio Lago Moreno, Barrio Melipal y Barrio Centro.
+      Evalúa columna termodinámica, bulbo húmedo, energía de fusión/recongelamiento, capa dendrítica,
+      orografía, adherencia superficial, tipo de precipitación y acumulación horaria.
     </div>
   </div>
 
@@ -160,107 +161,92 @@ th{position:sticky;top:0;z-index:1;background:#101b2c;color:#c5d8e8}
     <span class="chip">📍 Barrio Lago Moreno</span>
     <span class="chip">📍 Barrio Melipal</span>
     <span class="chip">📍 Barrio Centro</span>
-    <span class="chip">🛰️ Sin API key</span>
-    <span class="chip">🧪 Física avanzada</span>
+    <span class="chip">🧊 Bourgouin simplificado</span>
+    <span class="chip">🌨️ DGZ</span>
+    <span class="chip">⛰️ Froude</span>
   </div>
 </header>
 
 <main>
   <section class="kpis">
-    <div class="kpi"><span>❄️ Veredicto nieve</span><strong id="verdict">—</strong><small id="verdictText">Sin corrida.</small></div>
+    <div class="kpi"><span>❄️ Nivel nieve</span><strong id="verdict">—</strong><small id="verdictText">Sin corrida.</small></div>
     <div class="kpi"><span>🌨️ Próxima nieve</span><strong id="nextSnow">—</strong><small id="nextSnowText">—</small></div>
-    <div class="kpi"><span>⚠️ Máximo riesgo</span><strong id="peakRisk">—</strong><small id="peakRiskText">—</small></div>
+    <div class="kpi"><span>🧪 Tipo físico</span><strong id="ptype">—</strong><small id="ptypeText">—</small></div>
     <div class="kpi"><span>📏 Acumulado nieve</span><strong id="accum">—</strong><small id="accumText">—</small></div>
   </section>
 
   <section class="kpis">
-    <div class="kpi"><span>🌧️ Veredicto precipitación</span><strong id="precipVerdict">—</strong><small id="precipVerdictText">Sin corrida.</small></div>
+    <div class="kpi"><span>🌧️ Nivel precipitación</span><strong id="precipVerdict">—</strong><small id="precipVerdictText">Sin corrida.</small></div>
     <div class="kpi"><span>☔ Próxima precipitación</span><strong id="nextPrecip">—</strong><small id="nextPrecipText">—</small></div>
     <div class="kpi"><span>📈 Pico precipitación</span><strong id="peakPrecip">—</strong><small id="peakPrecipText">—</small></div>
     <div class="kpi"><span>🎯 Confianza interna</span><strong id="confidence">—</strong><small id="confidenceText">Máximo mostrado: 90%.</small></div>
   </section>
 
   <section class="panel">
-    <h2>📘 Escala BariSnow de nieve acumulada</h2>
+    <h2>📘 Escala BariSnow de nieve</h2>
     <div class="science-grid">
       <div class="science-card">
-        <h3>❄️ Escala principal en 5 niveles</h3>
+        <h3>❄️ Escala práctica en 5 niveles</h3>
 
         <div class="scale-level">
-          <div class="scale-tag green">Nivel 1<br>Muy baja</div>
-          <div>
-            Señal prácticamente nula. Acumulado estimado menor a 0,5 cm,
-            precipitación escasa o fase mayormente lluvia. Puede haber copos aislados sin acumulación.
-          </div>
+          <div class="scale-tag green">1<br>Sin acumulación</div>
+          <div>No se espera nieve acumuladora. Puede estar frío, pero la columna atmosférica o la precipitación no alcanzan.</div>
         </div>
 
         <div class="scale-level">
-          <div class="scale-tag green">Nivel 2<br>Baja</div>
-          <div>
-            Señal débil. Acumulado entre 0,5 y 1,5 cm, o probabilidad de nieve baja/moderada.
-            Puede aparecer nieve húmeda puntual, generalmente sin impacto importante.
-          </div>
+          <div class="scale-tag green">2<br>Copos débiles</div>
+          <div>Puede verse algún copo, lluvia con copos o nieve muy húmeda. En general no genera acumulación útil.</div>
         </div>
 
         <div class="scale-level">
-          <div class="scale-tag yellow">Nivel 3<br>Marginal</div>
-          <div>
-            Entorno límite. Acumulado aproximado entre 1,5 y 5 cm, o ventana con probabilidad
-            de nieve mayor al 45%. Puede alternar lluvia, aguanieve y nieve húmeda.
-          </div>
+          <div class="scale-tag yellow">3<br>Mezcla marginal</div>
+          <div>Puede alternar lluvia, aguanieve y nieve húmeda. La acumulación depende mucho de la intensidad y de la hora del día.</div>
         </div>
 
         <div class="scale-level">
-          <div class="scale-tag yellow">Nivel 4<br>Moderada</div>
-          <div>
-            Señal relevante. Acumulado estimado entre 5 y 10 cm, o bloque de 6 horas mayor a 3 cm.
-            Puede haber acumulación visible en césped, techos, banquinas y sectores fríos.
-          </div>
+          <div class="scale-tag orange">4<br>Nieve acumulable</div>
+          <div>La nieve puede pegar y acumular en superficies frías: césped, techos, autos, banquinas y zonas menos transitadas.</div>
         </div>
 
         <div class="scale-level">
-          <div class="scale-tag red">Nivel 5<br>Alta</div>
-          <div>
-            Señal fuerte. Acumulado mayor a 10 cm, bloque de 6 horas mayor a 6 cm,
-            o riesgo horario alto. Puede afectar tránsito, calles internas y caminos expuestos.
-          </div>
+          <div class="scale-tag red">5<br>Nevada importante</div>
+          <div>Señal fuerte de acumulación. Puede afectar calles internas, accesos, caminos expuestos y movilidad.</div>
         </div>
       </div>
 
       <div class="science-card">
-        <h3>🌧️ Escala de precipitación en 5 niveles</h3>
+        <h3>🧊 Tipo físico de precipitación</h3>
 
         <div class="scale-level">
-          <div class="scale-tag green">Nivel 1<br>Muy baja</div>
-          <div>Menos de 1 mm total y picos menores a 0,2 mm/h.</div>
+          <div class="scale-tag green">0<br>Lluvia</div>
+          <div>La capa baja está demasiado cálida. Los copos se derriten antes de llegar o al tocar superficie.</div>
         </div>
 
         <div class="scale-level">
-          <div class="scale-tag green">Nivel 2<br>Baja</div>
-          <div>Entre 1 y 5 mm totales, o picos menores a 0,8 mm/h.</div>
+          <div class="scale-tag green">1<br>Lluvia con copos</div>
+          <div>Algunos copos sobreviven parcialmente, pero no hay condiciones claras para acumulación.</div>
         </div>
 
         <div class="scale-level">
-          <div class="scale-tag yellow">Nivel 3<br>Media</div>
-          <div>Entre 5 y 15 mm totales, o bloque de 6 horas mayor a 3 mm.</div>
+          <div class="scale-tag yellow">2<br>Aguanieve</div>
+          <div>Mezcla de lluvia y nieve por una capa baja marginal o recongelamiento incompleto.</div>
         </div>
 
         <div class="scale-level">
-          <div class="scale-tag yellow">Nivel 4<br>Alta</div>
-          <div>Entre 15 y 30 mm totales, o bloque de 6 horas mayor a 8 mm.</div>
+          <div class="scale-tag orange">3<br>Nieve húmeda</div>
+          <div>Puede nevar, pero con copos pesados y húmedos. La acumulación depende de intensidad y superficie.</div>
         </div>
 
         <div class="scale-level">
-          <div class="scale-tag red">Nivel 5<br>Muy alta</div>
-          <div>Más de 30 mm totales, bloque de 6 horas mayor a 12 mm, o pico mayor a 4 mm/h.</div>
+          <div class="scale-tag red">4-5<br>Nieve acumuladora</div>
+          <div>La columna está suficientemente fría y la nieve tiene chances reales de pegar y acumular.</div>
         </div>
       </div>
     </div>
 
     <div class="note">
-      🎯 La confianza interna mide acuerdo entre fuentes, baja dispersión y coherencia física.
-      No equivale a garantía de acierto; sin observaciones locales históricas no se puede validar
-      un porcentaje real de precisión.
+      La escala está pensada para interpretación práctica por barrio. No representa una garantía:
+      resume la señal física de columna, precipitación, cota, fusión, DGZ, orografía y adherencia superficial.
     </div>
   </section>
 
@@ -310,7 +296,7 @@ th{position:sticky;top:0;z-index:1;background:#101b2c;color:#c5d8e8}
         <thead>
           <tr>
             <th>Hora</th><th>T</th><th>Tw eff</th><th>Precip</th><th>Cota</th><th>Prob.</th>
-            <th>cm/h</th><th>Spread</th><th>Melt</th><th>Sup.</th><th>Oro</th><th>Conf.</th>
+            <th>Tipo</th><th>cm/h</th><th>DGZ</th><th>Melt</th><th>Refreeze</th><th>Oro</th><th>Conf.</th>
             <th>Windguru</th><th>Dif.</th><th>Riesgo</th>
           </tr>
         </thead>
@@ -345,22 +331,35 @@ O:
 
   <section class="science-grid">
     <section class="panel">
-      <h2>🧪 Física detrás de la nieve</h2>
+      <h2>🧪 Física atmosférica del modelo</h2>
+
       <div class="science-card">
-        <h3>🌡️ 1. Columna de bulbo húmedo</h3>
-        <div class="formula">Tw_eff = Tw_superficie - enfriamiento_evaporativo - enfriamiento_orográfico</div>
-        <div id="physicsTw" class="diagnosis"></div>
+        <h3>🌡️ 1. Columna termodinámica</h3>
+        <div class="formula">Tw(z), T(z), RH(z), p(z) desde superficie, 925, 850 y 700 hPa</div>
+        <div id="physicsColumn" class="diagnosis"></div>
       </div>
+
       <br>
+
       <div class="science-card">
-        <h3>🧊 2. Energía de fusión</h3>
-        <div class="formula">M = ∫ max(Tw(z)-0.1°C,0) dz ; supervivencia = exp(-M/360)</div>
-        <div id="physicsMelt" class="diagnosis"></div>
+        <h3>🔥 2. Energía de fusión y recongelamiento</h3>
+        <div class="formula">M⁺ = ∫ max(Tw(z)-0.1,0) dz ; M⁻ = ∫ max(-Tw(z),0) dz</div>
+        <div id="physicsEnergy" class="diagnosis"></div>
       </div>
+
       <br>
+
       <div class="science-card">
-        <h3>⛰️ 3. Orografía y acumulación</h3>
-        <div class="formula">nieve ≈ precip × prob_fase × SLR × adherencia</div>
+        <h3>❄️ 3. Capa dendrítica DGZ</h3>
+        <div class="formula">DGZ ≈ espesor saturado entre -12 °C y -18 °C × humedad × ascenso</div>
+        <div id="physicsDgz" class="diagnosis"></div>
+      </div>
+
+      <br>
+
+      <div class="science-card">
+        <h3>⛰️ 4. Orografía, Froude y acumulación</h3>
+        <div class="formula">Fr = U⊥ / (N·H) ; nieve = precip × fase × SLR × adherencia</div>
         <div id="physicsOro" class="diagnosis"></div>
       </div>
     </section>
@@ -404,7 +403,7 @@ O:
         <div class="field full"><button id="windguruBtn" class="secondary" type="button">🟣 Abrir Windguru</button></div>
       </div>
       <div class="note">
-        ⚙️ El menú de zona actualiza coordenadas, altitud, orografía y sesgo térmico local.
+        El menú de barrio actualiza coordenadas, altitud, orografía y sesgo térmico local.
         Si editás manualmente latitud, longitud, altitud, orografía o ajuste frío, la zona pasa a modo personalizada.
       </div>
     </div>
@@ -431,15 +430,15 @@ var SOURCES=[
 var PLACES={
   lago_moreno:{
     name:"Barrio Lago Moreno",lat:-41.1000,lon:-71.4500,elev:778,oro:0.42,coldBias:0.0,
-    note:"Zona oeste, influencia lacustre y orográfica marcada. Tiende a favorecer precipitación orográfica con flujo del oeste/noroeste."
+    note:"Zona oeste, influencia lacustre y orográfica marcada. Favorece realce orográfico con flujo del oeste/noroeste."
   },
   melipal:{
     name:"Barrio Melipal",lat:-41.1240,lon:-71.3660,elev:790,oro:0.34,coldBias:0.0,
-    note:"Zona intermedia entre centro y oeste. Mantiene algo de influencia orográfica, pero menor que Lago Moreno."
+    note:"Zona intermedia entre centro y oeste. Conserva señal orográfica, pero menos intensa que Lago Moreno."
   },
   centro:{
     name:"Barrio Centro",lat:-41.1343,lon:-71.3085,elev:770,oro:0.24,coldBias:0.2,
-    note:"Zona urbana cercana al Nahuel Huapi. Mayor moderación lacustre e isla térmica urbana relativa; la nieve puede ser más marginal."
+    note:"Zona urbana próxima al Nahuel Huapi. Mayor moderación lacustre e isla térmica urbana relativa."
   }
 };
 
@@ -537,7 +536,7 @@ function wetBulb(T,RH,p){
   RH=clamp(RH,1,100);
   eActual=esSat(T)*RH/100;
   lo=-45;hi=T+0.2;
-  for(i=0;i<38;i++){
+  for(i=0;i<42;i++){
     tw=0.5*(lo+hi);
     gamma=0.00066*(1+0.00115*tw);
     eTw=esSat(tw)-gamma*p*(T-tw);
@@ -728,22 +727,119 @@ function physicalSnowLine(column,threshold,elev,TwEff){
   return Math.max(0,elev+(TwEff-0.6)/0.006);
 }
 
-function integrateWarmLayer(column,elev,TwEff){
-  var dz,top,maxZ,i,z,Tw,melt,depth,maxTw;
+function columnPhysics(column,elev,TwEff,P,oro,time){
+  var dz=25;
+  var maxZ=elev+100;
+  var i,z,T,Tw,RH;
+  var warmEnergy=0;
+  var refreezeEnergy=0;
+  var warmDepth=0;
+  var coldDepth=0;
+  var lowWarmEnergy=0;
+  var maxTw=-99;
+
+  var dgzDepth=0;
+  var dgzRHsum=0;
+  var dgzSamples=0;
+
+  var satDepth=0;
+  var coldSatDepth=0;
+  var warmNoseMax=-99;
+
+  var d,hour,nightBonus,dayPenalty;
+  var dgzRH,dgzScore,satScore,omegaProxy,microSnowScore,surfaceAccumIndex;
+
   if(column.length<2){
-    melt=TwEff>0.1?(TwEff-0.1)*450:0;
-    return {meltEnergy:melt,warmDepth:TwEff>0.1?450:0,maxTw:TwEff};
+    warmEnergy=TwEff>0.1?(TwEff-0.1)*450:0;
+    refreezeEnergy=TwEff<0?(-TwEff)*300:0;
+
+    return {
+      meltEnergy:warmEnergy,refreezeEnergy:refreezeEnergy,warmDepth:TwEff>0.1?450:0,
+      coldDepth:TwEff<0?300:0,lowWarmEnergy:warmEnergy,maxTw:TwEff,warmNoseMax:TwEff,
+      dgzDepth:0,dgzRH:0,dgzScore:0,satDepth:0,coldSatDepth:0,omegaProxy:0,
+      microSnowScore:0,surfaceAccumIndex:clamp((0.7-TwEff)/1.7,0,1)
+    };
   }
-  maxZ=elev+100;
+
   for(i=0;i<column.length;i++)maxZ=Math.max(maxZ,column[i].z);
-  top=Math.min(3300,maxZ);dz=50;melt=0;depth=0;maxTw=-99;
-  for(z=elev;z<top;z+=dz){
+  maxZ=Math.min(3800,maxZ);
+
+  for(z=elev;z<maxZ;z+=dz){
+    T=interpColumn(column,z+dz/2,"T");
     Tw=interpColumn(column,z+dz/2,"Tw");
-    if(!finite(Tw))continue;
+    RH=interpColumn(column,z+dz/2,"RH");
+    if(!finite(T)||!finite(Tw)||!finite(RH))continue;
+
     maxTw=Math.max(maxTw,Tw);
-    if(Tw>0.1){melt+=(Tw-0.1)*dz;depth+=dz;}
+
+    if(Tw>0.1){
+      warmEnergy+=(Tw-0.1)*dz;
+      warmDepth+=dz;
+      warmNoseMax=Math.max(warmNoseMax,Tw);
+      if(z<elev+700)lowWarmEnergy+=(Tw-0.1)*dz;
+    }
+
+    if(Tw<0){
+      refreezeEnergy+=(-Tw)*dz;
+      coldDepth+=dz;
+    }
+
+    if(RH>=85){
+      satDepth+=dz;
+      if(T<0)coldSatDepth+=dz;
+    }
+
+    if(T<=-12&&T>=-18){
+      dgzDepth+=dz;
+      dgzRHsum+=RH;
+      dgzSamples++;
+    }
   }
-  return {meltEnergy:melt,warmDepth:depth,maxTw:maxTw};
+
+  dgzRH=dgzSamples?dgzRHsum/dgzSamples:0;
+
+  omegaProxy=clamp(
+    0.28*Math.log(1+Math.max(0,P))+
+    0.36*clamp(oro.oroIndex,0,1.4)+
+    0.18*clamp((oro.Uperp||0)/35,0,1)+
+    0.18*clamp(coldSatDepth/1200,0,1),
+    0,1.7
+  );
+
+  if(dgzSamples>0){
+    dgzScore=clamp((dgzDepth/600)*(dgzRH/90)*(0.65+0.55*omegaProxy),0,1.7);
+  }else{
+    dgzScore=0;
+  }
+
+  satScore=clamp(coldSatDepth/1400,0,1.4);
+
+  microSnowScore=clamp(
+    0.42*dgzScore+0.24*satScore+0.22*omegaProxy+0.12*clamp(P/1.2,0,1),
+    0,1.7
+  );
+
+  d=new Date(time);
+  hour=isNaN(d.getTime())?0:d.getHours();
+
+  nightBonus=(hour>=20||hour<=8)?0.12:0;
+  dayPenalty=(hour>=11&&hour<=17)?0.12:0;
+
+  surfaceAccumIndex=clamp(
+    0.42*clamp((0.55-TwEff)/1.4,0,1)+
+    0.22*clamp(P/0.8,0,1)+
+    0.18*clamp(1-lowWarmEnergy/850,0,1)+
+    0.10*clamp(elev/1000,0.5,1.2)+
+    nightBonus-dayPenalty,
+    0,1
+  );
+
+  return {
+    meltEnergy:warmEnergy,refreezeEnergy:refreezeEnergy,warmDepth:warmDepth,coldDepth:coldDepth,
+    lowWarmEnergy:lowWarmEnergy,maxTw:maxTw,warmNoseMax:warmNoseMax,dgzDepth:dgzDepth,
+    dgzRH:dgzRH,dgzScore:dgzScore,satDepth:satDepth,coldSatDepth:coldSatDepth,
+    omegaProxy:omegaProxy,microSnowScore:microSnowScore,surfaceAccumIndex:surfaceAccumIndex
+  };
 }
 
 function bruntVaisala(h,i){
@@ -773,95 +869,177 @@ function orographicDiagnostics(h,i,oroFactor){
   var moisture=clamp(RH850/90,0.25,1.35);
   var windTerm=clamp(Uperp/45,0,1.6);
   var froudeTerm=clamp(0.45+0.55*Fr,0.25,1.55);
+  var blocking=Fr<0.35?clamp((0.35-Fr)/0.35,0,1):0;
   var oroIndex=windward*moisture*windTerm*froudeTerm;
   return {
-    oroIndex:oroIndex,Uperp:Uperp,Fr:Fr,N:N,
-    precipMultiplier:clamp(1+oroFactor*oroIndex,0.80,2.45),
-    liftCooling:clamp(0.16*oroIndex,0,0.65)
+    oroIndex:oroIndex,Uperp:Uperp,Fr:Fr,N:N,blocking:blocking,
+    precipMultiplier:clamp(1+oroFactor*oroIndex-0.15*blocking,0.78,2.50),
+    liftCooling:clamp(0.16*oroIndex,0,0.70)
   };
 }
 
-function snowLiquidRatio(TwEff,T850,wind850,elev,oroIndex){
-  var coldTerm=2.0*Math.max(0,-TwEff);
-  var warmPenalty=5.5*Math.max(0,TwEff);
-  var elevationTerm=clamp((elev-800)/850,-0.6,1.8);
-  var dendriteTerm=finite(T850)?clamp(1.2-Math.abs(T850+12)/8,-0.5,1.2):0;
-  var windPenalty=clamp((wind850-45)/35,0,1.5);
-  return clamp(9.0+coldTerm-warmPenalty+elevationTerm+dendriteTerm+0.8*oroIndex-windPenalty,2.5,18);
+function snowLiquidRatio(TwEff,T850,wind850,elev,oroIndex,dgzScore,microSnowScore,meltEnergy,ptypeIdx){
+  var coldTerm=2.2*Math.max(0,-TwEff);
+  var warmPenalty=6.2*Math.max(0,TwEff);
+  var elevationTerm=clamp((elev-800)/850,-0.8,1.8);
+  var dgzTerm=2.5*clamp(dgzScore,0,1.4);
+  var microTerm=1.4*clamp(microSnowScore,0,1.4);
+  var t850Term=finite(T850)?clamp(1.4-Math.abs(T850+5.5)/7.5,-1.0,1.4):0;
+  var windPenalty=clamp((wind850-42)/32,0,1.8);
+  var meltPenalty=clamp(meltEnergy/700,0,2.2);
+  var slr=8.5+coldTerm-warmPenalty+elevationTerm+dgzTerm+microTerm+t850Term+0.7*oroIndex-windPenalty-meltPenalty;
+  if(ptypeIdx<=1)slr=Math.min(slr,2.5);
+  if(ptypeIdx===2)slr=Math.min(slr,4.0);
+  if(ptypeIdx===3)slr=Math.min(slr,7.0);
+  return clamp(slr,1.2,22);
 }
 
-function stickingFactor(TwEff,P,elev,meltEnergy){
-  var thermal=sigmoid((0.25-TwEff)/0.28);
-  var intensity=clamp(0.82+0.13*Math.sqrt(Math.max(0,P)),0.78,1.12);
-  var elevation=elev>=1000?1.10:elev>=850?0.95:0.78;
-  var meltPenalty=clamp(1-meltEnergy/1200,0.35,1);
-  return clamp(thermal*intensity*elevation*meltPenalty,0,1);
+function stickingFactor(TwEff,P,elev,meltEnergy,ptypeIdx,surfaceAccumIndex,time){
+  var d=new Date(time);
+  var hour=isNaN(d.getTime())?0:d.getHours();
+  var night=(hour>=20||hour<=8)?1.08:1.0;
+  var midday=(hour>=11&&hour<=17)?0.88:1.0;
+  var thermal=sigmoid((0.25-TwEff)/0.30);
+  var intensity=clamp(0.78+0.18*Math.sqrt(Math.max(0,P)),0.70,1.22);
+  var elevation=elev>=1000?1.12:elev>=850?0.98:0.78;
+  var meltPenalty=clamp(1-meltEnergy/1300,0.22,1);
+  var phase=ptypeIdx>=5?1.05:ptypeIdx===4?0.90:ptypeIdx===3?0.62:ptypeIdx===2?0.30:0.08;
+  return clamp(
+    thermal*intensity*elevation*meltPenalty*phase*night*midday*clamp(0.55+0.65*surfaceAccumIndex,0.35,1.15),
+    0,1
+  );
+}
+
+function classifyPrecipType(o){
+  var phaseScore;
+  if(o.P<0.04)return {idx:0,label:"Sin precip."};
+
+  phaseScore=
+    1.25*clamp((0.75-o.TwEff)/1.75,0,1)+
+    1.05*clamp((700-o.meltEnergy)/700,0,1)+
+    0.70*clamp(o.refreezeEnergy/550,0,1)+
+    0.85*clamp((o.elev-o.snowLine+250)/500,0,1)+
+    0.75*clamp(o.dgzScore,0,1.2)+
+    0.55*clamp(o.microSnowScore,0,1.4)+
+    0.55*clamp(o.survivalProb,0,1)+
+    0.35*clamp(o.P/0.8,0,1)-
+    0.55*clamp(o.lowWarmEnergy/800,0,1)-
+    0.45*clamp(o.warmDepth/1000,0,1);
+
+  if(o.TwEff>2.3||o.meltEnergy>1500)phaseScore-=1.4;
+  if(o.TwEff>1.4&&o.lowWarmEnergy>500)phaseScore-=0.8;
+
+  if(phaseScore>=4.55)return {idx:5,label:"Nieve acum."};
+  if(phaseScore>=3.70)return {idx:4,label:"Nieve marginal"};
+  if(phaseScore>=2.85)return {idx:3,label:"Nieve húmeda"};
+  if(phaseScore>=1.95)return {idx:2,label:"Aguanieve"};
+  if(phaseScore>=1.05)return {idx:1,label:"Lluvia/copos"};
+  return {idx:0,label:"Lluvia"};
 }
 
 function snowProbability(o){
-  var thermalTerm=(0.35-o.TwEff)/0.42;
-  var cotaTerm=(o.elev-o.snowLine+100)/180;
-  var precipTerm=Math.log(1+Math.max(0,o.P))*0.85;
-  var survivalTerm=2.1*(o.survivalProb-0.45);
-  var warmPenalty=o.warmDepth/450;
-  var oroTerm=0.28*o.oroIndex;
-  var score=-0.30+1.25*thermalTerm+1.05*cotaTerm+precipTerm+survivalTerm+oroTerm-0.80*warmPenalty;
+  var thermalTerm=(0.35-o.TwEff)/0.44;
+  var cotaTerm=(o.elev-o.snowLine+100)/190;
+  var precipTerm=Math.log(1+Math.max(0,o.P))*0.86;
+  var survivalTerm=1.95*(o.survivalProb-0.45);
+  var refreezeTerm=0.50*clamp(o.refreezeEnergy/550,0,1);
+  var dgzTerm=0.72*clamp(o.dgzScore,0,1.3);
+  var microTerm=0.55*clamp(o.microSnowScore,0,1.4);
+  var oroTerm=0.22*o.oroIndex;
+  var warmPenalty=o.warmDepth/560;
+  var lowWarmPenalty=o.lowWarmEnergy/800;
+
+  var score=-0.70+1.18*thermalTerm+0.96*cotaTerm+precipTerm+survivalTerm+
+    refreezeTerm+dgzTerm+microTerm+oroTerm-0.76*warmPenalty-0.42*lowWarmPenalty;
+
   var prob=sigmoid(score)*clamp(o.pop/100,0.15,1);
-  if(o.P<0.04)prob*=0.15;
-  if(o.meltEnergy>900)prob*=0.45;
-  if(o.TwEff>1.4)prob*=0.35;
+  if(o.P<0.04)prob*=0.12;
+  if(o.meltEnergy>1300)prob*=0.32;
+  if(o.TwEff>1.8)prob*=0.28;
+  if(o.dgzScore<0.10&&o.TwEff>0.8)prob*=0.75;
   return clamp(prob,0,1);
 }
 
 function computeModel(data,source,advanced){
-  var h=data.hourly||{},times=h.time||[];
+  var h=data.hourly||{};
+  var times=h.time||[];
   var elev=$("elev")?num($("elev").value,778):778;
   var oroFactor=$("oro")?num($("oro").value,0.42):0.42;
   var coldBias=$("coldBias")?num($("coldBias").value,0):0;
   var baseElev=finite(data.elevation)?Number(data.elevation):elev;
   var out=[];
   var i,Traw,RH,column,T,TwSurface,Praw,pop,oro,P,dryness,evapCooling,TwEff;
-  var warm,meltEnergy,survivalProb,snowLine,FL,prob,T850,wind850,slr,stick,cmh,snowApi,risk;
+  var phys,meltEnergy,refreezeEnergy,survivalProb,snowLine,FL,prob,T850,wind850,slr,ptype,stick,cmh,snowApi,risk;
+
   for(i=0;i<times.length;i++){
     Traw=getValue(h,"temperature_2m",i,null);
     RH=getValue(h,"relative_humidity_2m",i,null);
     if(!finite(Traw)||!finite(RH))continue;
+
     column=buildColumn(h,i,elev,baseElev,coldBias);
     if(!column.length)continue;
+
     T=interpColumn(column,elev,"T");
     TwSurface=interpColumn(column,elev,"Tw");
+
     Praw=getValue(h,"precipitation",i,0);
     pop=getValue(h,"precipitation_probability",i,100);
+
     oro=orographicDiagnostics(h,i,oroFactor);
     P=Praw*oro.precipMultiplier;
     dryness=clamp((100-RH)/45,0,1);
-    evapCooling=clamp(0.12*Math.sqrt(Math.max(0,P))+0.28*dryness*Math.sqrt(Math.max(0,P)),0,0.75);
+    evapCooling=clamp(0.12*Math.sqrt(Math.max(0,P))+0.30*dryness*Math.sqrt(Math.max(0,P)),0,0.85);
     TwEff=TwSurface-evapCooling-oro.liftCooling;
-    warm=integrateWarmLayer(column,elev,TwEff);
-    meltEnergy=Math.max(0,warm.meltEnergy-90*evapCooling-60*oro.liftCooling);
-    survivalProb=Math.exp(-meltEnergy/360);
+
+    phys=columnPhysics(column,elev,TwEff,P,oro,times[i]);
+    meltEnergy=Math.max(0,phys.meltEnergy-95*evapCooling-65*oro.liftCooling);
+    refreezeEnergy=phys.refreezeEnergy;
+
+    survivalProb=Math.exp(-meltEnergy/360)*clamp(1+refreezeEnergy/1400,0.65,1.45)*clamp(1-phys.lowWarmEnergy/1350,0.20,1.00);
+    survivalProb=clamp(survivalProb,0,1);
+
     snowLine=physicalSnowLine(column,0.45,elev,TwEff);
     FL=getValue(h,"freezing_level_height",i,null);
-    if(finite(FL))snowLine=0.70*snowLine+0.30*(FL-330);
-    snowLine=Math.max(0,snowLine-evapCooling*160-oro.liftCooling*130);
+    if(finite(FL))snowLine=0.72*snowLine+0.28*(FL-330);
+    snowLine=Math.max(0,snowLine-evapCooling*170-oro.liftCooling*135);
+
     prob=snowProbability({
-      TwEff:TwEff,snowLine:snowLine,elev:elev,P:P,pop:pop,
-      meltEnergy:meltEnergy,warmDepth:warm.warmDepth,survivalProb:survivalProb,oroIndex:oro.oroIndex
+      TwEff:TwEff,snowLine:snowLine,elev:elev,P:P,pop:pop,meltEnergy:meltEnergy,
+      refreezeEnergy:refreezeEnergy,warmDepth:phys.warmDepth,lowWarmEnergy:phys.lowWarmEnergy,
+      survivalProb:survivalProb,oroIndex:oro.oroIndex,dgzScore:phys.dgzScore,
+      microSnowScore:phys.microSnowScore
     });
+
+    ptype=classifyPrecipType({
+      TwEff:TwEff,P:P,elev:elev,snowLine:snowLine,meltEnergy:meltEnergy,
+      refreezeEnergy:refreezeEnergy,warmDepth:phys.warmDepth,lowWarmEnergy:phys.lowWarmEnergy,
+      dgzScore:phys.dgzScore,microSnowScore:phys.microSnowScore,survivalProb:survivalProb
+    });
+
     T850=getValue(h,"temperature_850hPa",i,null);
     wind850=getValue(h,"wind_speed_850hPa",i,getValue(h,"wind_speed_10m",i,0));
-    slr=snowLiquidRatio(TwEff,T850,wind850,elev,oro.oroIndex);
-    stick=stickingFactor(TwEff,P,elev,meltEnergy);
+
+    slr=snowLiquidRatio(TwEff,T850,wind850,elev,oro.oroIndex,phys.dgzScore,phys.microSnowScore,meltEnergy,ptype.idx);
+    stick=stickingFactor(TwEff,P,elev,meltEnergy,ptype.idx,phys.surfaceAccumIndex,times[i]);
     cmh=P*prob*slr/10*stick;
+
     snowApi=getValue(h,"snowfall",i,null);
     if(finite(snowApi)&&snowApi>0)cmh=0.65*cmh+0.35*snowApi;
+
     risk="Bajo";
-    if(prob>=0.72&&cmh>=1.1&&TwEff<=0.35&&meltEnergy<450)risk="Alto";
-    else if(prob>=0.46&&cmh>=0.25&&TwEff<=1.05&&meltEnergy<850)risk="Medio";
+    if(prob>=0.72&&cmh>=1.1&&TwEff<=0.35&&meltEnergy<500&&ptype.idx>=4)risk="Alto";
+    else if(prob>=0.46&&cmh>=0.25&&TwEff<=1.15&&meltEnergy<900&&ptype.idx>=2)risk="Medio";
+
     out.push({
-      time:times[i],key:isoHour(times[i]),T:T,TwEff:TwEff,P:P,snowLine:snowLine,prob:prob,cmh:cmh,
-      cmhMin:cmh,cmhMax:cmh,probMin:prob,probMax:prob,meltEnergy:meltEnergy,warmDepth:warm.warmDepth,
-      survivalProb:survivalProb,oroIndex:oro.oroIndex,froude:oro.Fr,slr:slr,risk:risk,confidence:0.72,
+      time:times[i],key:isoHour(times[i]),T:T,TwEff:TwEff,P:P,snowLine:snowLine,prob:prob,
+      cmh:cmh,cmhMin:cmh,cmhMax:cmh,probMin:prob,probMax:prob,meltEnergy:meltEnergy,
+      refreezeEnergy:refreezeEnergy,warmDepth:phys.warmDepth,coldDepth:phys.coldDepth,
+      lowWarmEnergy:phys.lowWarmEnergy,survivalProb:survivalProb,oroIndex:oro.oroIndex,
+      froude:oro.Fr,blocking:oro.blocking,Uperp:oro.Uperp,dgzDepth:phys.dgzDepth,
+      dgzRH:phys.dgzRH,dgzScore:phys.dgzScore,satDepth:phys.satDepth,
+      coldSatDepth:phys.coldSatDepth,omegaProxy:phys.omegaProxy,
+      microSnowScore:phys.microSnowScore,surfaceAccumIndex:phys.surfaceAccumIndex,
+      slr:slr,ptypeIdx:ptype.idx,ptypeLabel:ptype.label,risk:risk,confidence:0.72,
       members:1,sourceId:source.id,sourceName:source.label,sourceWeight:source.weight,wg:null,diff:null
     });
   }
@@ -894,28 +1072,44 @@ function weightedRisk(rows){
   return "Bajo";
 }
 
+function modalPtype(rows){
+  var counts={},best=null,bv=-1,i,k;
+  for(i=0;i<rows.length;i++){
+    k=String(rows[i].ptypeIdx);
+    counts[k]=(counts[k]||0)+rowWeight(rows[i]);
+    if(counts[k]>bv){bv=counts[k];best=rows[i];}
+  }
+  return best?{idx:best.ptypeIdx,label:best.ptypeLabel}:{idx:0,label:"—"};
+}
+
 function ensembleConfidence(rows,avg){
-  var probs=[],cmhs=[],i,pSpread,cSpread,cMax,cMin,base,memberBonus,physicsBonus,conf;
+  var probs=[],cmhs=[],types=[],i,pSpread,cSpread,tSpread,cMax,cMin,base,memberBonus,physicsBonus,conf;
   for(i=0;i<rows.length;i++){
     if(finite(rows[i].prob))probs.push(rows[i].prob);
     if(finite(rows[i].cmh))cmhs.push(rows[i].cmh);
+    if(finite(rows[i].ptypeIdx))types.push(rows[i].ptypeIdx);
   }
   if(rows.length<=1)return 0.70;
   if(!probs.length||!cmhs.length)return 0.50;
+
   pSpread=Math.max.apply(null,probs)-Math.min.apply(null,probs);
   cMax=Math.max.apply(null,cmhs);cMin=Math.min.apply(null,cmhs);
   cSpread=cMax>0.05?(cMax-cMin)/Math.max(0.1,cMax):0.15;
-  base=0.90-0.50*pSpread-0.25*cSpread;
+  tSpread=types.length?(Math.max.apply(null,types)-Math.min.apply(null,types))/5:0.2;
+
+  base=0.90-0.42*pSpread-0.22*cSpread-0.20*tSpread;
   memberBonus=rows.length>=4?0.04:rows.length>=3?0.025:0.01;
+
   physicsBonus=0;
   if(avg.TwEff<=0.3&&avg.meltEnergy<=350&&avg.prob>=0.65)physicsBonus+=0.03;
-  if(avg.P>=0.15&&avg.oroIndex>=0.25)physicsBonus+=0.02;
+  if(avg.dgzScore>=0.55&&avg.P>=0.15)physicsBonus+=0.02;
+
   conf=base+memberBonus+physicsBonus;
   return clamp(conf,0.15,0.90);
 }
 
 function averageModels(packs){
-  var byKey={},out=[],p,i,j,row,key,rows,first,cmhVals,probVals,avg;
+  var byKey={},out=[],p,i,j,row,key,rows,first,cmhVals,probVals,avg,pt;
   if(packs.length===1){
     for(i=0;i<packs[0].model.length;i++){
       row=copyRow(packs[0].model[i]);
@@ -924,6 +1118,7 @@ function averageModels(packs){
     }
     return out;
   }
+
   for(p=0;p<packs.length;p++){
     for(i=0;i<packs[p].model.length;i++){
       row=packs[p].model[i];key=row.key;
@@ -931,6 +1126,7 @@ function averageModels(packs){
       byKey[key].push(row);
     }
   }
+
   for(key in byKey){
     if(Object.prototype.hasOwnProperty.call(byKey,key)){
       rows=byKey[key];first=rows[0];cmhVals=[];probVals=[];
@@ -938,15 +1134,23 @@ function averageModels(packs){
         if(finite(rows[j].cmh))cmhVals.push(rows[j].cmh);
         if(finite(rows[j].prob))probVals.push(rows[j].prob);
       }
+      pt=modalPtype(rows);
       avg={
         time:first.time,key:key,T:weightedMean(rows,"T"),TwEff:weightedMean(rows,"TwEff"),
         P:weightedMean(rows,"P"),snowLine:weightedMean(rows,"snowLine"),prob:weightedMean(rows,"prob"),
         cmh:weightedMean(rows,"cmh"),cmhMin:cmhVals.length?Math.min.apply(null,cmhVals):null,
         cmhMax:cmhVals.length?Math.max.apply(null,cmhVals):null,probMin:probVals.length?Math.min.apply(null,probVals):null,
         probMax:probVals.length?Math.max.apply(null,probVals):null,meltEnergy:weightedMean(rows,"meltEnergy"),
-        warmDepth:weightedMean(rows,"warmDepth"),survivalProb:weightedMean(rows,"survivalProb"),
-        oroIndex:weightedMean(rows,"oroIndex"),froude:weightedMean(rows,"froude"),slr:weightedMean(rows,"slr"),
-        risk:weightedRisk(rows),members:rows.length,wg:null,diff:null
+        refreezeEnergy:weightedMean(rows,"refreezeEnergy"),warmDepth:weightedMean(rows,"warmDepth"),
+        coldDepth:weightedMean(rows,"coldDepth"),lowWarmEnergy:weightedMean(rows,"lowWarmEnergy"),
+        survivalProb:weightedMean(rows,"survivalProb"),oroIndex:weightedMean(rows,"oroIndex"),
+        froude:weightedMean(rows,"froude"),blocking:weightedMean(rows,"blocking"),
+        Uperp:weightedMean(rows,"Uperp"),dgzDepth:weightedMean(rows,"dgzDepth"),
+        dgzRH:weightedMean(rows,"dgzRH"),dgzScore:weightedMean(rows,"dgzScore"),
+        satDepth:weightedMean(rows,"satDepth"),coldSatDepth:weightedMean(rows,"coldSatDepth"),
+        omegaProxy:weightedMean(rows,"omegaProxy"),microSnowScore:weightedMean(rows,"microSnowScore"),
+        surfaceAccumIndex:weightedMean(rows,"surfaceAccumIndex"),slr:weightedMean(rows,"slr"),
+        ptypeIdx:pt.idx,ptypeLabel:pt.label,risk:weightedRisk(rows),members:rows.length,wg:null,diff:null
       };
       avg.confidence=ensembleConfidence(rows,avg);
       out.push(avg);
@@ -962,7 +1166,7 @@ function summarize(model){
   for(i=0;i<model.length;i++){
     total+=model[i].cmh||0;
     if((model[i].cmh||0)>(peak.cmh||0))peak=model[i];
-    if(!next&&model[i].prob>=0.45&&model[i].P>=0.12)next=model[i];
+    if(!next&&model[i].prob>=0.45&&model[i].P>=0.12&&model[i].ptypeIdx>=2)next=model[i];
     if(finite(model[i].confidence)){meanConf+=model[i].confidence;confCount++;}
   }
   for(i=0;i<model.length;i++){
@@ -991,37 +1195,37 @@ function summarizePrecip(model){
 
 function snowScale(summary){
   var total=summary.total||0,best6=summary.best6||0,peak=summary.peak||{},next=summary.next;
-  var cmh=peak.cmh||0,prob=peak.prob||0,risk=peak.risk||"Bajo";
+  var cmh=peak.cmh||0,prob=peak.prob||0,risk=peak.risk||"Bajo",pt=peak.ptypeIdx||0;
 
-  if(total>=10||best6>=6||risk==="Alto"||cmh>=1.4){
-    return {label:"Nivel 5 · Alta",cls:"red",text:"Señal fuerte de nieve acumuladora. Puede afectar tránsito y caminos expuestos."};
+  if(total>=10||best6>=6||risk==="Alto"||cmh>=1.4||pt>=5){
+    return {label:"5 · Nevada importante",cls:"red",text:"Alta probabilidad de nieve acumuladora. Puede afectar calles, caminos internos, accesos y tránsito."};
   }
-  if(total>=5||best6>=3||cmh>=0.7){
-    return {label:"Nivel 4 · Moderada",cls:"yellow",text:"Señal relevante. Puede acumular en superficies frías y sectores menos transitados."};
+  if(total>=5||best6>=3||cmh>=0.7||pt>=4){
+    return {label:"4 · Nieve acumulable",cls:"orange",text:"La nieve puede acumular de forma visible, sobre todo en césped, techos, banquinas, autos y sectores fríos."};
   }
-  if(total>=1.5||next){
-    return {label:"Nivel 3 · Marginal",cls:"yellow",text:"Entorno límite: posible nieve húmeda, aguanieve o acumulación limitada."};
+  if(total>=1.5||next||pt>=3){
+    return {label:"3 · Mezcla marginal",cls:"yellow",text:"Puede haber lluvia con nieve, aguanieve o nieve húmeda. La acumulación sería limitada y dependiente de la intensidad."};
   }
-  if(total>=0.5||prob>=0.25){
-    return {label:"Nivel 2 · Baja",cls:"green",text:"Señal débil. Puede haber copos o nieve húmeda aislada sin impacto importante."};
+  if(total>=0.5||prob>=0.25||pt>=1){
+    return {label:"2 · Copos débiles",cls:"green",text:"Puede verse algún copo o nieve muy húmeda, pero sin señal clara de acumulación relevante."};
   }
-  return {label:"Nivel 1 · Muy baja",cls:"green",text:"No hay señal robusta de nieve acumuladora."};
+  return {label:"1 · Sin acumulación",cls:"green",text:"No hay señal meteorológica robusta de nieve acumuladora para el barrio seleccionado."};
 }
 
 function precipScale(p){
   if(p.total>=30||p.best6>=12||p.peak.P>=4){
-    return {label:"Nivel 5 · Muy alta",cls:"red",text:"Señal de precipitación muy importante."};
+    return {label:"5 · Precipitación intensa",cls:"red",text:"Precipitación importante. Puede haber períodos fuertes o acumulados altos."};
   }
   if(p.total>=15||p.best6>=8||p.peak.P>=2.5){
-    return {label:"Nivel 4 · Alta",cls:"yellow",text:"Precipitación alta o persistente."};
+    return {label:"4 · Precipitación persistente",cls:"orange",text:"Precipitación sostenida o de varias horas, con acumulado relevante."};
   }
   if(p.total>=5||p.best6>=3||p.peak.P>=0.8){
-    return {label:"Nivel 3 · Media",cls:"yellow",text:"Precipitación útil o intermitente."};
+    return {label:"3 · Intermitente",cls:"yellow",text:"Puede llover o nevar por momentos. La precipitación no sería continua todo el período."};
   }
   if(p.total>=1||p.peak.P>=0.2){
-    return {label:"Nivel 2 · Baja",cls:"green",text:"Precipitación débil."};
+    return {label:"2 · Débil",cls:"green",text:"Precipitación débil, aislada o de bajo acumulado."};
   }
-  return {label:"Nivel 1 · Muy baja",cls:"green",text:"No hay señal de precipitación relevante."};
+  return {label:"1 · Casi seco",cls:"green",text:"No hay señal clara de precipitación relevante."};
 }
 
 function badge(r){
@@ -1031,19 +1235,20 @@ function badge(r){
 }
 
 function render(model,summary){
-  var sc=snowScale(summary);
+  var sc=snowScale(summary),p=summary.peak;
   $("verdict").className=sc.cls;
   $("verdict").textContent=sc.label;
   $("verdictText").textContent=sc.text;
 
   $("nextSnow").textContent=summary.next?localTime(summary.next.time):"—";
-  $("nextSnowText").textContent=summary.next?"Probabilidad "+Math.round(summary.next.prob*100)+"%, precipitación "+fmt(summary.next.P)+" mm/h.":"Sin ventana clara con precipitación y fase nieve.";
+  $("nextSnowText").textContent=summary.next?"Tipo "+summary.next.ptypeLabel+", prob. "+Math.round(summary.next.prob*100)+"%, precip. "+fmt(summary.next.P)+" mm/h.":"Sin ventana clara con precipitación y fase nieve.";
 
-  $("peakRisk").textContent=localTime(summary.peak.time);
-  $("peakRiskText").textContent="Pico "+fmt(summary.peak.cmh,2)+" cm/h; cota ~"+Math.round(summary.peak.snowLine)+" m.";
+  $("ptype").className=p.ptypeIdx>=4?"red":p.ptypeIdx>=3?"orange":p.ptypeIdx>=2?"yellow":"green";
+  $("ptype").textContent=p.ptypeLabel||"—";
+  $("ptypeText").textContent="Índice físico: "+(finite(p.ptypeIdx)?p.ptypeIdx:"—")+"/5. Supervivencia del copo: "+Math.round((p.survivalProb||0)*100)+"%.";
 
   $("accum").textContent=fmt(summary.total,1)+" cm";
-  $("accumText").textContent="Mejor bloque 6 h: "+fmt(summary.best6,1)+" cm.";
+  $("accumText").textContent="Mejor bloque 6 h: "+fmt(summary.best6,1)+" cm. Pico: "+fmt(summary.peak.cmh,2)+" cm/h.";
 
   renderPrecip(model,summary);
   renderDiagnosis(summary);
@@ -1054,7 +1259,6 @@ function render(model,summary){
 
 function renderPrecip(model,summary){
   var p=summarizePrecip(model),sc=precipScale(p),conf=summary.meanConf||0.70;
-
   $("precipVerdict").className=sc.cls;
   $("precipVerdict").textContent=sc.label;
   $("precipVerdictText").textContent=sc.text;
@@ -1074,16 +1278,17 @@ function renderDiagnosis(summary){
   var p=summary.peak;
   $("diagnosis").innerHTML=
     "<b>Hora crítica:</b> "+localTime(p.time)+". "+
+    "Tipo físico: <b>"+p.ptypeLabel+"</b>. "+
     "Tw efectivo: <b>"+fmt(p.TwEff)+" °C</b>. "+
     "Cota de nieve: <b>"+Math.round(p.snowLine)+" m</b>. "+
-    "Energía de fusión: <b>"+fmt(p.meltEnergy,0)+" °C·m</b>. "+
+    "Melt: <b>"+fmt(p.meltEnergy,0)+" °C·m</b>. "+
+    "Recongelamiento: <b>"+fmt(p.refreezeEnergy,0)+" °C·m</b>. "+
+    "DGZ: <b>"+fmt(p.dgzScore,2)+"</b>. "+
     "Supervivencia del copo: <b>"+Math.round((p.survivalProb||0)*100)+"%</b>. "+
-    "Índice orográfico: <b>"+fmt(p.oroIndex,2)+"</b>. "+
     "SLR: <b>"+fmt(p.slr,1)+":1</b>. "+
     "Pico: <b>"+fmt(p.cmh,2)+" cm/h</b>. "+
     "Total: <b>"+fmt(summary.total,1)+" cm</b>. "+
-    "Miembros disponibles en hora crítica: <b>"+(p.members||1)+"</b>. "+
-    "Confianza interna media: <b>"+Math.round((summary.meanConf||0)*100)+"%</b>.";
+    "Miembros disponibles: <b>"+(p.members||1)+"</b>.";
 }
 
 function needClass(ok,mid){return ok?"need-ok":mid?"need-mid":"need-bad";}
@@ -1093,24 +1298,53 @@ function renderPhysics(summary){
   var p=summary.peak,elev=$("elev")?num($("elev").value,778):778,cotaDiff=p.snowLine-elev;
   var twOk=p.TwEff<=0.3,twMid=p.TwEff<=1.1,cotaOk=cotaDiff<=100,cotaMid=cotaDiff<=350;
   var meltOk=p.meltEnergy<=350,meltMid=p.meltEnergy<=850,precipOk=p.P>=0.6,precipMid=p.P>=0.15;
-  var probOk=p.prob>=0.65,probMid=p.prob>=0.4;
-  $("physicsTw").innerHTML="En la hora crítica, <b>Tw_eff = "+fmt(p.TwEff)+" °C</b>. Para nieve clara conviene que esté cerca de 0 °C o por debajo.";
-  $("physicsMelt").innerHTML="Energía de fusión: <b>"+fmt(p.meltEnergy,0)+" °C·m</b>. Supervivencia estimada del copo: <b>"+Math.round((p.survivalProb||0)*100)+"%</b>. Capa cálida equivalente: <b>"+fmt(p.warmDepth,0)+" m</b>.";
-  $("physicsOro").innerHTML="Índice orográfico: <b>"+fmt(p.oroIndex,2)+"</b>. Froude simplificado: <b>"+fmt(p.froude,2)+"</b>. Relación nieve/agua estimada: <b>"+fmt(p.slr,1)+":1</b>.";
+  var dgzOk=p.dgzScore>=0.65,dgzMid=p.dgzScore>=0.3,ptypeOk=p.ptypeIdx>=4,ptypeMid=p.ptypeIdx>=2;
+
+  $("physicsColumn").innerHTML=
+    "La columna se evalúa con niveles de superficie, 925, 850 y 700 hPa cuando están disponibles. "+
+    "En la hora crítica, <b>Tw_eff = "+fmt(p.TwEff)+" °C</b> y cota estimada <b>"+Math.round(p.snowLine)+" m</b>.";
+
+  $("physicsEnergy").innerHTML=
+    "Energía cálida de fusión: <b>"+fmt(p.meltEnergy,0)+" °C·m</b>. "+
+    "Energía fría de recongelamiento: <b>"+fmt(p.refreezeEnergy,0)+" °C·m</b>. "+
+    "Capa cálida equivalente: <b>"+fmt(p.warmDepth,0)+" m</b>. "+
+    "Capa cálida baja: <b>"+fmt(p.lowWarmEnergy,0)+" °C·m</b>. "+
+    "Supervivencia del copo: <b>"+Math.round((p.survivalProb||0)*100)+"%</b>.";
+
+  $("physicsDgz").innerHTML=
+    "Índice DGZ: <b>"+fmt(p.dgzScore,2)+"</b>. "+
+    "Espesor DGZ estimado: <b>"+fmt(p.dgzDepth,0)+" m</b>. "+
+    "RH media DGZ: <b>"+fmt(p.dgzRH,0)+"%</b>. "+
+    "Microfísica de nieve: <b>"+fmt(p.microSnowScore,2)+"</b>. "+
+    "Una DGZ más profunda y húmeda mejora cristalización, SLR y acumulación.";
+
+  $("physicsOro").innerHTML=
+    "Índice orográfico: <b>"+fmt(p.oroIndex,2)+"</b>. "+
+    "Froude simplificado: <b>"+fmt(p.froude,2)+"</b>. "+
+    "Viento perpendicular: <b>"+fmt(p.Uperp,1)+" km/h</b>. "+
+    "Bloqueo orográfico: <b>"+fmt((p.blocking||0)*100,0)+"%</b>. "+
+    "SLR estimado: <b>"+fmt(p.slr,1)+":1</b>.";
+
   $("snowNeeds").innerHTML=
+    '<div class="need"><span>Tipo físico ≥ nieve marginal</span><b class="'+needClass(ptypeOk,ptypeMid)+'">'+needLabel(ptypeOk,ptypeMid)+' · '+p.ptypeLabel+'</b></div>'+
     '<div class="need"><span>Bulbo húmedo efectivo ≤ 0.3 °C</span><b class="'+needClass(twOk,twMid)+'">'+needLabel(twOk,twMid)+' · '+fmt(p.TwEff)+' °C</b></div>'+
     '<div class="need"><span>Cota cerca o debajo del barrio</span><b class="'+needClass(cotaOk,cotaMid)+'">'+needLabel(cotaOk,cotaMid)+' · '+Math.round(p.snowLine)+' m</b></div>'+
     '<div class="need"><span>Energía de fusión baja</span><b class="'+needClass(meltOk,meltMid)+'">'+needLabel(meltOk,meltMid)+' · '+fmt(p.meltEnergy,0)+' °C·m</b></div>'+
     '<div class="need"><span>Precipitación suficiente</span><b class="'+needClass(precipOk,precipMid)+'">'+needLabel(precipOk,precipMid)+' · '+fmt(p.P)+' mm/h</b></div>'+
-    '<div class="need"><span>Probabilidad de nieve ≥ 65%</span><b class="'+needClass(probOk,probMid)+'">'+needLabel(probOk,probMid)+' · '+Math.round(p.prob*100)+'%</b></div>';
+    '<div class="need"><span>DGZ húmeda y activa</span><b class="'+needClass(dgzOk,dgzMid)+'">'+needLabel(dgzOk,dgzMid)+' · '+fmt(p.dgzScore,2)+'</b></div>';
+
   var score=Math.round(100*clamp(
-    0.28*(twOk?1:twMid?0.55:0.15)+
-    0.22*(cotaOk?1:cotaMid?0.55:0.10)+
-    0.20*(meltOk?1:meltMid?0.55:0.10)+
-    0.15*(precipOk?1:precipMid?0.55:0.10)+
-    0.15*p.prob,0,1));
+    0.22*(ptypeOk?1:ptypeMid?0.55:0.10)+
+    0.20*(twOk?1:twMid?0.55:0.15)+
+    0.18*(cotaOk?1:cotaMid?0.55:0.10)+
+    0.16*(meltOk?1:meltMid?0.55:0.10)+
+    0.12*(precipOk?1:precipMid?0.55:0.10)+
+    0.12*(dgzOk?1:dgzMid?0.55:0.10),
+    0,1));
+
   $("snowNeedsText").innerHTML=
-    "Para nieve más clara se necesita aire más frío en capas bajas, menor energía de fusión, cota más baja y precipitación sostenida."+
+    "Para nieve acumuladora clara se necesita una columna baja más fría, menor energía de fusión, "+
+    "cota más baja, precipitación sostenida y DGZ suficientemente húmeda."+
     '<div class="meter"><div class="meter-fill" style="width:'+score+'%"></div></div><br>'+
     'Índice físico de entorno nivoso: <b>'+score+'/100</b>.';
 }
@@ -1129,10 +1363,11 @@ function renderRows(model){
       "<td>"+fmt(x.P)+" mm/h</td>"+
       "<td>"+Math.round(x.snowLine)+" m</td>"+
       "<td>"+Math.round(x.prob*100)+"%</td>"+
+      "<td>"+x.ptypeLabel+"</td>"+
       "<td>"+fmt(x.cmh,2)+"</td>"+
-      "<td>"+spread+"</td>"+
+      "<td>"+fmt(x.dgzScore,2)+"</td>"+
       "<td>"+fmt(x.meltEnergy,0)+"</td>"+
-      "<td>"+Math.round((x.survivalProb||0)*100)+"%</td>"+
+      "<td>"+fmt(x.refreezeEnergy,0)+"</td>"+
       "<td>"+fmt(x.oroIndex,2)+"</td>"+
       "<td>"+Math.round((x.confidence||0)*100)+"%</td>"+
       "<td class=\"purple\">"+wg+"</td>"+
@@ -1186,52 +1421,88 @@ function drawChart(model){
   var padL=isMobile?52:72,padR=isMobile?54:82,padT=isMobile?42:48,padB=isMobile?54:62;
   var plotW=W-padL-padR,plotH=H-padT-padB;
   var maxC=1,maxP=1,i,x,bh,bw,p,y,d,label,step;
+
   for(i=0;i<model.length;i++){
     maxC=Math.max(maxC,model[i].cmh||0,model[i].cmhMax||0);
     maxP=Math.max(maxP,model[i].P||0);
     if(finite(model[i].wg))maxC=Math.max(maxC,model[i].wg);
   }
+
   function xAt(i){return padL+plotW*i/Math.max(1,model.length-1);}
   function yProb(v){return padT+(1-v)*plotH;}
   function yCmh(v){return padT+(1-v/maxC)*plotH;}
-  ctx.clearRect(0,0,W,H);ctx.fillStyle="rgba(0,0,0,.20)";ctx.fillRect(0,0,W,H);
-  ctx.strokeStyle="rgba(255,255,255,.14)";ctx.lineWidth=1*info.dpr;ctx.font=(isMobile?10:12)+"px system-ui";
+
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle="rgba(0,0,0,.20)";
+  ctx.fillRect(0,0,W,H);
+
+  ctx.strokeStyle="rgba(255,255,255,.14)";
+  ctx.lineWidth=1*info.dpr;
+  ctx.font=(isMobile?10:12)+"px system-ui";
+
   for(i=0;i<=5;i++){
-    p=i/5;y=yProb(p);ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();
-    ctx.fillStyle="rgba(255,209,102,.9)";ctx.textAlign="right";ctx.fillText(Math.round(p*100)+"%",padL-8,y+4);
-    ctx.fillStyle="rgba(124,255,178,.9)";ctx.textAlign="left";ctx.fillText(fmt(maxC*p,1),W-padR+8,y+4);
+    p=i/5;y=yProb(p);
+    ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();
+
+    ctx.fillStyle="rgba(255,209,102,.9)";
+    ctx.textAlign="right";
+    ctx.fillText(Math.round(p*100)+"%",padL-8,y+4);
+
+    ctx.fillStyle="rgba(124,255,178,.9)";
+    ctx.textAlign="left";
+    ctx.fillText(fmt(maxC*p,1),W-padR+8,y+4);
   }
-  ctx.strokeStyle="rgba(238,248,255,.75)";ctx.lineWidth=1.2*info.dpr;
-  ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,H-padB);ctx.lineTo(W-padR,H-padB);ctx.moveTo(W-padR,padT);ctx.lineTo(W-padR,H-padB);ctx.stroke();
+
+  ctx.strokeStyle="rgba(238,248,255,.75)";
+  ctx.lineWidth=1.2*info.dpr;
+  ctx.beginPath();
+  ctx.moveTo(padL,padT);ctx.lineTo(padL,H-padB);ctx.lineTo(W-padR,H-padB);
+  ctx.moveTo(W-padR,padT);ctx.lineTo(W-padR,H-padB);
+  ctx.stroke();
+
   for(i=0;i<model.length;i++){
-    x=model[i];bh=((x.P||0)/maxP)*plotH;bw=Math.max(2*info.dpr,plotW/model.length*.72);
-    ctx.fillStyle="rgba(101,221,255,.24)";ctx.fillRect(xAt(i)-bw/2,H-padB-bh,bw,bh);
+    x=model[i];
+    bh=((x.P||0)/maxP)*plotH;
+    bw=Math.max(2*info.dpr,plotW/model.length*.72);
+    ctx.fillStyle="rgba(101,221,255,.24)";
+    ctx.fillRect(xAt(i)-bw/2,H-padB-bh,bw,bh);
   }
+
   drawBand(ctx,model,xAt,yCmh,"rgba(121,255,178,.14)");
   drawLine(ctx,model,xAt,function(row){return yProb(row.prob||0);},"#ffd166",2.6*info.dpr,false);
   drawLine(ctx,model,xAt,function(row){return yCmh(row.cmh||0);},"#79ffb2",3.1*info.dpr,false);
+
   if(modelHasWindguru(model)){
     drawLine(ctx,model,xAt,function(row){return yCmh(row.wg);},"#c5a6ff",2.4*info.dpr,true);
   }
-  ctx.textAlign="left";ctx.font=(isMobile?10:13)+"px system-ui";
-  ctx.fillStyle="#79ffb2";ctx.fillText("● Modelo",padL,isMobile?18:25);
-  ctx.fillStyle="#ffd166";ctx.fillText("● Prob.",isMobile?padL:padL+92,isMobile?34:25);
-  ctx.fillStyle="#65ddff";ctx.fillText("■ Precip.",isMobile?padL+100:padL+174,isMobile?18:25);
-  ctx.fillStyle="#c5a6ff";ctx.fillText("● Windguru",isMobile?padL+100:padL+270,isMobile?34:25);
-  ctx.fillStyle="rgba(238,248,255,.72)";ctx.textAlign="center";ctx.font=(isMobile?10:11)+"px system-ui";
+
+  ctx.textAlign="left";
+  ctx.font=(isMobile?10:13)+"px system-ui";
+
+  ctx.fillStyle="#79ffb2";ctx.fillText("● cm/h",padL,isMobile?18:25);
+  ctx.fillStyle="#ffd166";ctx.fillText("● prob.",isMobile?padL:padL+76,isMobile?34:25);
+  ctx.fillStyle="#65ddff";ctx.fillText("■ precip.",isMobile?padL+92:padL+158,isMobile?18:25);
+  ctx.fillStyle="#c5a6ff";ctx.fillText("● Windguru",isMobile?padL+92:padL+260,isMobile?34:25);
+
+  ctx.fillStyle="rgba(238,248,255,.72)";
+  ctx.textAlign="center";
+  ctx.font=(isMobile?10:11)+"px system-ui";
   step=Math.max(isMobile?12:6,Math.round(model.length/(isMobile?5:8)));
   for(i=0;i<model.length;i+=step){
-    d=new Date(model[i].time);label=pad2(d.getDate())+"/"+pad2(d.getHours())+"h";
+    d=new Date(model[i].time);
+    label=pad2(d.getDate())+"/"+pad2(d.getHours())+"h";
     ctx.fillText(label,xAt(i),H-padB+24);
   }
-  ctx.fillStyle="rgba(238,248,255,.75)";ctx.font=(isMobile?11:13)+"px system-ui";
+
+  ctx.fillStyle="rgba(238,248,255,.75)";
+  ctx.font=(isMobile?11:13)+"px system-ui";
   ctx.fillText("Tiempo local ART",padL+plotW/2,H-12);
 }
 
 function setLoading(){
   safeText("verdict","Calculando…");$("verdict").className="yellow";safeText("verdictText","Consultando Open-Meteo.");
   safeText("nextSnow","—");safeText("nextSnowText","Esperando datos.");
-  safeText("peakRisk","—");safeText("peakRiskText","Esperando datos.");
+  safeText("ptype","—");safeText("ptypeText","Esperando datos.");
   safeText("accum","—");safeText("accumText","Esperando datos.");
   safeText("precipVerdict","Calculando…");$("precipVerdict").className="yellow";safeText("precipVerdictText","Consultando Open-Meteo.");
   safeText("confidence","—");safeText("confidenceText","Esperando datos.");
@@ -1253,18 +1524,26 @@ function run(){
   safeText("status","Iniciando corrida avanzada…");
   safeHTML("sourceStatus","");
   safeHTML("debugBox","DOM: OK<br>Fuentes seleccionadas: "+sources.length);
+
   fetchAllSources(sources,0,[],[],function(ok,fail){
     var ms=new Date().getTime()-t0,model,summary,i,urls="";
     renderSourceStatus(ok,fail);
+
     for(i=0;i<ok.length;i++)urls+=ok[i].source.label+" ("+ok[i].mode+"): "+ok[i].url+"<br><br>";
+
     if(!ok.length){
       safeText("status","Error: no respondió ninguna fuente.");
       safeText("verdict","Error");$("verdict").className="red";safeText("verdictText","No respondió ninguna fuente automática.");
       safeHTML("debugBox","DOM: OK<br>API: ERROR<br>Fuentes intentadas: "+sources.length+"<br>Fallidas: "+fail.length+"<br>Tiempo: "+ms+" ms");
       return;
     }
+
     try{
-      model=averageModels(ok);summary=summarize(model);latestModel=model;render(latestModel,summary);
+      model=averageModels(ok);
+      summary=summarize(model);
+      latestModel=model;
+      render(latestModel,summary);
+
       safeText("status","Listo. Pronóstico calculado correctamente con "+ok.length+" fuente(s).");
       safeHTML("debugBox",
         "DOM: OK<br>API: OK<br>Fuentes OK: "+ok.length+"<br>Fuentes fallidas: "+fail.length+
@@ -1309,14 +1588,18 @@ function compareWindguru(){
   var parsed,hasDates,map,i,pairs,mae,bias,wgTotal,modelTotal;
   if(!latestModel.length)return;
   parsed=parseWindguru();
+
   for(i=0;i<latestModel.length;i++){latestModel[i].wg=null;latestModel[i].diff=null;}
+
   if(!parsed.length){
     safeText("wgSummary","No hay valores de Windguru cargados.");
     render(latestModel,summarize(latestModel));
     return;
   }
+
   hasDates=false;
   for(i=0;i<parsed.length;i++){if(parsed[i].key)hasDates=true;}
+
   if(hasDates){
     map={};
     for(i=0;i<parsed.length;i++){if(parsed[i].key)map[parsed[i].key]=parsed[i].value;}
@@ -1332,15 +1615,23 @@ function compareWindguru(){
       latestModel[i].diff=latestModel[i].cmh-latestModel[i].wg;
     }
   }
+
   render(latestModel,summarize(latestModel));
+
   pairs=[];
   for(i=0;i<latestModel.length;i++){if(finite(latestModel[i].wg))pairs.push(latestModel[i]);}
   if(!pairs.length){safeText("wgSummary","No pude emparejar horarios.");return;}
+
   mae=0;bias=0;wgTotal=0;modelTotal=0;
   for(i=0;i<pairs.length;i++){
-    mae+=Math.abs(pairs[i].diff);bias+=pairs[i].diff;wgTotal+=pairs[i].wg;modelTotal+=pairs[i].cmh;
+    mae+=Math.abs(pairs[i].diff);
+    bias+=pairs[i].diff;
+    wgTotal+=pairs[i].wg;
+    modelTotal+=pairs[i].cmh;
   }
-  mae/=pairs.length;bias/=pairs.length;
+  mae/=pairs.length;
+  bias/=pairs.length;
+
   safeHTML("wgSummary",
     "Comparados "+pairs.length+" puntos. Modelo: <b>"+fmt(modelTotal,1)+" cm</b>, "+
     "Windguru: <b>"+fmt(wgTotal,1)+" cm</b>. MAE: <b>"+fmt(mae,2)+" cm/h</b>. "+
@@ -1358,13 +1649,13 @@ function clearWindguru(){
 
 function auditDom(){
   var ids=[
-    "verdict","verdictText","nextSnow","nextSnowText","peakRisk","peakRiskText",
+    "verdict","verdictText","nextSnow","nextSnowText","ptype","ptypeText",
     "accum","accumText","precipVerdict","precipVerdictText","nextPrecip",
     "nextPrecipText","peakPrecip","peakPrecipText","confidence","confidenceText",
     "status","sourceStatus","debugBox","currentPlace","placeNote","locationPreset",
     "lat","lon","elev","days","oro","coldBias",
     "sourceMode","runBtn","windguruBtn","chart","diagnosis","windguruInput",
-    "compareBtn","clearWgBtn","wgSummary","physicsTw","physicsMelt","physicsOro",
+    "compareBtn","clearWgBtn","wgSummary","physicsColumn","physicsEnergy","physicsDgz","physicsOro",
     "snowNeeds","snowNeedsText","rows"
   ];
   var missing=[],i;
@@ -1380,21 +1671,32 @@ function auditDom(){
 function init(){
   var settings,manualIds=["lat","lon","elev","oro","coldBias"],i,el;
   if(!auditDom())return;
+
   $("runBtn").onclick=run;
   $("compareBtn").onclick=compareWindguru;
   $("clearWgBtn").onclick=clearWindguru;
-  $("windguruBtn").onclick=function(){window.open(WINDGURU_URL,"_blank","noopener,noreferrer");};
-  $("locationPreset").onchange=function(){applyLocationPreset(true);};
+
+  $("windguruBtn").onclick=function(){
+    window.open(WINDGURU_URL,"_blank","noopener,noreferrer");
+  };
+
+  $("locationPreset").onchange=function(){
+    applyLocationPreset(true);
+  };
+
   for(i=0;i<manualIds.length;i++){
     el=$(manualIds[i]);
     if(el)el.onchange=markCustomFromManual;
   }
+
   window.onresize=function(){
     clearTimeout(resizeTimer);
     resizeTimer=setTimeout(function(){if(latestModel.length)drawChart(latestModel);},120);
   };
+
   settings=$("settingsBox");
   if(settings&&window.innerWidth>=981)settings.open=true;
+
   applyLocationPreset(false);
   run();
 }
