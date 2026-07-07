@@ -1,1710 +1,3834 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BariSnow</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>BariSnow</title>
 
-<style>
-:root{
-  --bg0:#020712;--bg1:#071426;--bg2:#102843;--txt:#eff9ff;--mut:#a9bdd1;
-  --line:rgba(255,255,255,.16);--blue:#61dcff;--green:#79ffb2;
-  --yellow:#ffd166;--orange:#ff9f1c;--red:#ff6b6b;--purple:#c5a6ff;
-  --shadow:0 24px 80px rgba(0,0,0,.34)
-}
-*{box-sizing:border-box}
-body{
-  margin:0;min-height:100vh;color:var(--txt);
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:
-    radial-gradient(circle at 10% -8%,rgba(97,220,255,.32),transparent 34%),
-    radial-gradient(circle at 92% 5%,rgba(197,166,255,.20),transparent 34%),
-    linear-gradient(135deg,var(--bg0),var(--bg1) 45%,var(--bg2))
-}
-body:before{
-  content:"";position:fixed;inset:0;pointer-events:none;
-  background-image:
-    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
-  background-size:44px 44px;
-  mask-image:linear-gradient(to bottom,rgba(0,0,0,.70),transparent 75%)
-}
-.wrap{position:relative;z-index:1;width:min(1240px,calc(100% - 28px));margin:auto;padding:24px 0 48px}
-header{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;align-items:end;margin-bottom:16px}
-.eyebrow{
-  display:inline-flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 12px;
-  border-radius:999px;border:1px solid rgba(97,220,255,.28);
-  background:rgba(97,220,255,.10);color:#dff8ff;font-size:12px;font-weight:850
-}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 18px var(--green)}
-h1{margin:0;font-size:clamp(52px,8vw,98px);line-height:.88;letter-spacing:-.075em}
-h2{margin:0 0 14px;font-size:18px;letter-spacing:-.025em}
-h3{margin:0 0 10px;font-size:15px}
-.lead{max-width:830px;margin-top:14px;color:var(--mut);line-height:1.48;font-size:15.5px}
-.panel,.kpi,.hero-card{
-  border:1px solid var(--line);
-  background:linear-gradient(180deg,rgba(255,255,255,.105),rgba(255,255,255,.048));
-  box-shadow:var(--shadow);backdrop-filter:blur(16px)
-}
-.hero-card{border-radius:26px;padding:16px}
-.chip{
-  display:inline-block;margin:4px;padding:8px 12px;border-radius:999px;
-  border:1px solid var(--line);background:rgba(255,255,255,.075);color:#dff7ff;font-size:13px
-}
-.panel{border-radius:26px;padding:18px;margin-bottom:16px}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
-.kpi{position:relative;overflow:hidden;min-height:128px;border-radius:24px;padding:15px}
-.kpi:after{
-  content:"";position:absolute;right:-30px;bottom:-55px;width:120px;height:120px;border-radius:50%;
-  background:rgba(97,220,255,.10);filter:blur(2px)
-}
-.kpi span{
-  position:relative;z-index:1;display:block;color:var(--mut);font-size:12px;font-weight:950;
-  text-transform:uppercase;letter-spacing:.055em
-}
-.kpi strong{
-  position:relative;z-index:1;display:block;margin:9px 0 5px;font-size:30px;
-  line-height:1.02;letter-spacing:-.055em;word-break:break-word
-}
-.kpi small{position:relative;z-index:1;color:var(--mut);line-height:1.35}
-.green{color:var(--green)}.yellow{color:var(--yellow)}.orange{color:var(--orange)}.red{color:var(--red)}.purple{color:var(--purple)}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
-.field{display:flex;flex-direction:column;gap:6px}.full{grid-column:1/-1}
-label{color:var(--mut);font-size:12px;font-weight:850}
-input,select,textarea,button{
-  width:100%;padding:11px 12px;border-radius:15px;border:1px solid var(--line);
-  background:rgba(0,0,0,.30);color:var(--txt);outline:none;font-size:14px
-}
-input:focus,select:focus,textarea:focus{border-color:rgba(97,220,255,.76);box-shadow:0 0 0 3px rgba(97,220,255,.13)}
-button{cursor:pointer;border:0;background:linear-gradient(135deg,var(--blue),#cff7ff);color:#03131f;font-weight:950}
-button.secondary{border:1px solid var(--line);background:rgba(255,255,255,.10);color:var(--txt)}
-textarea{min-height:128px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:13px;line-height:1.45}
-.status{min-height:28px;margin-top:8px;color:#d2f7ff;font-size:13px;font-weight:780;line-height:1.35}
-.note{margin-top:10px;color:var(--mut);font-size:12.5px;line-height:1.45}
-.source-pill{
-  display:inline-block;margin:4px 4px 0 0;padding:5px 8px;border-radius:999px;
-  border:1px solid var(--line);background:rgba(255,255,255,.08);font-size:12px
-}
-.source-ok{color:var(--green)}.source-fail{color:var(--red)}
-details summary{cursor:pointer;list-style:none;font-size:18px;font-weight:900}
-details summary::-webkit-details-marker{display:none}
-details summary:after{
-  content:"Abrir";float:right;padding:5px 10px;border-radius:999px;
-  background:linear-gradient(135deg,var(--blue),#cff7ff);color:#03131f;font-size:12px
-}
-details[open] summary:after{content:"Cerrar"}
-.settings-content{margin-top:14px}
-canvas{display:block;width:100%;height:370px;border-radius:20px;border:1px solid var(--line);background:rgba(0,0,0,.25)}
-.diagnosis{color:#dcefff;font-size:14px;line-height:1.58}.diagnosis b{color:#fff}
-.split,.science-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-.science-card{padding:14px;border-radius:19px;border:1px solid var(--line);background:rgba(255,255,255,.065)}
-.formula{
-  margin:10px 0;padding:10px;border-radius:13px;border:1px solid var(--line);
-  background:rgba(0,0,0,.28);color:#dff8ff;overflow:auto;
-  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:13px
-}
-.need{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.10);font-size:14px}
-.need:last-child{border-bottom:0}.need b{text-align:right}
-.need-ok{color:var(--green)!important}.need-mid{color:var(--yellow)!important}.need-bad{color:var(--red)!important}
-.meter{height:10px;margin-top:12px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
-.meter-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--red),var(--yellow),var(--green))}
-.tablebox{max-height:500px;overflow:auto;margin-top:16px;border-radius:20px;border:1px solid var(--line)}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,.10);white-space:nowrap;text-align:left}
-th{position:sticky;top:0;z-index:1;background:#101b2c;color:#c5d8e8}
-.badge{display:inline-block;padding:4px 9px;border-radius:999px;font-size:11px;font-weight:950}
-.low{background:rgba(124,255,178,.14);color:var(--green)}
-.mid{background:rgba(255,209,102,.14);color:var(--yellow)}
-.high{background:rgba(255,107,107,.16);color:var(--red)}
-.debug{white-space:normal;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;color:#c7d8e8}
-.location-card{margin-top:14px;padding:14px;border-radius:20px;border:1px solid var(--line);background:rgba(255,255,255,.055)}
-.scale-level{
-  display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start;
-  padding:10px 0;border-bottom:1px solid rgba(255,255,255,.10)
-}
-.scale-level:last-child{border-bottom:0}
-.scale-tag{font-weight:950}
-@media (min-width:981px){details summary:after{display:none}}
-@media (max-width:980px){
-  header,.split,.science-grid{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.grid3{grid-template-columns:1fr 1fr}canvas{height:340px}
-}
-@media (max-width:620px){
-  .wrap{width:min(100% - 18px,1240px);padding:16px 0 34px}
-  header{gap:12px;margin-bottom:12px}.hero-card{display:none}
-  .eyebrow{font-size:11px;padding:7px 10px;margin-bottom:10px}
-  h1{font-size:48px;line-height:.92}.lead{font-size:13.5px;line-height:1.42}
-  .panel{border-radius:20px;padding:14px}.kpis{grid-template-columns:1fr;gap:10px;margin-bottom:10px}
-  .grid,.grid3{grid-template-columns:1fr}.kpi{min-height:auto;border-radius:18px;padding:14px}
-  .kpi span{font-size:11px}.kpi strong{font-size:27px}.kpi small{font-size:13px}
-  canvas{height:260px}.need{flex-direction:column;gap:4px}.need b{text-align:left}
-  .scale-level{grid-template-columns:1fr}
-  th,td{padding:8px;font-size:12px}
-}
-</style>
+  <style>
+    :root {
+      --bg0: #020712;
+      --bg1: #071426;
+      --bg2: #102843;
+      --txt: #f4fbff;
+      --mut: #bfd0df;
+      --soft: #d9edf8;
+      --line: rgba(255, 255, 255, .16);
+      --card: rgba(255, 255, 255, .075);
+      --card2: rgba(255, 255, 255, .045);
+      --blue: #61dcff;
+      --green: #79ffb2;
+      --yellow: #ffd166;
+      --orange: #ff9f1c;
+      --red: #ff6b6b;
+      --purple: #c5a6ff;
+      --shadow: 0 24px 80px rgba(0, 0, 0, .34);
+      --radius: 26px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--txt);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 8% -10%, rgba(97, 220, 255, .34), transparent 32%),
+        radial-gradient(circle at 92% 0%, rgba(197, 166, 255, .22), transparent 34%),
+        linear-gradient(135deg, var(--bg0), var(--bg1) 46%, var(--bg2));
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .72), transparent 78%);
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      width: min(1240px, calc(100% - 28px));
+      margin: auto;
+      padding: 24px 0 48px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 14px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(97, 220, 255, .32);
+      background: rgba(97, 220, 255, .10);
+      color: #e6fbff;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 18px var(--green);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(54px, 8vw, 102px);
+      line-height: .88;
+      letter-spacing: -.078em;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 18px;
+      letter-spacing: -.025em;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+
+    .lead {
+      max-width: 830px;
+      margin-top: 14px;
+      color: var(--mut);
+      line-height: 1.48;
+      font-size: 15.5px;
+    }
+
+    .panel,
+    .kpi,
+    .hero-card,
+    .control-panel,
+    .status-strip {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .hero-card {
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 4px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, .075);
+      color: #e4f8ff;
+      font-size: 13px;
+    }
+
+    .panel {
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .control-panel {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      border-radius: var(--radius);
+      padding: 16px;
+      margin: 12px 0 16px;
+    }
+
+    .location-title {
+      margin-bottom: 8px;
+      color: var(--mut);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .location-active {
+      font-size: 20px;
+      font-weight: 950;
+      letter-spacing: -.02em;
+    }
+
+    .location-note {
+      margin-top: 6px;
+      color: var(--mut);
+      font-size: 13px;
+      line-height: 1.42;
+    }
+
+    .control-actions {
+      display: grid;
+      grid-template-columns: 260px 170px;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .kpi {
+      position: relative;
+      overflow: hidden;
+      min-height: 128px;
+      border-radius: 24px;
+      padding: 15px;
+    }
+
+    .kpi::after {
+      content: "";
+      position: absolute;
+      right: -30px;
+      bottom: -55px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(97, 220, 255, .10);
+      filter: blur(2px);
+    }
+
+    .kpi span {
+      position: relative;
+      z-index: 1;
+      display: block;
+      color: var(--mut);
+      font-size: 12px;
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: .055em;
+    }
+
+    .kpi strong {
+      position: relative;
+      z-index: 1;
+      display: block;
+      margin: 9px 0 5px;
+      font-size: 30px;
+      line-height: 1.02;
+      letter-spacing: -.055em;
+      word-break: break-word;
+    }
+
+    .kpi small {
+      position: relative;
+      z-index: 1;
+      color: var(--mut);
+      line-height: 1.35;
+    }
+
+    .green {
+      color: var(--green);
+    }
+
+    .yellow {
+      color: var(--yellow);
+    }
+
+    .orange {
+      color: var(--orange);
+    }
+
+    .red {
+      color: var(--red);
+    }
+
+    .purple {
+      color: var(--purple);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 11px;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 11px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: var(--mut);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 15px;
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, .30);
+      color: var(--txt);
+      outline: none;
+      font-size: 14px;
+    }
+
+    select option {
+      background: #102033;
+      color: #fff;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(97, 220, 255, .76);
+      box-shadow: 0 0 0 3px rgba(97, 220, 255, .13);
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      background: linear-gradient(135deg, var(--blue), #cff7ff);
+      color: #03131f;
+      font-weight: 950;
+    }
+
+    button.secondary {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, .10);
+      color: var(--txt);
+    }
+
+    textarea {
+      min-height: 128px;
+      resize: vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .status-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      align-items: center;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 20px;
+      color: #d2f7ff;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .status-main {
+      font-weight: 900;
+    }
+
+    .status-meta {
+      color: var(--mut);
+    }
+
+    .note {
+      margin-top: 10px;
+      color: var(--mut);
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+
+    .source-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin: 4px 4px 0 0;
+      padding: 5px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, .08);
+      font-size: 12px;
+    }
+
+    .source-ok {
+      color: var(--green);
+    }
+
+    .source-fail {
+      color: var(--red);
+    }
+
+    details summary {
+      cursor: pointer;
+      list-style: none;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    details summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details summary::after {
+      content: "Abrir";
+      float: right;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--blue), #cff7ff);
+      color: #03131f;
+      font-size: 12px;
+    }
+
+    details[open] summary::after {
+      content: "Cerrar";
+    }
+
+    .settings-content {
+      margin-top: 14px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 390px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, .25);
+    }
+
+    .chart-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+
+    .chart-meta {
+      color: var(--mut);
+      font-size: 13px;
+      line-height: 1.4;
+      text-align: right;
+    }
+
+    .diagnosis {
+      color: #dcefff;
+      font-size: 14px;
+      line-height: 1.58;
+    }
+
+    .diagnosis b {
+      color: #fff;
+    }
+
+    .split,
+    .science-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .science-card {
+      padding: 14px;
+      border-radius: 19px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, .065);
+    }
+
+    .formula {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 13px;
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, .28);
+      color: #dff8ff;
+      overflow: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+    }
+
+    .need {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .10);
+      font-size: 14px;
+    }
+
+    .need:last-child {
+      border-bottom: 0;
+    }
+
+    .need b {
+      text-align: right;
+    }
+
+    .need-ok {
+      color: var(--green) !important;
+    }
+
+    .need-mid {
+      color: var(--yellow) !important;
+    }
+
+    .need-bad {
+      color: var(--red) !important;
+    }
+
+    .meter {
+      height: 10px;
+      margin-top: 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .12);
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--red), var(--yellow), var(--green));
+    }
+
+    .tablebox {
+      max-height: 500px;
+      overflow: auto;
+      margin-top: 16px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, .10);
+      white-space: nowrap;
+      text-align: left;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #101b2c;
+      color: #c5d8e8;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 950;
+    }
+
+    .low {
+      background: rgba(124, 255, 178, .14);
+      color: var(--green);
+    }
+
+    .mid {
+      background: rgba(255, 209, 102, .14);
+      color: var(--yellow);
+    }
+
+    .high {
+      background: rgba(255, 107, 107, .16);
+      color: var(--red);
+    }
+
+    .debug {
+      white-space: normal;
+      word-break: break-word;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      color: #c7d8e8;
+    }
+
+    .scale-level {
+      display: grid;
+      grid-template-columns: 128px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .10);
+    }
+
+    .scale-level:last-child {
+      border-bottom: 0;
+    }
+
+    .scale-tag {
+      font-weight: 950;
+    }
+
+    @media (min-width: 981px) {
+      details summary::after {
+        display: none;
+      }
+    }
+
+    @media (max-width: 980px) {
+      header,
+      .split,
+      .science-grid,
+      .control-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .control-actions {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .kpis {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .grid3 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      canvas {
+        height: 340px;
+      }
+
+      .chart-head {
+        display: block;
+      }
+
+      .chart-meta {
+        margin-top: 6px;
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .wrap {
+        width: min(100% - 18px, 1240px);
+        padding: 16px 0 34px;
+      }
+
+      header {
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .hero-card {
+        display: none;
+      }
+
+      .eyebrow {
+        margin-bottom: 10px;
+        padding: 7px 10px;
+        font-size: 11px;
+      }
+
+      h1 {
+        font-size: 48px;
+        line-height: .92;
+      }
+
+      .lead {
+        font-size: 13.5px;
+        line-height: 1.42;
+      }
+
+      .panel,
+      .control-panel {
+        border-radius: 20px;
+        padding: 14px;
+      }
+
+      .kpis {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .grid,
+      .grid3,
+      .control-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .kpi {
+        min-height: auto;
+        border-radius: 18px;
+        padding: 14px;
+      }
+
+      .kpi span {
+        font-size: 11px;
+      }
+
+      .kpi strong {
+        font-size: 27px;
+      }
+
+      .kpi small {
+        font-size: 13px;
+      }
+
+      canvas {
+        height: 270px;
+      }
+
+      .need {
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .need b {
+        text-align: left;
+      }
+
+      .scale-level {
+        grid-template-columns: 1fr;
+      }
+
+      th,
+      td {
+        padding: 8px;
+        font-size: 12px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-<div class="wrap">
-<header>
-  <div>
-    <div class="eyebrow"><span class="dot"></span> Modelo experimental de nieve local</div>
-    <h1>BariSnow</h1>
-    <div class="lead">
-      Modelo físico-matemático de nieve para Barrio Lago Moreno, Barrio Melipal y Barrio Centro.
-      Evalúa columna termodinámica, bulbo húmedo, energía de fusión/recongelamiento, capa dendrítica,
-      orografía, adherencia superficial, tipo de precipitación y acumulación horaria.
-    </div>
-  </div>
-
-  <div class="hero-card">
-    <span class="chip">📍 Barrio Lago Moreno</span>
-    <span class="chip">📍 Barrio Melipal</span>
-    <span class="chip">📍 Barrio Centro</span>
-    <span class="chip">🧊 Bourgouin simplificado</span>
-    <span class="chip">🌨️ DGZ</span>
-    <span class="chip">⛰️ Froude</span>
-  </div>
-</header>
-
-<main>
-  <section class="kpis">
-    <div class="kpi"><span>❄️ Nivel nieve</span><strong id="verdict">—</strong><small id="verdictText">Sin corrida.</small></div>
-    <div class="kpi"><span>🌨️ Próxima nieve</span><strong id="nextSnow">—</strong><small id="nextSnowText">—</small></div>
-    <div class="kpi"><span>🧪 Tipo físico</span><strong id="ptype">—</strong><small id="ptypeText">—</small></div>
-    <div class="kpi"><span>📏 Acumulado nieve</span><strong id="accum">—</strong><small id="accumText">—</small></div>
-  </section>
-
-  <section class="kpis">
-    <div class="kpi"><span>🌧️ Nivel precipitación</span><strong id="precipVerdict">—</strong><small id="precipVerdictText">Sin corrida.</small></div>
-    <div class="kpi"><span>☔ Próxima precipitación</span><strong id="nextPrecip">—</strong><small id="nextPrecipText">—</small></div>
-    <div class="kpi"><span>📈 Pico precipitación</span><strong id="peakPrecip">—</strong><small id="peakPrecipText">—</small></div>
-    <div class="kpi"><span>🎯 Confianza interna</span><strong id="confidence">—</strong><small id="confidenceText">Máximo mostrado: 90%.</small></div>
-  </section>
-
-  <section class="panel">
-    <h2>📘 Escala BariSnow de nieve</h2>
-    <div class="science-grid">
-      <div class="science-card">
-        <h3>❄️ Escala práctica en 5 niveles</h3>
-
-        <div class="scale-level">
-          <div class="scale-tag green">1<br>Sin acumulación</div>
-          <div>No se espera nieve acumuladora. Puede estar frío, pero la columna atmosférica o la precipitación no alcanzan.</div>
+  <div class="wrap">
+    <header>
+      <div>
+        <div class="eyebrow">
+          <span class="dot"></span>
+          Pronóstico experimental de nieve por barrio
         </div>
 
-        <div class="scale-level">
-          <div class="scale-tag green">2<br>Copos débiles</div>
-          <div>Puede verse algún copo, lluvia con copos o nieve muy húmeda. En general no genera acumulación útil.</div>
-        </div>
+        <h1>BariSnow</h1>
 
-        <div class="scale-level">
-          <div class="scale-tag yellow">3<br>Mezcla marginal</div>
-          <div>Puede alternar lluvia, aguanieve y nieve húmeda. La acumulación depende mucho de la intensidad y de la hora del día.</div>
-        </div>
-
-        <div class="scale-level">
-          <div class="scale-tag orange">4<br>Nieve acumulable</div>
-          <div>La nieve puede pegar y acumular en superficies frías: césped, techos, autos, banquinas y zonas menos transitadas.</div>
-        </div>
-
-        <div class="scale-level">
-          <div class="scale-tag red">5<br>Nevada importante</div>
-          <div>Señal fuerte de acumulación. Puede afectar calles internas, accesos, caminos expuestos y movilidad.</div>
+        <div class="lead">
+          Modelo físico-matemático local para Lago Moreno, Melipal y Centro de Bariloche.
+          Combina columna termodinámica, bulbo húmedo, fusión/recongelamiento, DGZ,
+          orografía, adherencia superficial y acumulación horaria.
         </div>
       </div>
 
-      <div class="science-card">
-        <h3>🧊 Tipo físico de precipitación</h3>
-
-        <div class="scale-level">
-          <div class="scale-tag green">0<br>Lluvia</div>
-          <div>La capa baja está demasiado cálida. Los copos se derriten antes de llegar o al tocar superficie.</div>
-        </div>
-
-        <div class="scale-level">
-          <div class="scale-tag green">1<br>Lluvia con copos</div>
-          <div>Algunos copos sobreviven parcialmente, pero no hay condiciones claras para acumulación.</div>
-        </div>
-
-        <div class="scale-level">
-          <div class="scale-tag yellow">2<br>Aguanieve</div>
-          <div>Mezcla de lluvia y nieve por una capa baja marginal o recongelamiento incompleto.</div>
-        </div>
-
-        <div class="scale-level">
-          <div class="scale-tag orange">3<br>Nieve húmeda</div>
-          <div>Puede nevar, pero con copos pesados y húmedos. La acumulación depende de intensidad y superficie.</div>
-        </div>
-
-        <div class="scale-level">
-          <div class="scale-tag red">4-5<br>Nieve acumuladora</div>
-          <div>La columna está suficientemente fría y la nieve tiene chances reales de pegar y acumular.</div>
-        </div>
+      <div class="hero-card">
+        <span class="chip">📍 Lago Moreno</span>
+        <span class="chip">📍 Melipal</span>
+        <span class="chip">📍 Centro</span>
+        <span class="chip">🧊 Bourgouin simplificado</span>
+        <span class="chip">🌨️ DGZ</span>
+        <span class="chip">⛰️ Froude</span>
       </div>
-    </div>
+    </header>
 
-    <div class="note">
-      La escala está pensada para interpretación práctica por barrio. No representa una garantía:
-      resume la señal física de columna, precipitación, cota, fusión, DGZ, orografía y adherencia superficial.
-    </div>
-  </section>
-
-  <section class="panel">
-    <h2>📍 Zona del pronóstico</h2>
-    <div class="location-card">
-      <div class="grid">
-        <div class="field">
-          <label>Menú desplegable de barrio</label>
-          <select id="locationPreset">
-            <option value="lago_moreno" selected>Barrio Lago Moreno · 778 m</option>
-            <option value="melipal">Barrio Melipal · 790 m</option>
-            <option value="centro">Barrio Centro · 770 m</option>
-            <option value="custom">Ubicación personalizada / manual</option>
-          </select>
+    <main>
+      <section class="control-panel" aria-label="Zona del pronóstico">
+        <div>
+          <div class="location-title">Zona activa</div>
+          <div id="currentPlace" class="location-active">📍 Barrio Lago Moreno · 778 m</div>
+          <div id="placeNote" class="location-note">
+            Zona oeste, influencia lacustre y orográfica marcada.
+          </div>
         </div>
-        <div class="field">
-          <label>📌 Ubicación activa</label>
-          <div id="currentPlace" class="source-pill source-ok">📍 Barrio Lago Moreno · 778 m</div>
+
+        <div class="control-actions">
+          <div class="field">
+            <label for="locationPreset">Cambiar barrio</label>
+            <select id="locationPreset">
+              <option value="lago_moreno" selected>Barrio Lago Moreno</option>
+              <option value="melipal">Barrio Melipal</option>
+              <option value="centro">Barrio Centro</option>
+              <option value="custom">Ubicación personalizada</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>&nbsp;</label>
+            <button id="runBtn" type="button">🔄 Actualizar</button>
+          </div>
         </div>
-      </div>
-      <div id="placeNote" class="note">Zona oeste, influencia lacustre y orográfica marcada.</div>
-    </div>
-  </section>
+      </section>
 
-  <section class="panel">
-    <h2>🟢 Estado</h2>
-    <div id="status" class="status">Listo para correr.</div>
-    <div id="sourceStatus" class="note"></div>
-  </section>
+      <section class="kpis">
+        <div class="kpi">
+          <span>❄️ Nieve esperada</span>
+          <strong id="verdict">—</strong>
+          <small id="verdictText">Sin corrida.</small>
+        </div>
 
-  <section class="panel technical-audit" aria-hidden="true" style="display:none">
-    <h2>🛠️ Auditoría técnica</h2>
-    <div id="debugBox" class="debug">Esperando corrida.</div>
-  </section>
+        <div class="kpi">
+          <span>🌨️ Próxima ventana</span>
+          <strong id="nextSnow">—</strong>
+          <small id="nextSnowText">—</small>
+        </div>
 
-  <section class="panel">
-    <h2>📊 Gráfico principal</h2>
-    <canvas id="chart"></canvas>
-    <div class="note">🟡 Probabilidad de nieve · 🟢 Acumulación cm/h · 🔵 Precipitación relativa · 🟣 Windguru manual.</div>
-  </section>
+        <div class="kpi">
+          <span>🧪 Tipo esperado</span>
+          <strong id="ptype">—</strong>
+          <small id="ptypeText">—</small>
+        </div>
 
-  <section class="panel">
-    <h2>🕒 Detalle horario</h2>
-    <div class="tablebox">
-      <table>
-        <thead>
-          <tr>
-            <th>Hora</th><th>T</th><th>Tw eff</th><th>Precip</th><th>Cota</th><th>Prob.</th>
-            <th>Tipo</th><th>cm/h</th><th>DGZ</th><th>Melt</th><th>Refreeze</th><th>Oro</th><th>Conf.</th>
-            <th>Windguru</th><th>Dif.</th><th>Riesgo</th>
-          </tr>
-        </thead>
-        <tbody id="rows"></tbody>
-      </table>
-    </div>
-  </section>
+        <div class="kpi">
+          <span>📏 Nieve acumulada</span>
+          <strong id="accum">—</strong>
+          <small id="accumText">—</small>
+        </div>
+      </section>
 
-  <section class="split">
-    <section class="panel">
-      <h2>🧭 Diagnóstico meteorológico</h2>
-      <div id="diagnosis" class="diagnosis">Ejecutá el modelo para generar el análisis.</div>
-    </section>
+      <section class="kpis">
+        <div class="kpi">
+          <span>🌧️ Precipitación</span>
+          <strong id="precipVerdict">—</strong>
+          <small id="precipVerdictText">Sin corrida.</small>
+        </div>
 
-    <section class="panel">
-      <h2>🟣 Comparar con Windguru</h2>
-      <div class="diagnosis">Pegá la nieve de Windguru como <b>fecha hora, cm/h</b> o una lista simple de números.</div>
-      <textarea id="windguruInput" placeholder="2026-07-07 06:00, 0.4
+        <div class="kpi">
+          <span>☔ Próxima precipitación</span>
+          <strong id="nextPrecip">—</strong>
+          <small id="nextPrecipText">—</small>
+        </div>
+
+        <div class="kpi">
+          <span>📈 Máxima precipitación</span>
+          <strong id="peakPrecip">—</strong>
+          <small id="peakPrecipText">—</small>
+        </div>
+
+        <div class="kpi">
+          <span>🎯 Confianza del modelo</span>
+          <strong id="confidence">—</strong>
+          <small id="confidenceText">Máximo mostrado: 90%.</small>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="chart-head">
+          <div>
+            <h2>📊 Evolución horaria del pronóstico</h2>
+            <div class="note">
+              🟡 Probabilidad de nieve · 🟢 Acumulación cm/h · 🔵 Precipitación relativa · 🟣 Windguru manual.
+            </div>
+          </div>
+
+          <div id="chartMeta" class="chart-meta">Esperando corrida.</div>
+        </div>
+
+        <canvas id="chart" aria-label="Gráfico horario de BariSnow"></canvas>
+      </section>
+
+      <section class="panel">
+        <h2>📘 Escala BariSnow de nieve</h2>
+
+        <div class="science-grid">
+          <div class="science-card">
+            <h3>❄️ Escala práctica en 5 niveles</h3>
+
+            <div class="scale-level">
+              <div class="scale-tag green">1<br>Sin acumulación</div>
+              <div>No se espera nieve acumuladora. Puede estar frío, pero la columna atmosférica o la precipitación no alcanzan.</div>
+            </div>
+
+            <div class="scale-level">
+              <div class="scale-tag green">2<br>Copos débiles</div>
+              <div>Puede verse algún copo, lluvia con copos o nieve muy húmeda. En general no genera acumulación útil.</div>
+            </div>
+
+            <div class="scale-level">
+              <div class="scale-tag yellow">3<br>Mezcla marginal</div>
+              <div>Puede alternar lluvia, aguanieve y nieve húmeda. La acumulación depende mucho de la intensidad y de la hora del día.</div>
+            </div>
+
+            <div class="scale-level">
+              <div class="scale-tag orange">4<br>Nieve acumulable</div>
+              <div>La nieve puede pegar y acumular en superficies frías: césped, techos, autos, banquinas y zonas menos transitadas.</div>
+            </div>
+
+            <div class="scale-level">
+              <div class="scale-tag red">5<br>Nevada importante</div>
+              <div>Señal fuerte de acumulación. Puede afectar calles internas, accesos, caminos expuestos y movilidad.</div>
+            </div>
+          </div>
+
+          <div class="science-card">
+            <h3>🧊 Tipo físico de precipitación</h3>
+
+            <div class="scale-level">
+              <div class="scale-tag green">0<br>Lluvia</div>
+              <div>La capa baja está demasiado cálida. Los copos se derriten antes de llegar o al tocar superficie.</div>
+            </div>
+
+            <div class="scale-level">
+              <div class="scale-tag green">1<br>Lluvia con copos</div>
+              <div>Algunos copos sobreviven parcialmente, pero no hay condiciones claras para acumulación.</div>
+            </div>
+
+            <div class="scale-level">
+              <div class="scale-tag yellow">2<br>Aguanieve</div>
+              <div>Mezcla de lluvia y nieve por una capa baja marginal o recongelamiento incompleto.</div>
+            </div>
+
+            <div class="scale-level">
+              <div class="scale-tag orange">3<br>Nieve húmeda</div>
+              <div>Puede nevar, pero con copos pesados y húmedos. La acumulación depende de intensidad y superficie.</div>
+            </div>
+
+            <div class="scale-level">
+              <div class="scale-tag red">4-5<br>Nieve acumuladora</div>
+              <div>La columna está suficientemente fría y la nieve tiene chances reales de pegar y acumular.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="note">
+          La escala resume la señal física de columna, precipitación, cota, fusión, DGZ, orografía y adherencia superficial.
+          No representa garantía de ocurrencia.
+        </div>
+      </section>
+
+      <section class="status-strip">
+        <span class="status-main" id="status">Listo para correr.</span>
+        <span class="status-meta" id="sourceStatus"></span>
+      </section>
+
+      <section class="panel technical-audit" aria-hidden="true" style="display:none">
+        <h2>🛠️ Auditoría técnica</h2>
+        <div id="debugBox" class="debug">Esperando corrida.</div>
+      </section>
+
+      <section class="panel">
+        <h2>🕒 Detalle horario</h2>
+
+        <div class="tablebox">
+          <table>
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>T</th>
+                <th>Tw eff</th>
+                <th>Precip</th>
+                <th>Cota</th>
+                <th>Prob.</th>
+                <th>Tipo</th>
+                <th>cm/h</th>
+                <th>DGZ</th>
+                <th>Melt</th>
+                <th>Refreeze</th>
+                <th>Oro</th>
+                <th>Conf.</th>
+                <th>Windguru</th>
+                <th>Dif.</th>
+                <th>Riesgo</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="split">
+        <section class="panel">
+          <h2>🧭 Diagnóstico meteorológico</h2>
+          <div id="diagnosis" class="diagnosis">Ejecutá el modelo para generar el análisis.</div>
+        </section>
+
+        <section class="panel">
+          <h2>🟣 Comparar con Windguru</h2>
+
+          <div class="diagnosis">
+            Pegá la nieve de Windguru como <b>fecha hora, cm/h</b> o una lista simple de números.
+          </div>
+
+          <textarea id="windguruInput" placeholder="2026-07-07 06:00, 0.4
 2026-07-07 07:00, 1.2
 
 O:
 0
 0.4
 1.2"></textarea>
-      <div class="grid" style="margin-top:10px">
-        <button id="compareBtn" class="secondary" type="button">🟣 Comparar</button>
-        <button id="clearWgBtn" class="secondary" type="button">🧹 Limpiar</button>
-      </div>
-      <div id="wgSummary" class="status"></div>
-    </section>
-  </section>
 
-  <section class="science-grid">
-    <section class="panel">
-      <h2>🧪 Física atmosférica del modelo</h2>
+          <div class="grid" style="margin-top:10px">
+            <button id="compareBtn" class="secondary" type="button">🟣 Comparar</button>
+            <button id="clearWgBtn" class="secondary" type="button">🧹 Limpiar</button>
+          </div>
 
-      <div class="science-card">
-        <h3>🌡️ 1. Columna termodinámica</h3>
-        <div class="formula">Tw(z), T(z), RH(z), p(z) desde superficie, 925, 850 y 700 hPa</div>
-        <div id="physicsColumn" class="diagnosis"></div>
-      </div>
+          <div id="wgSummary" class="status-strip" style="box-shadow:none;margin:10px 0 0"></div>
+        </section>
+      </section>
 
-      <br>
+      <details class="panel">
+        <summary>🧪 Ver diagnóstico físico avanzado</summary>
 
-      <div class="science-card">
-        <h3>🔥 2. Energía de fusión y recongelamiento</h3>
-        <div class="formula">M⁺ = ∫ max(Tw(z)-0.1,0) dz ; M⁻ = ∫ max(-Tw(z),0) dz</div>
-        <div id="physicsEnergy" class="diagnosis"></div>
-      </div>
+        <div class="settings-content science-grid">
+          <div>
+            <div class="science-card">
+              <h3>🌡️ Columna termodinámica</h3>
+              <div class="formula">Tw(z), T(z), RH(z), p(z) desde superficie, 925, 850 y 700 hPa</div>
+              <div id="physicsColumn" class="diagnosis"></div>
+            </div>
 
-      <br>
+            <br>
 
-      <div class="science-card">
-        <h3>❄️ 3. Capa dendrítica DGZ</h3>
-        <div class="formula">DGZ ≈ espesor saturado entre -12 °C y -18 °C × humedad × ascenso</div>
-        <div id="physicsDgz" class="diagnosis"></div>
-      </div>
+            <div class="science-card">
+              <h3>🔥 Fusión y recongelamiento</h3>
+              <div class="formula">M⁺ = ∫ max(Tw(z)-0.1,0) dz ; M⁻ = ∫ max(-Tw(z),0) dz</div>
+              <div id="physicsEnergy" class="diagnosis"></div>
+            </div>
+          </div>
 
-      <br>
+          <div>
+            <div class="science-card">
+              <h3>❄️ Capa dendrítica DGZ</h3>
+              <div class="formula">DGZ ≈ espesor saturado entre -12 °C y -18 °C × humedad × ascenso</div>
+              <div id="physicsDgz" class="diagnosis"></div>
+            </div>
 
-      <div class="science-card">
-        <h3>⛰️ 4. Orografía, Froude y acumulación</h3>
-        <div class="formula">Fr = U⊥ / (N·H) ; nieve = precip × fase × SLR × adherencia</div>
-        <div id="physicsOro" class="diagnosis"></div>
-      </div>
-    </section>
+            <br>
 
-    <section class="panel">
-      <h2>❄️ Qué faltaría para que sí nieve</h2>
-      <div class="science-card">
-        <h3>✅ Condiciones necesarias</h3>
-        <div id="snowNeeds"></div>
-      </div>
-      <br>
-      <div class="science-card">
-        <h3>🧩 Diagnóstico práctico</h3>
-        <div id="snowNeedsText" class="diagnosis"></div>
-      </div>
-    </section>
-  </section>
-
-  <details class="panel" id="settingsBox">
-    <summary>⚙️ Configuración avanzada del modelo</summary>
-    <div class="settings-content">
-      <div class="grid3">
-        <div class="field"><label>📍 Latitud</label><input id="lat" type="number" step="0.0001" value="-41.1000"></div>
-        <div class="field"><label>📍 Longitud</label><input id="lon" type="number" step="0.0001" value="-71.4500"></div>
-        <div class="field"><label>⛰️ Altitud, m</label><input id="elev" type="number" value="778"></div>
-        <div class="field"><label>📅 Días</label><input id="days" type="number" min="1" max="10" value="7"></div>
-        <div class="field"><label>⛰️ Factor orográfico</label><input id="oro" type="number" step="0.05" value="0.42"></div>
-        <div class="field"><label>🌡️ Ajuste frío local °C</label><input id="coldBias" type="number" step="0.1" value="0.0"></div>
-        <div class="field full">
-          <label>🛰️ Fuentes</label>
-          <select id="sourceMode">
-            <option value="best_match">Best Match estable</option>
-            <option value="ensemble">Ensamble disponible</option>
-            <option value="gfs">Solo GFS</option>
-            <option value="ecmwf">Solo ECMWF</option>
-            <option value="icon">Solo ICON</option>
-            <option value="gem">Solo GEM</option>
-          </select>
+            <div class="science-card">
+              <h3>⛰️ Orografía, Froude y acumulación</h3>
+              <div class="formula">Fr = U⊥ / (N·H) ; nieve = precip × fase × SLR × adherencia</div>
+              <div id="physicsOro" class="diagnosis"></div>
+            </div>
+          </div>
         </div>
-        <div class="field full"><button id="runBtn" type="button">🔄 Correr pronóstico</button></div>
-        <div class="field full"><button id="windguruBtn" class="secondary" type="button">🟣 Abrir Windguru</button></div>
-      </div>
-      <div class="note">
-        El menú de barrio actualiza coordenadas, altitud, orografía y sesgo térmico local.
-        Si editás manualmente latitud, longitud, altitud, orografía o ajuste frío, la zona pasa a modo personalizada.
-      </div>
-    </div>
-  </details>
-</main>
-</div>
 
-<script>
-(function(){
-"use strict";
-
-var WINDGURU_URL="https://www.windguru.cz/366613";
-var latestModel=[];
-var resizeTimer=null;
-
-var SOURCES=[
-  {id:"best_match",label:"Best Match",endpoint:"https://api.open-meteo.com/v1/forecast",maxDays:10,weight:0.40},
-  {id:"gfs",label:"GFS",endpoint:"https://api.open-meteo.com/v1/gfs",maxDays:7,weight:0.22},
-  {id:"ecmwf",label:"ECMWF",endpoint:"https://api.open-meteo.com/v1/ecmwf",maxDays:7,weight:0.24},
-  {id:"icon",label:"ICON",endpoint:"https://api.open-meteo.com/v1/dwd-icon",maxDays:7,weight:0.08},
-  {id:"gem",label:"GEM",endpoint:"https://api.open-meteo.com/v1/gem",maxDays:7,weight:0.06}
-];
-
-var PLACES={
-  lago_moreno:{
-    name:"Barrio Lago Moreno",lat:-41.1000,lon:-71.4500,elev:778,oro:0.42,coldBias:0.0,
-    note:"Zona oeste, influencia lacustre y orográfica marcada. Favorece realce orográfico con flujo del oeste/noroeste."
-  },
-  melipal:{
-    name:"Barrio Melipal",lat:-41.1240,lon:-71.3660,elev:790,oro:0.34,coldBias:0.0,
-    note:"Zona intermedia entre centro y oeste. Conserva señal orográfica, pero menos intensa que Lago Moreno."
-  },
-  centro:{
-    name:"Barrio Centro",lat:-41.1343,lon:-71.3085,elev:770,oro:0.24,coldBias:0.2,
-    note:"Zona urbana próxima al Nahuel Huapi. Mayor moderación lacustre e isla térmica urbana relativa."
-  }
-};
-
-function $(id){return document.getElementById(id);}
-function finite(x){return x!==null&&x!==""&&typeof x!=="undefined"&&isFinite(Number(x));}
-function num(x,f){return finite(x)?Number(x):f;}
-function clamp(x,a,b){return Math.max(a,Math.min(b,x));}
-function sigmoid(x){return 1/(1+Math.exp(-x));}
-function fmt(x,d){if(typeof d==="undefined")d=1;return finite(x)?Number(x).toFixed(d):"—";}
-function pad2(n){n=Number(n);return n<10?"0"+n:String(n);}
-function safeText(id,txt){var el=$(id);if(el)el.textContent=txt;}
-function safeHTML(id,html){var el=$(id);if(el)el.innerHTML=html;}
-function rad(d){return d*Math.PI/180;}
-
-window.onerror=function(msg,src,line){
-  safeText("status","Error JS: "+msg+" línea "+line);
-  safeHTML("debugBox","Fallo de JavaScript.<br>Mensaje: "+msg+"<br>Línea: "+line);
-};
-
-function selectedPlace(){
-  var sel=$("locationPreset");
-  if(!sel)return PLACES.lago_moreno;
-  if(sel.value==="custom"){
-    return {
-      name:"Ubicación personalizada",
-      lat:num($("lat").value,-41.1000),
-      lon:num($("lon").value,-71.4500),
-      elev:num($("elev").value,778),
-      oro:num($("oro").value,0.42),
-      coldBias:num($("coldBias").value,0),
-      note:"Coordenadas y parámetros editados manualmente."
-    };
-  }
-  return PLACES[sel.value]||PLACES.lago_moreno;
-}
-
-function updatePlaceBadge(){
-  var p=selectedPlace(),el=$("currentPlace"),note=$("placeNote"),wg=$("windguruBtn");
-  if(el)el.textContent="📍 "+p.name+" · "+Math.round(p.elev)+" m";
-  if(note){
-    note.textContent=p.note+
-      " Coordenadas activas: "+fmt(p.lat,4)+", "+fmt(p.lon,4)+
-      ". Orografía: "+fmt(p.oro,2)+
-      ". Ajuste frío: "+fmt(p.coldBias,1)+" °C.";
-  }
-  if(wg)wg.textContent="🟣 Abrir Windguru";
-}
-
-function applyLocationPreset(runAfterChange){
-  var sel=$("locationPreset"),p;
-  if(!sel)return;
-  p=selectedPlace();
-  if(sel.value!=="custom"){
-    if($("lat"))$("lat").value=p.lat.toFixed(4);
-    if($("lon"))$("lon").value=p.lon.toFixed(4);
-    if($("elev"))$("elev").value=Math.round(p.elev);
-    if($("oro"))$("oro").value=p.oro.toFixed(2);
-    if($("coldBias"))$("coldBias").value=p.coldBias.toFixed(1);
-  }
-  updatePlaceBadge();
-  if(runAfterChange)run();
-}
-
-function markCustomFromManual(){
-  var sel=$("locationPreset");
-  if(sel&&sel.value!=="custom")sel.value="custom";
-  updatePlaceBadge();
-}
-
-function localTime(t){
-  var d=new Date(t);
-  if(isNaN(d.getTime()))return "—";
-  try{return d.toLocaleString("es-AR",{weekday:"short",day:"2-digit",hour:"2-digit",minute:"2-digit"});}
-  catch(e){return pad2(d.getDate())+"/"+pad2(d.getMonth()+1)+" "+pad2(d.getHours())+":00";}
-}
-
-function isoHour(t){
-  var d=new Date(t);
-  if(isNaN(d.getTime()))return String(t);
-  return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate())+" "+pad2(d.getHours())+":00";
-}
-
-function esWater(T){return 6.112*Math.exp((17.67*T)/(T+243.5));}
-function esIce(T){return 6.112*Math.exp((22.46*T)/(T+272.62));}
-function esSat(T){return T<0?esIce(T):esWater(T);}
-
-function pressureFromMsl(pmsl,z){
-  var p0=finite(pmsl)?Number(pmsl):1013.25;
-  return p0*Math.pow(1-0.0065*z/288.15,5.255);
-}
-
-function wetBulb(T,RH,p){
-  var eActual,lo,hi,i,tw,gamma,eTw;
-  if(!finite(T)||!finite(RH)||!finite(p))return T;
-  RH=clamp(RH,1,100);
-  eActual=esSat(T)*RH/100;
-  lo=-45;hi=T+0.2;
-  for(i=0;i<42;i++){
-    tw=0.5*(lo+hi);
-    gamma=0.00066*(1+0.00115*tw);
-    eTw=esSat(tw)-gamma*p*(T-tw);
-    if(eTw>eActual)hi=tw;else lo=tw;
-  }
-  return 0.5*(lo+hi);
-}
-
-function thetaK(Tc,pHpa){return (Tc+273.15)*Math.pow(1000/pHpa,0.286);}
-
-function hourlyFull(){
-  return [
-    "temperature_2m","relative_humidity_2m","precipitation","precipitation_probability",
-    "snowfall","freezing_level_height","surface_pressure","pressure_msl",
-    "wind_speed_10m","wind_direction_10m",
-    "temperature_925hPa","relative_humidity_925hPa","geopotential_height_925hPa",
-    "wind_speed_925hPa","wind_direction_925hPa",
-    "temperature_850hPa","relative_humidity_850hPa","geopotential_height_850hPa",
-    "wind_speed_850hPa","wind_direction_850hPa",
-    "temperature_700hPa","relative_humidity_700hPa","geopotential_height_700hPa",
-    "wind_speed_700hPa","wind_direction_700hPa"
-  ].join(",");
-}
-
-function hourlyCore(){
-  return [
-    "temperature_2m","relative_humidity_2m","precipitation",
-    "surface_pressure","pressure_msl","wind_speed_10m","wind_direction_10m"
-  ].join(",");
-}
-
-function selectedSources(){
-  var mode=$("sourceMode").value,out=[],i;
-  if(mode==="ensemble"){
-    for(i=0;i<SOURCES.length;i++)out.push(SOURCES[i]);
-    return out;
-  }
-  for(i=0;i<SOURCES.length;i++){
-    if(SOURCES[i].id===mode)return [SOURCES[i]];
-  }
-  return [SOURCES[0]];
-}
-
-function buildUrl(source,full){
-  var lat=$("lat")?$("lat").value:"-41.1000";
-  var lon=$("lon")?$("lon").value:"-71.4500";
-  var elev=$("elev")?$("elev").value:"778";
-  var requestedDays=$("days")?num($("days").value,7):7;
-  var days=clamp(requestedDays,1,source.maxDays||7);
-  var hourly=full?hourlyFull():hourlyCore();
-  return source.endpoint+
-    "?latitude="+encodeURIComponent(lat)+
-    "&longitude="+encodeURIComponent(lon)+
-    "&elevation="+encodeURIComponent(elev)+
-    "&hourly="+encodeURIComponent(hourly)+
-    "&timezone="+encodeURIComponent("America/Argentina/Buenos_Aires")+
-    "&forecast_days="+encodeURIComponent(days)+
-    "&temperature_unit=celsius"+
-    "&wind_speed_unit=kmh"+
-    "&precipitation_unit=mm";
-}
-
-function xhrJSON(url,callback){
-  var xhr=new XMLHttpRequest();
-  xhr.open("GET",url,true);
-  xhr.timeout=25000;
-  xhr.onreadystatechange=function(){
-    if(xhr.readyState===4){
-      if(xhr.status>=200&&xhr.status<300){
-        try{callback(null,JSON.parse(xhr.responseText),xhr.status);}
-        catch(e){callback(new Error("JSON inválido: "+e.message),null,xhr.status);}
-      }else callback(new Error("HTTP "+xhr.status+": "+xhr.responseText),null,xhr.status);
-    }
-  };
-  xhr.onerror=function(){callback(new Error("No se pudo conectar con la API."),null,0);};
-  xhr.ontimeout=function(){callback(new Error("Timeout conectando con la API."),null,0);};
-  xhr.send(null);
-}
-
-function fetchSource(source,done){
-  var urlFull=buildUrl(source,true),urlCore=buildUrl(source,false);
-  xhrJSON(urlFull,function(err,data,http){
-    if(!err){
-      try{
-        var model=computeModel(data,source,true);
-        if(!model.length)throw new Error("Sin horas modeladas");
-        done(null,{source:source,model:model,mode:"avanzado",http:http,url:urlFull});
-      }catch(e1){done({source:source,error:e1.message,url:urlFull});}
-      return;
-    }
-    xhrJSON(urlCore,function(err2,data2,http2){
-      if(err2){
-        done({source:source,error:err.message+" / fallback: "+err2.message,url:urlCore});
-        return;
-      }
-      try{
-        var model2=computeModel(data2,source,false);
-        if(!model2.length)throw new Error("Sin horas modeladas");
-        done(null,{source:source,model:model2,mode:"básico",http:http2,url:urlCore});
-      }catch(e2){done({source:source,error:e2.message,url:urlCore});}
-    });
-  });
-}
-
-function fetchAllSources(sources,idx,ok,fail,done){
-  if(idx>=sources.length){done(ok,fail);return;}
-  safeText("status","Descargando fuente "+(idx+1)+"/"+sources.length+": "+sources[idx].label+"…");
-  fetchSource(sources[idx],function(err,pack){
-    if(err)fail.push(err);else ok.push(pack);
-    fetchAllSources(sources,idx+1,ok,fail,done);
-  });
-}
-
-function getValue(h,name,i,fallback){
-  if(!h||!h[name]||typeof h[name][i]==="undefined"||h[name][i]===null)return fallback;
-  return num(h[name][i],fallback);
-}
-
-function addLevel(column,h,i,level){
-  var T=getValue(h,"temperature_"+level+"hPa",i,null);
-  var RH=getValue(h,"relative_humidity_"+level+"hPa",i,null);
-  var z=getValue(h,"geopotential_height_"+level+"hPa",i,null);
-  if(!finite(T)||!finite(RH)||!finite(z))return;
-  column.push({
-    z:z,p:level,T:T,RH:RH,Tw:wetBulb(T,RH,level),
-    wind:getValue(h,"wind_speed_"+level+"hPa",i,null),
-    dir:getValue(h,"wind_direction_"+level+"hPa",i,null)
-  });
-}
-
-function buildColumn(h,i,elev,baseElev,coldBias){
-  var T2raw=getValue(h,"temperature_2m",i,null);
-  var RH2=getValue(h,"relative_humidity_2m",i,null);
-  var pSurf,column,clean,k;
-  if(!finite(T2raw)||!finite(RH2))return [];
-  pSurf=getValue(h,"surface_pressure",i,null);
-  if(!finite(pSurf))pSurf=pressureFromMsl(getValue(h,"pressure_msl",i,1013.25),baseElev);
-  column=[{
-    z:elev,p:pSurf,T:T2raw+coldBias,RH:RH2,
-    Tw:wetBulb(T2raw+coldBias,RH2,pSurf),
-    wind:getValue(h,"wind_speed_10m",i,0),
-    dir:getValue(h,"wind_direction_10m",i,270)
-  }];
-  addLevel(column,h,i,925);
-  addLevel(column,h,i,850);
-  addLevel(column,h,i,700);
-  column.sort(function(a,b){return a.z-b.z;});
-  clean=[];
-  for(k=0;k<column.length;k++){
-    if(!clean.length||Math.abs(clean[clean.length-1].z-column[k].z)>20)clean.push(column[k]);
-  }
-  return clean;
-}
-
-function interpColumn(column,z,key){
-  var i,a,b,w,slope;
-  if(!column.length)return null;
-  if(column.length===1)return column[0][key];
-  if(z<=column[0].z){
-    a=column[0];b=column[1];
-    slope=(b[key]-a[key])/Math.max(1,b.z-a.z);
-    return a[key]+slope*(z-a.z);
-  }
-  for(i=0;i<column.length-1;i++){
-    a=column[i];b=column[i+1];
-    if(z>=a.z&&z<=b.z){
-      w=(z-a.z)/Math.max(1,b.z-a.z);
-      return a[key]*(1-w)+b[key]*w;
-    }
-  }
-  a=column[column.length-2];b=column[column.length-1];
-  slope=(b[key]-a[key])/Math.max(1,b.z-a.z);
-  return b[key]+slope*(z-b.z);
-}
-
-function physicalSnowLine(column,threshold,elev,TwEff){
-  var i,a,b,w;
-  if(typeof threshold==="undefined")threshold=0.45;
-  if(column.length<2)return Math.max(0,elev+(TwEff-0.6)/0.006);
-  if(column[0].Tw<=threshold)return column[0].z;
-  for(i=0;i<column.length-1;i++){
-    a=column[i];b=column[i+1];
-    if(a.Tw>threshold&&b.Tw<=threshold){
-      w=(threshold-a.Tw)/(b.Tw-a.Tw);
-      return a.z+clamp(w,0,1)*(b.z-a.z);
-    }
-  }
-  return Math.max(0,elev+(TwEff-0.6)/0.006);
-}
-
-function columnPhysics(column,elev,TwEff,P,oro,time){
-  var dz=25;
-  var maxZ=elev+100;
-  var i,z,T,Tw,RH;
-  var warmEnergy=0;
-  var refreezeEnergy=0;
-  var warmDepth=0;
-  var coldDepth=0;
-  var lowWarmEnergy=0;
-  var maxTw=-99;
-
-  var dgzDepth=0;
-  var dgzRHsum=0;
-  var dgzSamples=0;
-
-  var satDepth=0;
-  var coldSatDepth=0;
-  var warmNoseMax=-99;
-
-  var d,hour,nightBonus,dayPenalty;
-  var dgzRH,dgzScore,satScore,omegaProxy,microSnowScore,surfaceAccumIndex;
-
-  if(column.length<2){
-    warmEnergy=TwEff>0.1?(TwEff-0.1)*450:0;
-    refreezeEnergy=TwEff<0?(-TwEff)*300:0;
-
-    return {
-      meltEnergy:warmEnergy,refreezeEnergy:refreezeEnergy,warmDepth:TwEff>0.1?450:0,
-      coldDepth:TwEff<0?300:0,lowWarmEnergy:warmEnergy,maxTw:TwEff,warmNoseMax:TwEff,
-      dgzDepth:0,dgzRH:0,dgzScore:0,satDepth:0,coldSatDepth:0,omegaProxy:0,
-      microSnowScore:0,surfaceAccumIndex:clamp((0.7-TwEff)/1.7,0,1)
-    };
-  }
-
-  for(i=0;i<column.length;i++)maxZ=Math.max(maxZ,column[i].z);
-  maxZ=Math.min(3800,maxZ);
-
-  for(z=elev;z<maxZ;z+=dz){
-    T=interpColumn(column,z+dz/2,"T");
-    Tw=interpColumn(column,z+dz/2,"Tw");
-    RH=interpColumn(column,z+dz/2,"RH");
-    if(!finite(T)||!finite(Tw)||!finite(RH))continue;
-
-    maxTw=Math.max(maxTw,Tw);
-
-    if(Tw>0.1){
-      warmEnergy+=(Tw-0.1)*dz;
-      warmDepth+=dz;
-      warmNoseMax=Math.max(warmNoseMax,Tw);
-      if(z<elev+700)lowWarmEnergy+=(Tw-0.1)*dz;
-    }
-
-    if(Tw<0){
-      refreezeEnergy+=(-Tw)*dz;
-      coldDepth+=dz;
-    }
-
-    if(RH>=85){
-      satDepth+=dz;
-      if(T<0)coldSatDepth+=dz;
-    }
-
-    if(T<=-12&&T>=-18){
-      dgzDepth+=dz;
-      dgzRHsum+=RH;
-      dgzSamples++;
-    }
-  }
-
-  dgzRH=dgzSamples?dgzRHsum/dgzSamples:0;
-
-  omegaProxy=clamp(
-    0.28*Math.log(1+Math.max(0,P))+
-    0.36*clamp(oro.oroIndex,0,1.4)+
-    0.18*clamp((oro.Uperp||0)/35,0,1)+
-    0.18*clamp(coldSatDepth/1200,0,1),
-    0,1.7
-  );
-
-  if(dgzSamples>0){
-    dgzScore=clamp((dgzDepth/600)*(dgzRH/90)*(0.65+0.55*omegaProxy),0,1.7);
-  }else{
-    dgzScore=0;
-  }
-
-  satScore=clamp(coldSatDepth/1400,0,1.4);
-
-  microSnowScore=clamp(
-    0.42*dgzScore+0.24*satScore+0.22*omegaProxy+0.12*clamp(P/1.2,0,1),
-    0,1.7
-  );
-
-  d=new Date(time);
-  hour=isNaN(d.getTime())?0:d.getHours();
-
-  nightBonus=(hour>=20||hour<=8)?0.12:0;
-  dayPenalty=(hour>=11&&hour<=17)?0.12:0;
-
-  surfaceAccumIndex=clamp(
-    0.42*clamp((0.55-TwEff)/1.4,0,1)+
-    0.22*clamp(P/0.8,0,1)+
-    0.18*clamp(1-lowWarmEnergy/850,0,1)+
-    0.10*clamp(elev/1000,0.5,1.2)+
-    nightBonus-dayPenalty,
-    0,1
-  );
-
-  return {
-    meltEnergy:warmEnergy,refreezeEnergy:refreezeEnergy,warmDepth:warmDepth,coldDepth:coldDepth,
-    lowWarmEnergy:lowWarmEnergy,maxTw:maxTw,warmNoseMax:warmNoseMax,dgzDepth:dgzDepth,
-    dgzRH:dgzRH,dgzScore:dgzScore,satDepth:satDepth,coldSatDepth:coldSatDepth,
-    omegaProxy:omegaProxy,microSnowScore:microSnowScore,surfaceAccumIndex:surfaceAccumIndex
-  };
-}
-
-function bruntVaisala(h,i){
-  var T850=getValue(h,"temperature_850hPa",i,null);
-  var T700=getValue(h,"temperature_700hPa",i,null);
-  var z850=getValue(h,"geopotential_height_850hPa",i,null);
-  var z700=getValue(h,"geopotential_height_700hPa",i,null);
-  var th850,th700,dz,dThetaDz,thetaMean;
-  if(!finite(T850)||!finite(T700)||!finite(z850)||!finite(z700))return 0.011;
-  th850=thetaK(T850,850);th700=thetaK(T700,700);
-  dz=Math.max(100,z700-z850);
-  dThetaDz=Math.max(0.000003,(th700-th850)/dz);
-  thetaMean=0.5*(th850+th700);
-  return Math.sqrt((9.80665/thetaMean)*dThetaDz);
-}
-
-function orographicDiagnostics(h,i,oroFactor){
-  var dir850=getValue(h,"wind_direction_850hPa",i,getValue(h,"wind_direction_10m",i,270));
-  var wind850=getValue(h,"wind_speed_850hPa",i,getValue(h,"wind_speed_10m",i,0));
-  var RH850=getValue(h,"relative_humidity_850hPa",i,getValue(h,"relative_humidity_2m",i,75));
-  var windward=Math.max(0,Math.cos(rad(dir850-280)));
-  var Uperp=Math.max(0,wind850*windward);
-  var Ums=Uperp/3.6;
-  var N=bruntVaisala(h,i);
-  var Hbarrier=1200;
-  var Fr=clamp(Ums/Math.max(0.001,N*Hbarrier),0.05,2.2);
-  var moisture=clamp(RH850/90,0.25,1.35);
-  var windTerm=clamp(Uperp/45,0,1.6);
-  var froudeTerm=clamp(0.45+0.55*Fr,0.25,1.55);
-  var blocking=Fr<0.35?clamp((0.35-Fr)/0.35,0,1):0;
-  var oroIndex=windward*moisture*windTerm*froudeTerm;
-  return {
-    oroIndex:oroIndex,Uperp:Uperp,Fr:Fr,N:N,blocking:blocking,
-    precipMultiplier:clamp(1+oroFactor*oroIndex-0.15*blocking,0.78,2.50),
-    liftCooling:clamp(0.16*oroIndex,0,0.70)
-  };
-}
-
-function snowLiquidRatio(TwEff,T850,wind850,elev,oroIndex,dgzScore,microSnowScore,meltEnergy,ptypeIdx){
-  var coldTerm=2.2*Math.max(0,-TwEff);
-  var warmPenalty=6.2*Math.max(0,TwEff);
-  var elevationTerm=clamp((elev-800)/850,-0.8,1.8);
-  var dgzTerm=2.5*clamp(dgzScore,0,1.4);
-  var microTerm=1.4*clamp(microSnowScore,0,1.4);
-  var t850Term=finite(T850)?clamp(1.4-Math.abs(T850+5.5)/7.5,-1.0,1.4):0;
-  var windPenalty=clamp((wind850-42)/32,0,1.8);
-  var meltPenalty=clamp(meltEnergy/700,0,2.2);
-  var slr=8.5+coldTerm-warmPenalty+elevationTerm+dgzTerm+microTerm+t850Term+0.7*oroIndex-windPenalty-meltPenalty;
-  if(ptypeIdx<=1)slr=Math.min(slr,2.5);
-  if(ptypeIdx===2)slr=Math.min(slr,4.0);
-  if(ptypeIdx===3)slr=Math.min(slr,7.0);
-  return clamp(slr,1.2,22);
-}
-
-function stickingFactor(TwEff,P,elev,meltEnergy,ptypeIdx,surfaceAccumIndex,time){
-  var d=new Date(time);
-  var hour=isNaN(d.getTime())?0:d.getHours();
-  var night=(hour>=20||hour<=8)?1.08:1.0;
-  var midday=(hour>=11&&hour<=17)?0.88:1.0;
-  var thermal=sigmoid((0.25-TwEff)/0.30);
-  var intensity=clamp(0.78+0.18*Math.sqrt(Math.max(0,P)),0.70,1.22);
-  var elevation=elev>=1000?1.12:elev>=850?0.98:0.78;
-  var meltPenalty=clamp(1-meltEnergy/1300,0.22,1);
-  var phase=ptypeIdx>=5?1.05:ptypeIdx===4?0.90:ptypeIdx===3?0.62:ptypeIdx===2?0.30:0.08;
-  return clamp(
-    thermal*intensity*elevation*meltPenalty*phase*night*midday*clamp(0.55+0.65*surfaceAccumIndex,0.35,1.15),
-    0,1
-  );
-}
-
-function classifyPrecipType(o){
-  var phaseScore;
-  if(o.P<0.04)return {idx:0,label:"Sin precip."};
-
-  phaseScore=
-    1.25*clamp((0.75-o.TwEff)/1.75,0,1)+
-    1.05*clamp((700-o.meltEnergy)/700,0,1)+
-    0.70*clamp(o.refreezeEnergy/550,0,1)+
-    0.85*clamp((o.elev-o.snowLine+250)/500,0,1)+
-    0.75*clamp(o.dgzScore,0,1.2)+
-    0.55*clamp(o.microSnowScore,0,1.4)+
-    0.55*clamp(o.survivalProb,0,1)+
-    0.35*clamp(o.P/0.8,0,1)-
-    0.55*clamp(o.lowWarmEnergy/800,0,1)-
-    0.45*clamp(o.warmDepth/1000,0,1);
-
-  if(o.TwEff>2.3||o.meltEnergy>1500)phaseScore-=1.4;
-  if(o.TwEff>1.4&&o.lowWarmEnergy>500)phaseScore-=0.8;
-
-  if(phaseScore>=4.55)return {idx:5,label:"Nieve acum."};
-  if(phaseScore>=3.70)return {idx:4,label:"Nieve marginal"};
-  if(phaseScore>=2.85)return {idx:3,label:"Nieve húmeda"};
-  if(phaseScore>=1.95)return {idx:2,label:"Aguanieve"};
-  if(phaseScore>=1.05)return {idx:1,label:"Lluvia/copos"};
-  return {idx:0,label:"Lluvia"};
-}
-
-function snowProbability(o){
-  var thermalTerm=(0.35-o.TwEff)/0.44;
-  var cotaTerm=(o.elev-o.snowLine+100)/190;
-  var precipTerm=Math.log(1+Math.max(0,o.P))*0.86;
-  var survivalTerm=1.95*(o.survivalProb-0.45);
-  var refreezeTerm=0.50*clamp(o.refreezeEnergy/550,0,1);
-  var dgzTerm=0.72*clamp(o.dgzScore,0,1.3);
-  var microTerm=0.55*clamp(o.microSnowScore,0,1.4);
-  var oroTerm=0.22*o.oroIndex;
-  var warmPenalty=o.warmDepth/560;
-  var lowWarmPenalty=o.lowWarmEnergy/800;
-
-  var score=-0.70+1.18*thermalTerm+0.96*cotaTerm+precipTerm+survivalTerm+
-    refreezeTerm+dgzTerm+microTerm+oroTerm-0.76*warmPenalty-0.42*lowWarmPenalty;
-
-  var prob=sigmoid(score)*clamp(o.pop/100,0.15,1);
-  if(o.P<0.04)prob*=0.12;
-  if(o.meltEnergy>1300)prob*=0.32;
-  if(o.TwEff>1.8)prob*=0.28;
-  if(o.dgzScore<0.10&&o.TwEff>0.8)prob*=0.75;
-  return clamp(prob,0,1);
-}
-
-function computeModel(data,source,advanced){
-  var h=data.hourly||{};
-  var times=h.time||[];
-  var elev=$("elev")?num($("elev").value,778):778;
-  var oroFactor=$("oro")?num($("oro").value,0.42):0.42;
-  var coldBias=$("coldBias")?num($("coldBias").value,0):0;
-  var baseElev=finite(data.elevation)?Number(data.elevation):elev;
-  var out=[];
-  var i,Traw,RH,column,T,TwSurface,Praw,pop,oro,P,dryness,evapCooling,TwEff;
-  var phys,meltEnergy,refreezeEnergy,survivalProb,snowLine,FL,prob,T850,wind850,slr,ptype,stick,cmh,snowApi,risk;
-
-  for(i=0;i<times.length;i++){
-    Traw=getValue(h,"temperature_2m",i,null);
-    RH=getValue(h,"relative_humidity_2m",i,null);
-    if(!finite(Traw)||!finite(RH))continue;
-
-    column=buildColumn(h,i,elev,baseElev,coldBias);
-    if(!column.length)continue;
-
-    T=interpColumn(column,elev,"T");
-    TwSurface=interpColumn(column,elev,"Tw");
-
-    Praw=getValue(h,"precipitation",i,0);
-    pop=getValue(h,"precipitation_probability",i,100);
-
-    oro=orographicDiagnostics(h,i,oroFactor);
-    P=Praw*oro.precipMultiplier;
-    dryness=clamp((100-RH)/45,0,1);
-    evapCooling=clamp(0.12*Math.sqrt(Math.max(0,P))+0.30*dryness*Math.sqrt(Math.max(0,P)),0,0.85);
-    TwEff=TwSurface-evapCooling-oro.liftCooling;
-
-    phys=columnPhysics(column,elev,TwEff,P,oro,times[i]);
-    meltEnergy=Math.max(0,phys.meltEnergy-95*evapCooling-65*oro.liftCooling);
-    refreezeEnergy=phys.refreezeEnergy;
-
-    survivalProb=Math.exp(-meltEnergy/360)*clamp(1+refreezeEnergy/1400,0.65,1.45)*clamp(1-phys.lowWarmEnergy/1350,0.20,1.00);
-    survivalProb=clamp(survivalProb,0,1);
-
-    snowLine=physicalSnowLine(column,0.45,elev,TwEff);
-    FL=getValue(h,"freezing_level_height",i,null);
-    if(finite(FL))snowLine=0.72*snowLine+0.28*(FL-330);
-    snowLine=Math.max(0,snowLine-evapCooling*170-oro.liftCooling*135);
-
-    prob=snowProbability({
-      TwEff:TwEff,snowLine:snowLine,elev:elev,P:P,pop:pop,meltEnergy:meltEnergy,
-      refreezeEnergy:refreezeEnergy,warmDepth:phys.warmDepth,lowWarmEnergy:phys.lowWarmEnergy,
-      survivalProb:survivalProb,oroIndex:oro.oroIndex,dgzScore:phys.dgzScore,
-      microSnowScore:phys.microSnowScore
-    });
-
-    ptype=classifyPrecipType({
-      TwEff:TwEff,P:P,elev:elev,snowLine:snowLine,meltEnergy:meltEnergy,
-      refreezeEnergy:refreezeEnergy,warmDepth:phys.warmDepth,lowWarmEnergy:phys.lowWarmEnergy,
-      dgzScore:phys.dgzScore,microSnowScore:phys.microSnowScore,survivalProb:survivalProb
-    });
-
-    T850=getValue(h,"temperature_850hPa",i,null);
-    wind850=getValue(h,"wind_speed_850hPa",i,getValue(h,"wind_speed_10m",i,0));
-
-    slr=snowLiquidRatio(TwEff,T850,wind850,elev,oro.oroIndex,phys.dgzScore,phys.microSnowScore,meltEnergy,ptype.idx);
-    stick=stickingFactor(TwEff,P,elev,meltEnergy,ptype.idx,phys.surfaceAccumIndex,times[i]);
-    cmh=P*prob*slr/10*stick;
-
-    snowApi=getValue(h,"snowfall",i,null);
-    if(finite(snowApi)&&snowApi>0)cmh=0.65*cmh+0.35*snowApi;
-
-    risk="Bajo";
-    if(prob>=0.72&&cmh>=1.1&&TwEff<=0.35&&meltEnergy<500&&ptype.idx>=4)risk="Alto";
-    else if(prob>=0.46&&cmh>=0.25&&TwEff<=1.15&&meltEnergy<900&&ptype.idx>=2)risk="Medio";
-
-    out.push({
-      time:times[i],key:isoHour(times[i]),T:T,TwEff:TwEff,P:P,snowLine:snowLine,prob:prob,
-      cmh:cmh,cmhMin:cmh,cmhMax:cmh,probMin:prob,probMax:prob,meltEnergy:meltEnergy,
-      refreezeEnergy:refreezeEnergy,warmDepth:phys.warmDepth,coldDepth:phys.coldDepth,
-      lowWarmEnergy:phys.lowWarmEnergy,survivalProb:survivalProb,oroIndex:oro.oroIndex,
-      froude:oro.Fr,blocking:oro.blocking,Uperp:oro.Uperp,dgzDepth:phys.dgzDepth,
-      dgzRH:phys.dgzRH,dgzScore:phys.dgzScore,satDepth:phys.satDepth,
-      coldSatDepth:phys.coldSatDepth,omegaProxy:phys.omegaProxy,
-      microSnowScore:phys.microSnowScore,surfaceAccumIndex:phys.surfaceAccumIndex,
-      slr:slr,ptypeIdx:ptype.idx,ptypeLabel:ptype.label,risk:risk,confidence:0.72,
-      members:1,sourceId:source.id,sourceName:source.label,sourceWeight:source.weight,wg:null,diff:null
-    });
-  }
-  return out;
-}
-
-function copyRow(x){var y={},k;for(k in x){if(Object.prototype.hasOwnProperty.call(x,k))y[k]=x[k];}return y;}
-function rowWeight(row){return finite(row.sourceWeight)?Number(row.sourceWeight):0.1;}
-
-function weightedMean(rows,key){
-  var sw=0,sx=0,i,v,w;
-  for(i=0;i<rows.length;i++){
-    v=rows[i][key];
-    if(!finite(v))continue;
-    w=rowWeight(rows[i]);sw+=w;sx+=w*v;
-  }
-  return sw>0?sx/sw:null;
-}
-
-function weightedRisk(rows){
-  var sw=0,sx=0,i,w,score;
-  for(i=0;i<rows.length;i++){
-    w=rowWeight(rows[i]);sw+=w;
-    if(rows[i].risk==="Alto")sx+=2*w;
-    else if(rows[i].risk==="Medio")sx+=w;
-  }
-  score=sw>0?sx/sw:0;
-  if(score>=1.35)return "Alto";
-  if(score>=0.55)return "Medio";
-  return "Bajo";
-}
-
-function modalPtype(rows){
-  var counts={},best=null,bv=-1,i,k;
-  for(i=0;i<rows.length;i++){
-    k=String(rows[i].ptypeIdx);
-    counts[k]=(counts[k]||0)+rowWeight(rows[i]);
-    if(counts[k]>bv){bv=counts[k];best=rows[i];}
-  }
-  return best?{idx:best.ptypeIdx,label:best.ptypeLabel}:{idx:0,label:"—"};
-}
-
-function ensembleConfidence(rows,avg){
-  var probs=[],cmhs=[],types=[],i,pSpread,cSpread,tSpread,cMax,cMin,base,memberBonus,physicsBonus,conf;
-  for(i=0;i<rows.length;i++){
-    if(finite(rows[i].prob))probs.push(rows[i].prob);
-    if(finite(rows[i].cmh))cmhs.push(rows[i].cmh);
-    if(finite(rows[i].ptypeIdx))types.push(rows[i].ptypeIdx);
-  }
-  if(rows.length<=1)return 0.70;
-  if(!probs.length||!cmhs.length)return 0.50;
-
-  pSpread=Math.max.apply(null,probs)-Math.min.apply(null,probs);
-  cMax=Math.max.apply(null,cmhs);cMin=Math.min.apply(null,cmhs);
-  cSpread=cMax>0.05?(cMax-cMin)/Math.max(0.1,cMax):0.15;
-  tSpread=types.length?(Math.max.apply(null,types)-Math.min.apply(null,types))/5:0.2;
-
-  base=0.90-0.42*pSpread-0.22*cSpread-0.20*tSpread;
-  memberBonus=rows.length>=4?0.04:rows.length>=3?0.025:0.01;
-
-  physicsBonus=0;
-  if(avg.TwEff<=0.3&&avg.meltEnergy<=350&&avg.prob>=0.65)physicsBonus+=0.03;
-  if(avg.dgzScore>=0.55&&avg.P>=0.15)physicsBonus+=0.02;
-
-  conf=base+memberBonus+physicsBonus;
-  return clamp(conf,0.15,0.90);
-}
-
-function averageModels(packs){
-  var byKey={},out=[],p,i,j,row,key,rows,first,cmhVals,probVals,avg,pt;
-  if(packs.length===1){
-    for(i=0;i<packs[0].model.length;i++){
-      row=copyRow(packs[0].model[i]);
-      row.confidence=0.72;row.members=1;row.cmhMin=row.cmh;row.cmhMax=row.cmh;row.probMin=row.prob;row.probMax=row.prob;
-      out.push(row);
-    }
-    return out;
-  }
-
-  for(p=0;p<packs.length;p++){
-    for(i=0;i<packs[p].model.length;i++){
-      row=packs[p].model[i];key=row.key;
-      if(!byKey[key])byKey[key]=[];
-      byKey[key].push(row);
-    }
-  }
-
-  for(key in byKey){
-    if(Object.prototype.hasOwnProperty.call(byKey,key)){
-      rows=byKey[key];first=rows[0];cmhVals=[];probVals=[];
-      for(j=0;j<rows.length;j++){
-        if(finite(rows[j].cmh))cmhVals.push(rows[j].cmh);
-        if(finite(rows[j].prob))probVals.push(rows[j].prob);
-      }
-      pt=modalPtype(rows);
-      avg={
-        time:first.time,key:key,T:weightedMean(rows,"T"),TwEff:weightedMean(rows,"TwEff"),
-        P:weightedMean(rows,"P"),snowLine:weightedMean(rows,"snowLine"),prob:weightedMean(rows,"prob"),
-        cmh:weightedMean(rows,"cmh"),cmhMin:cmhVals.length?Math.min.apply(null,cmhVals):null,
-        cmhMax:cmhVals.length?Math.max.apply(null,cmhVals):null,probMin:probVals.length?Math.min.apply(null,probVals):null,
-        probMax:probVals.length?Math.max.apply(null,probVals):null,meltEnergy:weightedMean(rows,"meltEnergy"),
-        refreezeEnergy:weightedMean(rows,"refreezeEnergy"),warmDepth:weightedMean(rows,"warmDepth"),
-        coldDepth:weightedMean(rows,"coldDepth"),lowWarmEnergy:weightedMean(rows,"lowWarmEnergy"),
-        survivalProb:weightedMean(rows,"survivalProb"),oroIndex:weightedMean(rows,"oroIndex"),
-        froude:weightedMean(rows,"froude"),blocking:weightedMean(rows,"blocking"),
-        Uperp:weightedMean(rows,"Uperp"),dgzDepth:weightedMean(rows,"dgzDepth"),
-        dgzRH:weightedMean(rows,"dgzRH"),dgzScore:weightedMean(rows,"dgzScore"),
-        satDepth:weightedMean(rows,"satDepth"),coldSatDepth:weightedMean(rows,"coldSatDepth"),
-        omegaProxy:weightedMean(rows,"omegaProxy"),microSnowScore:weightedMean(rows,"microSnowScore"),
-        surfaceAccumIndex:weightedMean(rows,"surfaceAccumIndex"),slr:weightedMean(rows,"slr"),
-        ptypeIdx:pt.idx,ptypeLabel:pt.label,risk:weightedRisk(rows),members:rows.length,wg:null,diff:null
+        <br>
+
+        <div class="science-grid">
+          <div class="science-card">
+            <h3>✅ Condiciones necesarias</h3>
+            <div id="snowNeeds"></div>
+          </div>
+
+          <div class="science-card">
+            <h3>🧩 Diagnóstico práctico</h3>
+            <div id="snowNeedsText" class="diagnosis"></div>
+          </div>
+        </div>
+      </details>
+
+      <details class="panel" id="settingsBox">
+        <summary>⚙️ Configuración avanzada</summary>
+
+        <div class="settings-content">
+          <div class="grid3">
+            <div class="field">
+              <label>📍 Latitud</label>
+              <input id="lat" type="number" step="0.0001" value="-41.1000">
+            </div>
+
+            <div class="field">
+              <label>📍 Longitud</label>
+              <input id="lon" type="number" step="0.0001" value="-71.4500">
+            </div>
+
+            <div class="field">
+              <label>⛰️ Altitud, m</label>
+              <input id="elev" type="number" value="778">
+            </div>
+
+            <div class="field">
+              <label>📅 Días</label>
+              <input id="days" type="number" min="1" max="10" value="7">
+            </div>
+
+            <div class="field">
+              <label>⛰️ Factor orográfico</label>
+              <input id="oro" type="number" step="0.05" value="0.42">
+            </div>
+
+            <div class="field">
+              <label>🌡️ Ajuste frío local °C</label>
+              <input id="coldBias" type="number" step="0.1" value="0.0">
+            </div>
+
+            <div class="field full">
+              <label>🛰️ Fuentes</label>
+              <select id="sourceMode">
+                <option value="best_match">Best Match estable</option>
+                <option value="ensemble">Ensamble disponible</option>
+                <option value="gfs">Solo GFS</option>
+                <option value="ecmwf">Solo ECMWF</option>
+                <option value="icon">Solo ICON</option>
+                <option value="gem">Solo GEM</option>
+              </select>
+            </div>
+
+            <div class="field full">
+              <button id="windguruBtn" class="secondary" type="button">🟣 Abrir Windguru</button>
+            </div>
+          </div>
+
+          <div class="note">
+            Si editás manualmente latitud, longitud, altitud, orografía o ajuste frío, la zona pasa a modo personalizada.
+          </div>
+        </div>
+      </details>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var WINDGURU_URL = "https://www.windguru.cz/366613";
+      var latestModel = [];
+      var resizeTimer = null;
+      var latestSourceLabel = "—";
+
+      var SOURCES = [
+        {
+          id: "best_match",
+          label: "Best Match",
+          endpoint: "https://api.open-meteo.com/v1/forecast",
+          maxDays: 10,
+          weight: 0.40
+        },
+        {
+          id: "gfs",
+          label: "GFS",
+          endpoint: "https://api.open-meteo.com/v1/gfs",
+          maxDays: 7,
+          weight: 0.22
+        },
+        {
+          id: "ecmwf",
+          label: "ECMWF",
+          endpoint: "https://api.open-meteo.com/v1/ecmwf",
+          maxDays: 7,
+          weight: 0.24
+        },
+        {
+          id: "icon",
+          label: "ICON",
+          endpoint: "https://api.open-meteo.com/v1/dwd-icon",
+          maxDays: 7,
+          weight: 0.08
+        },
+        {
+          id: "gem",
+          label: "GEM",
+          endpoint: "https://api.open-meteo.com/v1/gem",
+          maxDays: 7,
+          weight: 0.06
+        }
+      ];
+
+      var PLACES = {
+        lago_moreno: {
+          name: "Barrio Lago Moreno",
+          lat: -41.1000,
+          lon: -71.4500,
+          elev: 778,
+          oro: 0.42,
+          coldBias: 0.0,
+          note: "Zona oeste, influencia lacustre y orográfica marcada. Favorece realce orográfico con flujo del oeste/noroeste."
+        },
+        melipal: {
+          name: "Barrio Melipal",
+          lat: -41.1240,
+          lon: -71.3660,
+          elev: 790,
+          oro: 0.34,
+          coldBias: 0.0,
+          note: "Zona intermedia entre centro y oeste. Conserva señal orográfica, pero menos intensa que Lago Moreno."
+        },
+        centro: {
+          name: "Barrio Centro",
+          lat: -41.1343,
+          lon: -71.3085,
+          elev: 770,
+          oro: 0.24,
+          coldBias: 0.2,
+          note: "Zona urbana próxima al Nahuel Huapi. Mayor moderación lacustre e isla térmica urbana relativa."
+        }
       };
-      avg.confidence=ensembleConfidence(rows,avg);
-      out.push(avg);
-    }
-  }
-  out.sort(function(a,b){return new Date(a.time)-new Date(b.time);});
-  return out;
-}
 
-function summarize(model){
-  var total=0,peak=model[0],next=null,best6=0,meanConf=0,confCount=0,i,j,s;
-  if(!model.length)throw new Error("No hay datos modelados.");
-  for(i=0;i<model.length;i++){
-    total+=model[i].cmh||0;
-    if((model[i].cmh||0)>(peak.cmh||0))peak=model[i];
-    if(!next&&model[i].prob>=0.45&&model[i].P>=0.12&&model[i].ptypeIdx>=2)next=model[i];
-    if(finite(model[i].confidence)){meanConf+=model[i].confidence;confCount++;}
-  }
-  for(i=0;i<model.length;i++){
-    s=0;
-    for(j=i;j<Math.min(i+6,model.length);j++)s+=model[j].cmh||0;
-    best6=Math.max(best6,s);
-  }
-  meanConf=confCount?meanConf/confCount:0.70;
-  return {total:total,peak:peak,next:next,best6:best6,meanConf:meanConf};
-}
-
-function summarizePrecip(model){
-  var total=0,peak=model[0],next=null,best6=0,i,j,s;
-  for(i=0;i<model.length;i++){
-    total+=model[i].P||0;
-    if((model[i].P||0)>(peak.P||0))peak=model[i];
-    if(!next&&model[i].P>=0.15)next=model[i];
-  }
-  for(i=0;i<model.length;i++){
-    s=0;
-    for(j=i;j<Math.min(i+6,model.length);j++)s+=model[j].P||0;
-    best6=Math.max(best6,s);
-  }
-  return {total:total,peak:peak,next:next,best6:best6};
-}
-
-function snowScale(summary){
-  var total=summary.total||0,best6=summary.best6||0,peak=summary.peak||{},next=summary.next;
-  var cmh=peak.cmh||0,prob=peak.prob||0,risk=peak.risk||"Bajo",pt=peak.ptypeIdx||0;
-
-  if(total>=10||best6>=6||risk==="Alto"||cmh>=1.4||pt>=5){
-    return {label:"5 · Nevada importante",cls:"red",text:"Alta probabilidad de nieve acumuladora. Puede afectar calles, caminos internos, accesos y tránsito."};
-  }
-  if(total>=5||best6>=3||cmh>=0.7||pt>=4){
-    return {label:"4 · Nieve acumulable",cls:"orange",text:"La nieve puede acumular de forma visible, sobre todo en césped, techos, banquinas, autos y sectores fríos."};
-  }
-  if(total>=1.5||next||pt>=3){
-    return {label:"3 · Mezcla marginal",cls:"yellow",text:"Puede haber lluvia con nieve, aguanieve o nieve húmeda. La acumulación sería limitada y dependiente de la intensidad."};
-  }
-  if(total>=0.5||prob>=0.25||pt>=1){
-    return {label:"2 · Copos débiles",cls:"green",text:"Puede verse algún copo o nieve muy húmeda, pero sin señal clara de acumulación relevante."};
-  }
-  return {label:"1 · Sin acumulación",cls:"green",text:"No hay señal meteorológica robusta de nieve acumuladora para el barrio seleccionado."};
-}
-
-function precipScale(p){
-  if(p.total>=30||p.best6>=12||p.peak.P>=4){
-    return {label:"5 · Precipitación intensa",cls:"red",text:"Precipitación importante. Puede haber períodos fuertes o acumulados altos."};
-  }
-  if(p.total>=15||p.best6>=8||p.peak.P>=2.5){
-    return {label:"4 · Precipitación persistente",cls:"orange",text:"Precipitación sostenida o de varias horas, con acumulado relevante."};
-  }
-  if(p.total>=5||p.best6>=3||p.peak.P>=0.8){
-    return {label:"3 · Intermitente",cls:"yellow",text:"Puede llover o nevar por momentos. La precipitación no sería continua todo el período."};
-  }
-  if(p.total>=1||p.peak.P>=0.2){
-    return {label:"2 · Débil",cls:"green",text:"Precipitación débil, aislada o de bajo acumulado."};
-  }
-  return {label:"1 · Casi seco",cls:"green",text:"No hay señal clara de precipitación relevante."};
-}
-
-function badge(r){
-  if(r==="Alto")return '<span class="badge high">Alto</span>';
-  if(r==="Medio")return '<span class="badge mid">Medio</span>';
-  return '<span class="badge low">Bajo</span>';
-}
-
-function render(model,summary){
-  var sc=snowScale(summary),p=summary.peak;
-  $("verdict").className=sc.cls;
-  $("verdict").textContent=sc.label;
-  $("verdictText").textContent=sc.text;
-
-  $("nextSnow").textContent=summary.next?localTime(summary.next.time):"—";
-  $("nextSnowText").textContent=summary.next?"Tipo "+summary.next.ptypeLabel+", prob. "+Math.round(summary.next.prob*100)+"%, precip. "+fmt(summary.next.P)+" mm/h.":"Sin ventana clara con precipitación y fase nieve.";
-
-  $("ptype").className=p.ptypeIdx>=4?"red":p.ptypeIdx>=3?"orange":p.ptypeIdx>=2?"yellow":"green";
-  $("ptype").textContent=p.ptypeLabel||"—";
-  $("ptypeText").textContent="Índice físico: "+(finite(p.ptypeIdx)?p.ptypeIdx:"—")+"/5. Supervivencia del copo: "+Math.round((p.survivalProb||0)*100)+"%.";
-
-  $("accum").textContent=fmt(summary.total,1)+" cm";
-  $("accumText").textContent="Mejor bloque 6 h: "+fmt(summary.best6,1)+" cm. Pico: "+fmt(summary.peak.cmh,2)+" cm/h.";
-
-  renderPrecip(model,summary);
-  renderDiagnosis(summary);
-  renderPhysics(summary);
-  renderRows(model);
-  drawChart(model);
-}
-
-function renderPrecip(model,summary){
-  var p=summarizePrecip(model),sc=precipScale(p),conf=summary.meanConf||0.70;
-  $("precipVerdict").className=sc.cls;
-  $("precipVerdict").textContent=sc.label;
-  $("precipVerdictText").textContent=sc.text;
-
-  $("nextPrecip").textContent=p.next?localTime(p.next.time):"—";
-  $("nextPrecipText").textContent=p.next?"Precipitación estimada "+fmt(p.next.P,1)+" mm/h.":"Sin precipitación horaria clara.";
-
-  $("peakPrecip").textContent=localTime(p.peak.time);
-  $("peakPrecipText").textContent="Pico "+fmt(p.peak.P,1)+" mm/h. Prob. nieve "+Math.round(p.peak.prob*100)+"%.";
-
-  $("confidence").className=conf>=0.78?"green":conf>=0.55?"yellow":"red";
-  $("confidence").textContent=Math.round(conf*100)+"%";
-  $("confidenceText").textContent="Confianza interna. Total precip.: "+fmt(p.total,1)+" mm.";
-}
-
-function renderDiagnosis(summary){
-  var p=summary.peak;
-  $("diagnosis").innerHTML=
-    "<b>Hora crítica:</b> "+localTime(p.time)+". "+
-    "Tipo físico: <b>"+p.ptypeLabel+"</b>. "+
-    "Tw efectivo: <b>"+fmt(p.TwEff)+" °C</b>. "+
-    "Cota de nieve: <b>"+Math.round(p.snowLine)+" m</b>. "+
-    "Melt: <b>"+fmt(p.meltEnergy,0)+" °C·m</b>. "+
-    "Recongelamiento: <b>"+fmt(p.refreezeEnergy,0)+" °C·m</b>. "+
-    "DGZ: <b>"+fmt(p.dgzScore,2)+"</b>. "+
-    "Supervivencia del copo: <b>"+Math.round((p.survivalProb||0)*100)+"%</b>. "+
-    "SLR: <b>"+fmt(p.slr,1)+":1</b>. "+
-    "Pico: <b>"+fmt(p.cmh,2)+" cm/h</b>. "+
-    "Total: <b>"+fmt(summary.total,1)+" cm</b>. "+
-    "Miembros disponibles: <b>"+(p.members||1)+"</b>.";
-}
-
-function needClass(ok,mid){return ok?"need-ok":mid?"need-mid":"need-bad";}
-function needLabel(ok,mid){return ok?"favorable":mid?"marginal":"desfavorable";}
-
-function renderPhysics(summary){
-  var p=summary.peak,elev=$("elev")?num($("elev").value,778):778,cotaDiff=p.snowLine-elev;
-  var twOk=p.TwEff<=0.3,twMid=p.TwEff<=1.1,cotaOk=cotaDiff<=100,cotaMid=cotaDiff<=350;
-  var meltOk=p.meltEnergy<=350,meltMid=p.meltEnergy<=850,precipOk=p.P>=0.6,precipMid=p.P>=0.15;
-  var dgzOk=p.dgzScore>=0.65,dgzMid=p.dgzScore>=0.3,ptypeOk=p.ptypeIdx>=4,ptypeMid=p.ptypeIdx>=2;
-
-  $("physicsColumn").innerHTML=
-    "La columna se evalúa con niveles de superficie, 925, 850 y 700 hPa cuando están disponibles. "+
-    "En la hora crítica, <b>Tw_eff = "+fmt(p.TwEff)+" °C</b> y cota estimada <b>"+Math.round(p.snowLine)+" m</b>.";
-
-  $("physicsEnergy").innerHTML=
-    "Energía cálida de fusión: <b>"+fmt(p.meltEnergy,0)+" °C·m</b>. "+
-    "Energía fría de recongelamiento: <b>"+fmt(p.refreezeEnergy,0)+" °C·m</b>. "+
-    "Capa cálida equivalente: <b>"+fmt(p.warmDepth,0)+" m</b>. "+
-    "Capa cálida baja: <b>"+fmt(p.lowWarmEnergy,0)+" °C·m</b>. "+
-    "Supervivencia del copo: <b>"+Math.round((p.survivalProb||0)*100)+"%</b>.";
-
-  $("physicsDgz").innerHTML=
-    "Índice DGZ: <b>"+fmt(p.dgzScore,2)+"</b>. "+
-    "Espesor DGZ estimado: <b>"+fmt(p.dgzDepth,0)+" m</b>. "+
-    "RH media DGZ: <b>"+fmt(p.dgzRH,0)+"%</b>. "+
-    "Microfísica de nieve: <b>"+fmt(p.microSnowScore,2)+"</b>. "+
-    "Una DGZ más profunda y húmeda mejora cristalización, SLR y acumulación.";
-
-  $("physicsOro").innerHTML=
-    "Índice orográfico: <b>"+fmt(p.oroIndex,2)+"</b>. "+
-    "Froude simplificado: <b>"+fmt(p.froude,2)+"</b>. "+
-    "Viento perpendicular: <b>"+fmt(p.Uperp,1)+" km/h</b>. "+
-    "Bloqueo orográfico: <b>"+fmt((p.blocking||0)*100,0)+"%</b>. "+
-    "SLR estimado: <b>"+fmt(p.slr,1)+":1</b>.";
-
-  $("snowNeeds").innerHTML=
-    '<div class="need"><span>Tipo físico ≥ nieve marginal</span><b class="'+needClass(ptypeOk,ptypeMid)+'">'+needLabel(ptypeOk,ptypeMid)+' · '+p.ptypeLabel+'</b></div>'+
-    '<div class="need"><span>Bulbo húmedo efectivo ≤ 0.3 °C</span><b class="'+needClass(twOk,twMid)+'">'+needLabel(twOk,twMid)+' · '+fmt(p.TwEff)+' °C</b></div>'+
-    '<div class="need"><span>Cota cerca o debajo del barrio</span><b class="'+needClass(cotaOk,cotaMid)+'">'+needLabel(cotaOk,cotaMid)+' · '+Math.round(p.snowLine)+' m</b></div>'+
-    '<div class="need"><span>Energía de fusión baja</span><b class="'+needClass(meltOk,meltMid)+'">'+needLabel(meltOk,meltMid)+' · '+fmt(p.meltEnergy,0)+' °C·m</b></div>'+
-    '<div class="need"><span>Precipitación suficiente</span><b class="'+needClass(precipOk,precipMid)+'">'+needLabel(precipOk,precipMid)+' · '+fmt(p.P)+' mm/h</b></div>'+
-    '<div class="need"><span>DGZ húmeda y activa</span><b class="'+needClass(dgzOk,dgzMid)+'">'+needLabel(dgzOk,dgzMid)+' · '+fmt(p.dgzScore,2)+'</b></div>';
-
-  var score=Math.round(100*clamp(
-    0.22*(ptypeOk?1:ptypeMid?0.55:0.10)+
-    0.20*(twOk?1:twMid?0.55:0.15)+
-    0.18*(cotaOk?1:cotaMid?0.55:0.10)+
-    0.16*(meltOk?1:meltMid?0.55:0.10)+
-    0.12*(precipOk?1:precipMid?0.55:0.10)+
-    0.12*(dgzOk?1:dgzMid?0.55:0.10),
-    0,1));
-
-  $("snowNeedsText").innerHTML=
-    "Para nieve acumuladora clara se necesita una columna baja más fría, menor energía de fusión, "+
-    "cota más baja, precipitación sostenida y DGZ suficientemente húmeda."+
-    '<div class="meter"><div class="meter-fill" style="width:'+score+'%"></div></div><br>'+
-    'Índice físico de entorno nivoso: <b>'+score+'/100</b>.';
-}
-
-function renderRows(model){
-  var html="",i,x,wg,diff,spread;
-  for(i=0;i<model.length;i++){
-    x=model[i];
-    wg=finite(x.wg)?fmt(x.wg,2):"—";
-    diff=finite(x.diff)?fmt(x.diff,2):"—";
-    spread=finite(x.cmhMin)&&finite(x.cmhMax)?fmt(x.cmhMin,2)+"–"+fmt(x.cmhMax,2):"—";
-    html+="<tr>"+
-      "<td>"+localTime(x.time)+"</td>"+
-      "<td>"+fmt(x.T)+" °C</td>"+
-      "<td>"+fmt(x.TwEff)+" °C</td>"+
-      "<td>"+fmt(x.P)+" mm/h</td>"+
-      "<td>"+Math.round(x.snowLine)+" m</td>"+
-      "<td>"+Math.round(x.prob*100)+"%</td>"+
-      "<td>"+x.ptypeLabel+"</td>"+
-      "<td>"+fmt(x.cmh,2)+"</td>"+
-      "<td>"+fmt(x.dgzScore,2)+"</td>"+
-      "<td>"+fmt(x.meltEnergy,0)+"</td>"+
-      "<td>"+fmt(x.refreezeEnergy,0)+"</td>"+
-      "<td>"+fmt(x.oroIndex,2)+"</td>"+
-      "<td>"+Math.round((x.confidence||0)*100)+"%</td>"+
-      "<td class=\"purple\">"+wg+"</td>"+
-      "<td>"+diff+"</td>"+
-      "<td>"+badge(x.risk)+"</td>"+
-    "</tr>";
-  }
-  $("rows").innerHTML=html;
-}
-
-function prepareCanvas(canvas){
-  var rect=canvas.getBoundingClientRect(),dpr=Math.max(1,window.devicePixelRatio||1);
-  var width=Math.max(320,Math.round(rect.width*dpr)),height=Math.max(270,Math.round(rect.height*dpr));
-  if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
-  return {dpr:dpr,width:width,height:height};
-}
-
-function drawLine(ctx,model,xAt,yFn,color,width,skipMissing){
-  var i,x,y,started=false;
-  ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=width;
-  for(i=0;i<model.length;i++){
-    if(skipMissing&&!finite(model[i].wg))continue;
-    x=xAt(i);y=yFn(model[i]);
-    if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);
-  }
-  if(started)ctx.stroke();
-}
-
-function drawBand(ctx,model,xAt,yCmh,color){
-  var pts=[],i,p;
-  for(i=0;i<model.length;i++){
-    if(finite(model[i].cmhMin)&&finite(model[i].cmhMax)){
-      pts.push({x:xAt(i),low:yCmh(model[i].cmhMin),high:yCmh(model[i].cmhMax)});
-    }
-  }
-  if(pts.length<2)return;
-  ctx.beginPath();ctx.fillStyle=color;
-  for(i=0;i<pts.length;i++){p=pts[i];if(i===0)ctx.moveTo(p.x,p.high);else ctx.lineTo(p.x,p.high);}
-  for(i=pts.length-1;i>=0;i--){p=pts[i];ctx.lineTo(p.x,p.low);}
-  ctx.closePath();ctx.fill();
-}
-
-function modelHasWindguru(model){
-  var i;for(i=0;i<model.length;i++){if(finite(model[i].wg))return true;}return false;
-}
-
-function drawChart(model){
-  var c=$("chart");if(!c)return;
-  var info=prepareCanvas(c),ctx=c.getContext("2d");
-  var W=info.width,H=info.height,isMobile=W<720;
-  var padL=isMobile?52:72,padR=isMobile?54:82,padT=isMobile?42:48,padB=isMobile?54:62;
-  var plotW=W-padL-padR,plotH=H-padT-padB;
-  var maxC=1,maxP=1,i,x,bh,bw,p,y,d,label,step;
-
-  for(i=0;i<model.length;i++){
-    maxC=Math.max(maxC,model[i].cmh||0,model[i].cmhMax||0);
-    maxP=Math.max(maxP,model[i].P||0);
-    if(finite(model[i].wg))maxC=Math.max(maxC,model[i].wg);
-  }
-
-  function xAt(i){return padL+plotW*i/Math.max(1,model.length-1);}
-  function yProb(v){return padT+(1-v)*plotH;}
-  function yCmh(v){return padT+(1-v/maxC)*plotH;}
-
-  ctx.clearRect(0,0,W,H);
-  ctx.fillStyle="rgba(0,0,0,.20)";
-  ctx.fillRect(0,0,W,H);
-
-  ctx.strokeStyle="rgba(255,255,255,.14)";
-  ctx.lineWidth=1*info.dpr;
-  ctx.font=(isMobile?10:12)+"px system-ui";
-
-  for(i=0;i<=5;i++){
-    p=i/5;y=yProb(p);
-    ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();
-
-    ctx.fillStyle="rgba(255,209,102,.9)";
-    ctx.textAlign="right";
-    ctx.fillText(Math.round(p*100)+"%",padL-8,y+4);
-
-    ctx.fillStyle="rgba(124,255,178,.9)";
-    ctx.textAlign="left";
-    ctx.fillText(fmt(maxC*p,1),W-padR+8,y+4);
-  }
-
-  ctx.strokeStyle="rgba(238,248,255,.75)";
-  ctx.lineWidth=1.2*info.dpr;
-  ctx.beginPath();
-  ctx.moveTo(padL,padT);ctx.lineTo(padL,H-padB);ctx.lineTo(W-padR,H-padB);
-  ctx.moveTo(W-padR,padT);ctx.lineTo(W-padR,H-padB);
-  ctx.stroke();
-
-  for(i=0;i<model.length;i++){
-    x=model[i];
-    bh=((x.P||0)/maxP)*plotH;
-    bw=Math.max(2*info.dpr,plotW/model.length*.72);
-    ctx.fillStyle="rgba(101,221,255,.24)";
-    ctx.fillRect(xAt(i)-bw/2,H-padB-bh,bw,bh);
-  }
-
-  drawBand(ctx,model,xAt,yCmh,"rgba(121,255,178,.14)");
-  drawLine(ctx,model,xAt,function(row){return yProb(row.prob||0);},"#ffd166",2.6*info.dpr,false);
-  drawLine(ctx,model,xAt,function(row){return yCmh(row.cmh||0);},"#79ffb2",3.1*info.dpr,false);
-
-  if(modelHasWindguru(model)){
-    drawLine(ctx,model,xAt,function(row){return yCmh(row.wg);},"#c5a6ff",2.4*info.dpr,true);
-  }
-
-  ctx.textAlign="left";
-  ctx.font=(isMobile?10:13)+"px system-ui";
-
-  ctx.fillStyle="#79ffb2";ctx.fillText("● cm/h",padL,isMobile?18:25);
-  ctx.fillStyle="#ffd166";ctx.fillText("● prob.",isMobile?padL:padL+76,isMobile?34:25);
-  ctx.fillStyle="#65ddff";ctx.fillText("■ precip.",isMobile?padL+92:padL+158,isMobile?18:25);
-  ctx.fillStyle="#c5a6ff";ctx.fillText("● Windguru",isMobile?padL+92:padL+260,isMobile?34:25);
-
-  ctx.fillStyle="rgba(238,248,255,.72)";
-  ctx.textAlign="center";
-  ctx.font=(isMobile?10:11)+"px system-ui";
-  step=Math.max(isMobile?12:6,Math.round(model.length/(isMobile?5:8)));
-  for(i=0;i<model.length;i+=step){
-    d=new Date(model[i].time);
-    label=pad2(d.getDate())+"/"+pad2(d.getHours())+"h";
-    ctx.fillText(label,xAt(i),H-padB+24);
-  }
-
-  ctx.fillStyle="rgba(238,248,255,.75)";
-  ctx.font=(isMobile?11:13)+"px system-ui";
-  ctx.fillText("Tiempo local ART",padL+plotW/2,H-12);
-}
-
-function setLoading(){
-  safeText("verdict","Calculando…");$("verdict").className="yellow";safeText("verdictText","Consultando Open-Meteo.");
-  safeText("nextSnow","—");safeText("nextSnowText","Esperando datos.");
-  safeText("ptype","—");safeText("ptypeText","Esperando datos.");
-  safeText("accum","—");safeText("accumText","Esperando datos.");
-  safeText("precipVerdict","Calculando…");$("precipVerdict").className="yellow";safeText("precipVerdictText","Consultando Open-Meteo.");
-  safeText("confidence","—");safeText("confidenceText","Esperando datos.");
-}
-
-function renderSourceStatus(ok,fail){
-  var html="",i;
-  html+="<b>Fuentes usadas:</b><br>";
-  for(i=0;i<ok.length;i++)html+='<span class="source-pill source-ok">✓ '+ok[i].source.label+" · "+ok[i].mode+"</span>";
-  for(i=0;i<fail.length;i++)html+='<span class="source-pill source-fail">× '+fail[i].source.label+"</span>";
-  if(fail.length)html+="<br><br>Fuentes fallidas excluidas del cálculo.";
-  safeHTML("sourceStatus",html);
-}
-
-function run(){
-  updatePlaceBadge();
-  var sources=selectedSources(),t0=new Date().getTime();
-  setLoading();
-  safeText("status","Iniciando corrida avanzada…");
-  safeHTML("sourceStatus","");
-  safeHTML("debugBox","DOM: OK<br>Fuentes seleccionadas: "+sources.length);
-
-  fetchAllSources(sources,0,[],[],function(ok,fail){
-    var ms=new Date().getTime()-t0,model,summary,i,urls="";
-    renderSourceStatus(ok,fail);
-
-    for(i=0;i<ok.length;i++)urls+=ok[i].source.label+" ("+ok[i].mode+"): "+ok[i].url+"<br><br>";
-
-    if(!ok.length){
-      safeText("status","Error: no respondió ninguna fuente.");
-      safeText("verdict","Error");$("verdict").className="red";safeText("verdictText","No respondió ninguna fuente automática.");
-      safeHTML("debugBox","DOM: OK<br>API: ERROR<br>Fuentes intentadas: "+sources.length+"<br>Fallidas: "+fail.length+"<br>Tiempo: "+ms+" ms");
-      return;
-    }
-
-    try{
-      model=averageModels(ok);
-      summary=summarize(model);
-      latestModel=model;
-      render(latestModel,summary);
-
-      safeText("status","Listo. Pronóstico calculado correctamente con "+ok.length+" fuente(s).");
-      safeHTML("debugBox",
-        "DOM: OK<br>API: OK<br>Fuentes OK: "+ok.length+"<br>Fuentes fallidas: "+fail.length+
-        "<br>Tiempo total: "+ms+" ms<br>Horas modeladas: "+latestModel.length+
-        "<br>Confianza interna media: "+Math.round((summary.meanConf||0)*100)+"%<br><br>"+urls);
-    }catch(e){
-      safeText("status","Error procesando ensamble: "+e.message);
-      safeText("verdict","Error");$("verdict").className="red";safeText("verdictText",e.message);
-      safeHTML("debugBox","API: OK, pero falló procesamiento.<br>Detalle: "+e.message+"<br>Fuentes OK: "+ok.length+"<br>Fuentes fallidas: "+fail.length);
-    }
-  });
-}
-
-function parseWindguru(){
-  var raw=$("windguruInput").value,lines,parsed,i,line,parts,value;
-  if(!raw)return [];
-  raw=raw.replace(/^\s+|\s+$/g,"");
-  if(!raw)return [];
-  lines=raw.split(/\n+/);parsed=[];
-  for(i=0;i<lines.length;i++){
-    line=lines[i].replace(/^\s+|\s+$/g,"");
-    if(!line)continue;
-    parts=line.split(/[;,]/);
-    if(parts.length>=2&&/\d{4}-\d{2}-\d{2}/.test(parts[0])){
-      value=Number(String(parts[1]).replace(",","."));
-      if(finite(value))parsed.push({key:normalizeKey(parts[0].replace("T"," ")),value:value});
-    }else{
-      value=Number(String(line).replace(",","."));
-      if(finite(value))parsed.push({key:null,value:value});
-    }
-  }
-  return parsed;
-}
-
-function normalizeKey(s){
-  var m=s.match(/(\d{4}-\d{2}-\d{2})\s+(\d{1,2})(?::(\d{2}))?/);
-  if(!m)return s;
-  return m[1]+" "+pad2(Number(m[2]))+":00";
-}
-
-function compareWindguru(){
-  var parsed,hasDates,map,i,pairs,mae,bias,wgTotal,modelTotal;
-  if(!latestModel.length)return;
-  parsed=parseWindguru();
-
-  for(i=0;i<latestModel.length;i++){latestModel[i].wg=null;latestModel[i].diff=null;}
-
-  if(!parsed.length){
-    safeText("wgSummary","No hay valores de Windguru cargados.");
-    render(latestModel,summarize(latestModel));
-    return;
-  }
-
-  hasDates=false;
-  for(i=0;i<parsed.length;i++){if(parsed[i].key)hasDates=true;}
-
-  if(hasDates){
-    map={};
-    for(i=0;i<parsed.length;i++){if(parsed[i].key)map[parsed[i].key]=parsed[i].value;}
-    for(i=0;i<latestModel.length;i++){
-      if(Object.prototype.hasOwnProperty.call(map,latestModel[i].key)){
-        latestModel[i].wg=map[latestModel[i].key];
-        latestModel[i].diff=latestModel[i].cmh-latestModel[i].wg;
+      function $(id) {
+        return document.getElementById(id);
       }
-    }
-  }else{
-    for(i=0;i<Math.min(parsed.length,latestModel.length);i++){
-      latestModel[i].wg=parsed[i].value;
-      latestModel[i].diff=latestModel[i].cmh-latestModel[i].wg;
-    }
-  }
 
-  render(latestModel,summarize(latestModel));
+      function finite(x) {
+        return x !== null && x !== "" && typeof x !== "undefined" && isFinite(Number(x));
+      }
 
-  pairs=[];
-  for(i=0;i<latestModel.length;i++){if(finite(latestModel[i].wg))pairs.push(latestModel[i]);}
-  if(!pairs.length){safeText("wgSummary","No pude emparejar horarios.");return;}
+      function num(x, fallback) {
+        return finite(x) ? Number(x) : fallback;
+      }
 
-  mae=0;bias=0;wgTotal=0;modelTotal=0;
-  for(i=0;i<pairs.length;i++){
-    mae+=Math.abs(pairs[i].diff);
-    bias+=pairs[i].diff;
-    wgTotal+=pairs[i].wg;
-    modelTotal+=pairs[i].cmh;
-  }
-  mae/=pairs.length;
-  bias/=pairs.length;
+      function clamp(x, a, b) {
+        return Math.max(a, Math.min(b, x));
+      }
 
-  safeHTML("wgSummary",
-    "Comparados "+pairs.length+" puntos. Modelo: <b>"+fmt(modelTotal,1)+" cm</b>, "+
-    "Windguru: <b>"+fmt(wgTotal,1)+" cm</b>. MAE: <b>"+fmt(mae,2)+" cm/h</b>. "+
-    "Sesgo modelo-Windguru: <b>"+fmt(bias,2)+" cm/h</b>."
-  );
-}
+      function sigmoid(x) {
+        return 1 / (1 + Math.exp(-x));
+      }
 
-function clearWindguru(){
-  var i;
-  $("windguruInput").value="";
-  safeText("wgSummary","");
-  for(i=0;i<latestModel.length;i++){latestModel[i].wg=null;latestModel[i].diff=null;}
-  if(latestModel.length)render(latestModel,summarize(latestModel));
-}
+      function fmt(x, d) {
+        if (typeof d === "undefined") {
+          d = 1;
+        }
 
-function auditDom(){
-  var ids=[
-    "verdict","verdictText","nextSnow","nextSnowText","ptype","ptypeText",
-    "accum","accumText","precipVerdict","precipVerdictText","nextPrecip",
-    "nextPrecipText","peakPrecip","peakPrecipText","confidence","confidenceText",
-    "status","sourceStatus","debugBox","currentPlace","placeNote","locationPreset",
-    "lat","lon","elev","days","oro","coldBias",
-    "sourceMode","runBtn","windguruBtn","chart","diagnosis","windguruInput",
-    "compareBtn","clearWgBtn","wgSummary","physicsColumn","physicsEnergy","physicsDgz","physicsOro",
-    "snowNeeds","snowNeedsText","rows"
-  ];
-  var missing=[],i;
-  for(i=0;i<ids.length;i++){if(!$(ids[i]))missing.push(ids[i]);}
-  if(missing.length){
-    safeText("status","Error DOM: faltan IDs "+missing.join(", "));
-    safeHTML("debugBox","Error DOM. Faltan IDs:<br>"+missing.join("<br>"));
-    return false;
-  }
-  return true;
-}
+        return finite(x) ? Number(x).toFixed(d) : "—";
+      }
 
-function init(){
-  var settings,manualIds=["lat","lon","elev","oro","coldBias"],i,el;
-  if(!auditDom())return;
+      function pad2(n) {
+        n = Number(n);
+        return n < 10 ? "0" + n : String(n);
+      }
 
-  $("runBtn").onclick=run;
-  $("compareBtn").onclick=compareWindguru;
-  $("clearWgBtn").onclick=clearWindguru;
+      function safeText(id, txt) {
+        var el = $(id);
 
-  $("windguruBtn").onclick=function(){
-    window.open(WINDGURU_URL,"_blank","noopener,noreferrer");
-  };
+        if (el) {
+          el.textContent = txt;
+        }
+      }
 
-  $("locationPreset").onchange=function(){
-    applyLocationPreset(true);
-  };
+      function safeHTML(id, html) {
+        var el = $(id);
 
-  for(i=0;i<manualIds.length;i++){
-    el=$(manualIds[i]);
-    if(el)el.onchange=markCustomFromManual;
-  }
+        if (el) {
+          el.innerHTML = html;
+        }
+      }
 
-  window.onresize=function(){
-    clearTimeout(resizeTimer);
-    resizeTimer=setTimeout(function(){if(latestModel.length)drawChart(latestModel);},120);
-  };
+      function rad(d) {
+        return d * Math.PI / 180;
+      }
 
-  settings=$("settingsBox");
-  if(settings&&window.innerWidth>=981)settings.open=true;
+      window.onerror = function (msg, src, line) {
+        safeText("status", "Error JS: " + msg + " línea " + line);
+        safeHTML("debugBox", "Fallo de JavaScript.<br>Mensaje: " + msg + "<br>Línea: " + line);
+      };
 
-  applyLocationPreset(false);
-  run();
-}
+      function selectedPlace() {
+        var sel = $("locationPreset");
 
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);
-else init();
+        if (!sel) {
+          return PLACES.lago_moreno;
+        }
 
-})();
-</script>
+        if (sel.value === "custom") {
+          return {
+            name: "Ubicación personalizada",
+            lat: num($("lat").value, -41.1000),
+            lon: num($("lon").value, -71.4500),
+            elev: num($("elev").value, 778),
+            oro: num($("oro").value, 0.42),
+            coldBias: num($("coldBias").value, 0),
+            note: "Coordenadas y parámetros editados manualmente."
+          };
+        }
+
+        return PLACES[sel.value] || PLACES.lago_moreno;
+      }
+
+      function updatePlaceBadge() {
+        var p = selectedPlace();
+        var el = $("currentPlace");
+        var note = $("placeNote");
+        var wg = $("windguruBtn");
+
+        if (el) {
+          el.textContent = "📍 " + p.name + " · " + Math.round(p.elev) + " m";
+        }
+
+        if (note) {
+          note.textContent =
+            p.note +
+            " Coordenadas activas: " +
+            fmt(p.lat, 4) +
+            ", " +
+            fmt(p.lon, 4) +
+            ". Orografía: " +
+            fmt(p.oro, 2) +
+            ". Ajuste frío: " +
+            fmt(p.coldBias, 1) +
+            " °C.";
+        }
+
+        if (wg) {
+          wg.textContent = "🟣 Abrir Windguru";
+        }
+      }
+
+      function applyLocationPreset(runAfterChange) {
+        var sel = $("locationPreset");
+        var p;
+
+        if (!sel) {
+          return;
+        }
+
+        p = selectedPlace();
+
+        if (sel.value !== "custom") {
+          if ($("lat")) {
+            $("lat").value = p.lat.toFixed(4);
+          }
+
+          if ($("lon")) {
+            $("lon").value = p.lon.toFixed(4);
+          }
+
+          if ($("elev")) {
+            $("elev").value = Math.round(p.elev);
+          }
+
+          if ($("oro")) {
+            $("oro").value = p.oro.toFixed(2);
+          }
+
+          if ($("coldBias")) {
+            $("coldBias").value = p.coldBias.toFixed(1);
+          }
+        }
+
+        updatePlaceBadge();
+
+        if (runAfterChange) {
+          run();
+        }
+      }
+
+      function markCustomFromManual() {
+        var sel = $("locationPreset");
+
+        if (sel && sel.value !== "custom") {
+          sel.value = "custom";
+        }
+
+        updatePlaceBadge();
+      }
+
+      function localTime(t) {
+        var d = new Date(t);
+
+        if (isNaN(d.getTime())) {
+          return "—";
+        }
+
+        try {
+          return d.toLocaleString("es-AR", {
+            weekday: "short",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit"
+          });
+        } catch (e) {
+          return pad2(d.getDate()) + "/" + pad2(d.getMonth() + 1) + " " + pad2(d.getHours()) + ":00";
+        }
+      }
+
+      function isoHour(t) {
+        var d = new Date(t);
+
+        if (isNaN(d.getTime())) {
+          return String(t);
+        }
+
+        return (
+          d.getFullYear() +
+          "-" +
+          pad2(d.getMonth() + 1) +
+          "-" +
+          pad2(d.getDate()) +
+          " " +
+          pad2(d.getHours()) +
+          ":00"
+        );
+      }
+
+      function esWater(T) {
+        return 6.112 * Math.exp((17.67 * T) / (T + 243.5));
+      }
+
+      function esIce(T) {
+        return 6.112 * Math.exp((22.46 * T) / (T + 272.62));
+      }
+
+      function esSat(T) {
+        return T < 0 ? esIce(T) : esWater(T);
+      }
+
+      function pressureFromMsl(pmsl, z) {
+        var p0 = finite(pmsl) ? Number(pmsl) : 1013.25;
+        return p0 * Math.pow(1 - 0.0065 * z / 288.15, 5.255);
+      }
+
+      function wetBulb(T, RH, p) {
+        var eActual;
+        var lo;
+        var hi;
+        var i;
+        var tw;
+        var gamma;
+        var eTw;
+
+        if (!finite(T) || !finite(RH) || !finite(p)) {
+          return T;
+        }
+
+        RH = clamp(RH, 1, 100);
+        eActual = esSat(T) * RH / 100;
+        lo = -45;
+        hi = T + 0.2;
+
+        for (i = 0; i < 42; i++) {
+          tw = 0.5 * (lo + hi);
+          gamma = 0.00066 * (1 + 0.00115 * tw);
+          eTw = esSat(tw) - gamma * p * (T - tw);
+
+          if (eTw > eActual) {
+            hi = tw;
+          } else {
+            lo = tw;
+          }
+        }
+
+        return 0.5 * (lo + hi);
+      }
+
+      function thetaK(Tc, pHpa) {
+        return (Tc + 273.15) * Math.pow(1000 / pHpa, 0.286);
+      }
+
+      function hourlyFull() {
+        return [
+          "temperature_2m",
+          "relative_humidity_2m",
+          "precipitation",
+          "precipitation_probability",
+          "snowfall",
+          "freezing_level_height",
+          "surface_pressure",
+          "pressure_msl",
+          "wind_speed_10m",
+          "wind_direction_10m",
+          "temperature_925hPa",
+          "relative_humidity_925hPa",
+          "geopotential_height_925hPa",
+          "wind_speed_925hPa",
+          "wind_direction_925hPa",
+          "temperature_850hPa",
+          "relative_humidity_850hPa",
+          "geopotential_height_850hPa",
+          "wind_speed_850hPa",
+          "wind_direction_850hPa",
+          "temperature_700hPa",
+          "relative_humidity_700hPa",
+          "geopotential_height_700hPa",
+          "wind_speed_700hPa",
+          "wind_direction_700hPa"
+        ].join(",");
+      }
+
+      function hourlyCore() {
+        return [
+          "temperature_2m",
+          "relative_humidity_2m",
+          "precipitation",
+          "surface_pressure",
+          "pressure_msl",
+          "wind_speed_10m",
+          "wind_direction_10m"
+        ].join(",");
+      }
+
+      function selectedSources() {
+        var mode = $("sourceMode").value;
+        var out = [];
+        var i;
+
+        if (mode === "ensemble") {
+          for (i = 0; i < SOURCES.length; i++) {
+            out.push(SOURCES[i]);
+          }
+
+          return out;
+        }
+
+        for (i = 0; i < SOURCES.length; i++) {
+          if (SOURCES[i].id === mode) {
+            return [SOURCES[i]];
+          }
+        }
+
+        return [SOURCES[0]];
+      }
+
+      function buildUrl(source, full) {
+        var lat = $("lat") ? $("lat").value : "-41.1000";
+        var lon = $("lon") ? $("lon").value : "-71.4500";
+        var elev = $("elev") ? $("elev").value : "778";
+        var requestedDays = $("days") ? num($("days").value, 7) : 7;
+        var days = clamp(requestedDays, 1, source.maxDays || 7);
+        var hourly = full ? hourlyFull() : hourlyCore();
+
+        return (
+          source.endpoint +
+          "?latitude=" + encodeURIComponent(lat) +
+          "&longitude=" + encodeURIComponent(lon) +
+          "&elevation=" + encodeURIComponent(elev) +
+          "&hourly=" + encodeURIComponent(hourly) +
+          "&timezone=" + encodeURIComponent("America/Argentina/Buenos_Aires") +
+          "&forecast_days=" + encodeURIComponent(days) +
+          "&temperature_unit=celsius" +
+          "&wind_speed_unit=kmh" +
+          "&precipitation_unit=mm"
+        );
+      }
+
+      function xhrJSON(url, callback) {
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("GET", url, true);
+        xhr.timeout = 25000;
+
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              try {
+                callback(null, JSON.parse(xhr.responseText), xhr.status);
+              } catch (e) {
+                callback(new Error("JSON inválido: " + e.message), null, xhr.status);
+              }
+            } else {
+              callback(new Error("HTTP " + xhr.status + ": " + xhr.responseText), null, xhr.status);
+            }
+          }
+        };
+
+        xhr.onerror = function () {
+          callback(new Error("No se pudo conectar con la API."), null, 0);
+        };
+
+        xhr.ontimeout = function () {
+          callback(new Error("Timeout conectando con la API."), null, 0);
+        };
+
+        xhr.send(null);
+      }
+
+      function fetchSource(source, done) {
+        var urlFull = buildUrl(source, true);
+        var urlCore = buildUrl(source, false);
+
+        function tryCore(reason) {
+          xhrJSON(urlCore, function (err2, data2, http2) {
+            var model2;
+
+            if (err2) {
+              done({
+                source: source,
+                error: reason + " / fallback: " + err2.message,
+                url: urlCore
+              });
+
+              return;
+            }
+
+            try {
+              model2 = computeModel(data2, source, false);
+
+              if (!model2.length) {
+                throw new Error("Sin horas modeladas");
+              }
+
+              done(null, {
+                source: source,
+                model: model2,
+                mode: "básico",
+                http: http2,
+                url: urlCore
+              });
+            } catch (e2) {
+              done({
+                source: source,
+                error: reason + " / fallback proceso: " + e2.message,
+                url: urlCore
+              });
+            }
+          });
+        }
+
+        xhrJSON(urlFull, function (err, data, http) {
+          var model;
+
+          if (err) {
+            tryCore(err.message);
+            return;
+          }
+
+          try {
+            model = computeModel(data, source, true);
+
+            if (!model.length) {
+              throw new Error("Sin horas modeladas");
+            }
+
+            done(null, {
+              source: source,
+              model: model,
+              mode: "avanzado",
+              http: http,
+              url: urlFull
+            });
+          } catch (e1) {
+            tryCore(e1.message);
+          }
+        });
+      }
+
+      function fetchAllSources(sources, idx, ok, fail, done) {
+        if (idx >= sources.length) {
+          done(ok, fail);
+          return;
+        }
+
+        safeText("status", "Descargando " + (idx + 1) + "/" + sources.length + ": " + sources[idx].label + "…");
+
+        fetchSource(sources[idx], function (err, pack) {
+          if (err) {
+            fail.push(err);
+          } else {
+            ok.push(pack);
+          }
+
+          fetchAllSources(sources, idx + 1, ok, fail, done);
+        });
+      }
+
+      function getValue(h, name, i, fallback) {
+        if (!h || !h[name] || typeof h[name][i] === "undefined" || h[name][i] === null) {
+          return fallback;
+        }
+
+        return num(h[name][i], fallback);
+      }
+
+      function addLevel(column, h, i, level) {
+        var T = getValue(h, "temperature_" + level + "hPa", i, null);
+        var RH = getValue(h, "relative_humidity_" + level + "hPa", i, null);
+        var z = getValue(h, "geopotential_height_" + level + "hPa", i, null);
+
+        if (!finite(T) || !finite(RH) || !finite(z)) {
+          return;
+        }
+
+        column.push({
+          z: z,
+          p: level,
+          T: T,
+          RH: RH,
+          Tw: wetBulb(T, RH, level),
+          wind: getValue(h, "wind_speed_" + level + "hPa", i, null),
+          dir: getValue(h, "wind_direction_" + level + "hPa", i, null)
+        });
+      }
+
+      function buildColumn(h, i, elev, baseElev, coldBias) {
+        var T2raw = getValue(h, "temperature_2m", i, null);
+        var RH2 = getValue(h, "relative_humidity_2m", i, null);
+        var pSurf;
+        var column;
+        var clean;
+        var k;
+
+        if (!finite(T2raw) || !finite(RH2)) {
+          return [];
+        }
+
+        pSurf = getValue(h, "surface_pressure", i, null);
+
+        if (!finite(pSurf)) {
+          pSurf = pressureFromMsl(getValue(h, "pressure_msl", i, 1013.25), baseElev);
+        }
+
+        column = [
+          {
+            z: elev,
+            p: pSurf,
+            T: T2raw + coldBias,
+            RH: RH2,
+            Tw: wetBulb(T2raw + coldBias, RH2, pSurf),
+            wind: getValue(h, "wind_speed_10m", i, 0),
+            dir: getValue(h, "wind_direction_10m", i, 270)
+          }
+        ];
+
+        addLevel(column, h, i, 925);
+        addLevel(column, h, i, 850);
+        addLevel(column, h, i, 700);
+
+        column.sort(function (a, b) {
+          return a.z - b.z;
+        });
+
+        clean = [];
+
+        for (k = 0; k < column.length; k++) {
+          if (!clean.length || Math.abs(clean[clean.length - 1].z - column[k].z) > 20) {
+            clean.push(column[k]);
+          }
+        }
+
+        return clean;
+      }
+
+      function interpColumn(column, z, key) {
+        var i;
+        var a;
+        var b;
+        var w;
+        var slope;
+
+        if (!column.length) {
+          return null;
+        }
+
+        if (column.length === 1) {
+          return column[0][key];
+        }
+
+        if (z <= column[0].z) {
+          a = column[0];
+          b = column[1];
+          slope = (b[key] - a[key]) / Math.max(1, b.z - a.z);
+          return a[key] + slope * (z - a.z);
+        }
+
+        for (i = 0; i < column.length - 1; i++) {
+          a = column[i];
+          b = column[i + 1];
+
+          if (z >= a.z && z <= b.z) {
+            w = (z - a.z) / Math.max(1, b.z - a.z);
+            return a[key] * (1 - w) + b[key] * w;
+          }
+        }
+
+        a = column[column.length - 2];
+        b = column[column.length - 1];
+        slope = (b[key] - a[key]) / Math.max(1, b.z - a.z);
+
+        return b[key] + slope * (z - b.z);
+      }
+
+      function physicalSnowLine(column, threshold, elev, TwEff) {
+        var i;
+        var a;
+        var b;
+        var w;
+
+        if (typeof threshold === "undefined") {
+          threshold = 0.45;
+        }
+
+        if (column.length < 2) {
+          return Math.max(0, elev + (TwEff - 0.6) / 0.006);
+        }
+
+        if (column[0].Tw <= threshold) {
+          return column[0].z;
+        }
+
+        for (i = 0; i < column.length - 1; i++) {
+          a = column[i];
+          b = column[i + 1];
+
+          if (a.Tw > threshold && b.Tw <= threshold) {
+            w = (threshold - a.Tw) / (b.Tw - a.Tw);
+            return a.z + clamp(w, 0, 1) * (b.z - a.z);
+          }
+        }
+
+        return Math.max(0, elev + (TwEff - 0.6) / 0.006);
+      }
+
+      function bruntVaisala(h, i) {
+        var T850 = getValue(h, "temperature_850hPa", i, null);
+        var T700 = getValue(h, "temperature_700hPa", i, null);
+        var z850 = getValue(h, "geopotential_height_850hPa", i, null);
+        var z700 = getValue(h, "geopotential_height_700hPa", i, null);
+        var th850;
+        var th700;
+        var dz;
+        var dThetaDz;
+        var thetaMean;
+
+        if (!finite(T850) || !finite(T700) || !finite(z850) || !finite(z700)) {
+          return 0.011;
+        }
+
+        th850 = thetaK(T850, 850);
+        th700 = thetaK(T700, 700);
+        dz = Math.max(100, z700 - z850);
+        dThetaDz = Math.max(0.000003, (th700 - th850) / dz);
+        thetaMean = 0.5 * (th850 + th700);
+
+        return Math.sqrt((9.80665 / thetaMean) * dThetaDz);
+      }
+
+      function orographicDiagnostics(h, i, oroFactor) {
+        var dir850 = getValue(h, "wind_direction_850hPa", i, getValue(h, "wind_direction_10m", i, 270));
+        var wind850 = getValue(h, "wind_speed_850hPa", i, getValue(h, "wind_speed_10m", i, 0));
+        var RH850 = getValue(h, "relative_humidity_850hPa", i, getValue(h, "relative_humidity_2m", i, 75));
+        var windward = Math.max(0, Math.cos(rad(dir850 - 280)));
+        var Uperp = Math.max(0, wind850 * windward);
+        var Ums = Uperp / 3.6;
+        var N = bruntVaisala(h, i);
+        var Fr = clamp(Ums / Math.max(0.001, N * 1200), 0.05, 2.2);
+        var moisture = clamp(RH850 / 90, 0.25, 1.35);
+        var windTerm = clamp(Uperp / 45, 0, 1.6);
+        var froudeTerm = clamp(0.45 + 0.55 * Fr, 0.25, 1.55);
+        var blocking = Fr < 0.35 ? clamp((0.35 - Fr) / 0.35, 0, 1) : 0;
+        var oroIndex = windward * moisture * windTerm * froudeTerm;
+
+        return {
+          oroIndex: oroIndex,
+          Uperp: Uperp,
+          Fr: Fr,
+          N: N,
+          blocking: blocking,
+          precipMultiplier: clamp(1 + oroFactor * oroIndex - 0.15 * blocking, 0.78, 2.50),
+          liftCooling: clamp(0.16 * oroIndex, 0, 0.70)
+        };
+      }
+
+      function columnPhysics(column, elev, TwEff, P, oro, time) {
+        var dz = 25;
+        var maxZ = elev + 100;
+        var i;
+        var z;
+        var T;
+        var Tw;
+        var RH;
+
+        var warmEnergy = 0;
+        var refreezeEnergy = 0;
+        var warmDepth = 0;
+        var coldDepth = 0;
+        var lowWarmEnergy = 0;
+        var maxTw = -99;
+
+        var dgzDepth = 0;
+        var dgzRHsum = 0;
+        var dgzSamples = 0;
+
+        var satDepth = 0;
+        var coldSatDepth = 0;
+        var warmNoseMax = -99;
+
+        var d;
+        var hour;
+        var nightBonus;
+        var dayPenalty;
+        var dgzRH;
+        var dgzScore;
+        var satScore;
+        var omegaProxy;
+        var microSnowScore;
+        var surfaceAccumIndex;
+
+        if (column.length < 2) {
+          warmEnergy = TwEff > 0.1 ? (TwEff - 0.1) * 450 : 0;
+          refreezeEnergy = TwEff < 0 ? (-TwEff) * 300 : 0;
+
+          return {
+            meltEnergy: warmEnergy,
+            refreezeEnergy: refreezeEnergy,
+            warmDepth: TwEff > 0.1 ? 450 : 0,
+            coldDepth: TwEff < 0 ? 300 : 0,
+            lowWarmEnergy: warmEnergy,
+            maxTw: TwEff,
+            warmNoseMax: TwEff,
+            dgzDepth: 0,
+            dgzRH: 0,
+            dgzScore: 0,
+            satDepth: 0,
+            coldSatDepth: 0,
+            omegaProxy: 0,
+            microSnowScore: 0,
+            surfaceAccumIndex: clamp((0.7 - TwEff) / 1.7, 0, 1)
+          };
+        }
+
+        for (i = 0; i < column.length; i++) {
+          maxZ = Math.max(maxZ, column[i].z);
+        }
+
+        maxZ = Math.min(3800, maxZ);
+
+        for (z = elev; z < maxZ; z += dz) {
+          T = interpColumn(column, z + dz / 2, "T");
+          Tw = interpColumn(column, z + dz / 2, "Tw");
+          RH = interpColumn(column, z + dz / 2, "RH");
+
+          if (!finite(T) || !finite(Tw) || !finite(RH)) {
+            continue;
+          }
+
+          maxTw = Math.max(maxTw, Tw);
+
+          if (Tw > 0.1) {
+            warmEnergy += (Tw - 0.1) * dz;
+            warmDepth += dz;
+            warmNoseMax = Math.max(warmNoseMax, Tw);
+
+            if (z < elev + 700) {
+              lowWarmEnergy += (Tw - 0.1) * dz;
+            }
+          }
+
+          if (Tw < 0) {
+            refreezeEnergy += (-Tw) * dz;
+            coldDepth += dz;
+          }
+
+          if (RH >= 85) {
+            satDepth += dz;
+
+            if (T < 0) {
+              coldSatDepth += dz;
+            }
+          }
+
+          if (T <= -12 && T >= -18) {
+            dgzDepth += dz;
+            dgzRHsum += RH;
+            dgzSamples++;
+          }
+        }
+
+        dgzRH = dgzSamples ? dgzRHsum / dgzSamples : 0;
+
+        omegaProxy = clamp(
+          0.28 * Math.log(1 + Math.max(0, P)) +
+          0.36 * clamp(oro.oroIndex, 0, 1.4) +
+          0.18 * clamp((oro.Uperp || 0) / 35, 0, 1) +
+          0.18 * clamp(coldSatDepth / 1200, 0, 1),
+          0,
+          1.7
+        );
+
+        if (dgzSamples > 0) {
+          dgzScore = clamp(
+            (dgzDepth / 600) *
+            (dgzRH / 90) *
+            (0.65 + 0.55 * omegaProxy),
+            0,
+            1.7
+          );
+        } else {
+          dgzScore = 0;
+        }
+
+        satScore = clamp(coldSatDepth / 1400, 0, 1.4);
+
+        microSnowScore = clamp(
+          0.42 * dgzScore +
+          0.24 * satScore +
+          0.22 * omegaProxy +
+          0.12 * clamp(P / 1.2, 0, 1),
+          0,
+          1.7
+        );
+
+        d = new Date(time);
+        hour = isNaN(d.getTime()) ? 0 : d.getHours();
+
+        nightBonus = hour >= 20 || hour <= 8 ? 0.12 : 0;
+        dayPenalty = hour >= 11 && hour <= 17 ? 0.12 : 0;
+
+        surfaceAccumIndex = clamp(
+          0.42 * clamp((0.55 - TwEff) / 1.4, 0, 1) +
+          0.22 * clamp(P / 0.8, 0, 1) +
+          0.18 * clamp(1 - lowWarmEnergy / 850, 0, 1) +
+          0.10 * clamp(elev / 1000, 0.5, 1.2) +
+          nightBonus -
+          dayPenalty,
+          0,
+          1
+        );
+
+        return {
+          meltEnergy: warmEnergy,
+          refreezeEnergy: refreezeEnergy,
+          warmDepth: warmDepth,
+          coldDepth: coldDepth,
+          lowWarmEnergy: lowWarmEnergy,
+          maxTw: maxTw,
+          warmNoseMax: warmNoseMax,
+          dgzDepth: dgzDepth,
+          dgzRH: dgzRH,
+          dgzScore: dgzScore,
+          satDepth: satDepth,
+          coldSatDepth: coldSatDepth,
+          omegaProxy: omegaProxy,
+          microSnowScore: microSnowScore,
+          surfaceAccumIndex: surfaceAccumIndex
+        };
+      }
+
+      function snowLiquidRatio(TwEff, T850, wind850, elev, oroIndex, dgzScore, microSnowScore, meltEnergy, ptypeIdx) {
+        var slr =
+          8.5 +
+          2.2 * Math.max(0, -TwEff) -
+          6.2 * Math.max(0, TwEff) +
+          clamp((elev - 800) / 850, -0.8, 1.8) +
+          2.5 * clamp(dgzScore, 0, 1.4) +
+          1.4 * clamp(microSnowScore, 0, 1.4) +
+          (finite(T850) ? clamp(1.4 - Math.abs(T850 + 5.5) / 7.5, -1, 1.4) : 0) +
+          0.7 * oroIndex -
+          clamp((wind850 - 42) / 32, 0, 1.8) -
+          clamp(meltEnergy / 700, 0, 2.2);
+
+        if (ptypeIdx <= 1) {
+          slr = Math.min(slr, 2.5);
+        }
+
+        if (ptypeIdx === 2) {
+          slr = Math.min(slr, 4.0);
+        }
+
+        if (ptypeIdx === 3) {
+          slr = Math.min(slr, 7.0);
+        }
+
+        return clamp(slr, 1.2, 22);
+      }
+
+      function stickingFactor(TwEff, P, elev, meltEnergy, ptypeIdx, surfaceAccumIndex, time) {
+        var d = new Date(time);
+        var hour = isNaN(d.getTime()) ? 0 : d.getHours();
+        var night = hour >= 20 || hour <= 8 ? 1.08 : 1.0;
+        var midday = hour >= 11 && hour <= 17 ? 0.88 : 1.0;
+        var thermal = sigmoid((0.25 - TwEff) / 0.30);
+        var intensity = clamp(0.78 + 0.18 * Math.sqrt(Math.max(0, P)), 0.70, 1.22);
+        var elevation = elev >= 1000 ? 1.12 : elev >= 850 ? 0.98 : 0.78;
+        var meltPenalty = clamp(1 - meltEnergy / 1300, 0.22, 1);
+        var phase = ptypeIdx >= 5 ? 1.05 : ptypeIdx === 4 ? 0.90 : ptypeIdx === 3 ? 0.62 : ptypeIdx === 2 ? 0.30 : 0.08;
+
+        return clamp(
+          thermal *
+          intensity *
+          elevation *
+          meltPenalty *
+          phase *
+          night *
+          midday *
+          clamp(0.55 + 0.65 * surfaceAccumIndex, 0.35, 1.15),
+          0,
+          1
+        );
+      }
+
+      function classifyPrecipType(o) {
+        var phaseScore;
+
+        if (o.P < 0.04) {
+          return {
+            idx: 0,
+            label: "Sin precip."
+          };
+        }
+
+        phaseScore =
+          1.25 * clamp((0.75 - o.TwEff) / 1.75, 0, 1) +
+          1.05 * clamp((700 - o.meltEnergy) / 700, 0, 1) +
+          0.70 * clamp(o.refreezeEnergy / 550, 0, 1) +
+          0.85 * clamp((o.elev - o.snowLine + 250) / 500, 0, 1) +
+          0.75 * clamp(o.dgzScore, 0, 1.2) +
+          0.55 * clamp(o.microSnowScore, 0, 1.4) +
+          0.55 * clamp(o.survivalProb, 0, 1) +
+          0.35 * clamp(o.P / 0.8, 0, 1) -
+          0.55 * clamp(o.lowWarmEnergy / 800, 0, 1) -
+          0.45 * clamp(o.warmDepth / 1000, 0, 1);
+
+        if (o.TwEff > 2.3 || o.meltEnergy > 1500) {
+          phaseScore -= 1.4;
+        }
+
+        if (o.TwEff > 1.4 && o.lowWarmEnergy > 500) {
+          phaseScore -= 0.8;
+        }
+
+        if (phaseScore >= 4.55) {
+          return { idx: 5, label: "Nieve acum." };
+        }
+
+        if (phaseScore >= 3.70) {
+          return { idx: 4, label: "Nieve marginal" };
+        }
+
+        if (phaseScore >= 2.85) {
+          return { idx: 3, label: "Nieve húmeda" };
+        }
+
+        if (phaseScore >= 1.95) {
+          return { idx: 2, label: "Aguanieve" };
+        }
+
+        if (phaseScore >= 1.05) {
+          return { idx: 1, label: "Lluvia/copos" };
+        }
+
+        return {
+          idx: 0,
+          label: "Lluvia"
+        };
+      }
+
+      function snowProbability(o) {
+        var score =
+          -0.70 +
+          1.18 * ((0.35 - o.TwEff) / 0.44) +
+          0.96 * ((o.elev - o.snowLine + 100) / 190) +
+          Math.log(1 + Math.max(0, o.P)) * 0.86 +
+          1.95 * (o.survivalProb - 0.45) +
+          0.50 * clamp(o.refreezeEnergy / 550, 0, 1) +
+          0.72 * clamp(o.dgzScore, 0, 1.3) +
+          0.55 * clamp(o.microSnowScore, 0, 1.4) +
+          0.22 * o.oroIndex -
+          0.76 * (o.warmDepth / 560) -
+          0.42 * (o.lowWarmEnergy / 800);
+
+        var prob = sigmoid(score) * clamp(o.pop / 100, 0.15, 1);
+
+        if (o.P < 0.04) {
+          prob *= 0.12;
+        }
+
+        if (o.meltEnergy > 1300) {
+          prob *= 0.32;
+        }
+
+        if (o.TwEff > 1.8) {
+          prob *= 0.28;
+        }
+
+        if (o.dgzScore < 0.10 && o.TwEff > 0.8) {
+          prob *= 0.75;
+        }
+
+        return clamp(prob, 0, 1);
+      }
+
+      function computeModel(data, source, advanced) {
+        var h = data.hourly || {};
+        var times = h.time || [];
+        var elev = $("elev") ? num($("elev").value, 778) : 778;
+        var oroFactor = $("oro") ? num($("oro").value, 0.42) : 0.42;
+        var coldBias = $("coldBias") ? num($("coldBias").value, 0) : 0;
+        var baseElev = finite(data.elevation) ? Number(data.elevation) : elev;
+        var out = [];
+
+        var i;
+        var Traw;
+        var RH;
+        var column;
+        var T;
+        var TwSurface;
+        var Praw;
+        var pop;
+        var oro;
+        var P;
+        var dryness;
+        var evapCooling;
+        var TwEff;
+        var phys;
+        var meltEnergy;
+        var refreezeEnergy;
+        var survivalProb;
+        var snowLine;
+        var FL;
+        var prob;
+        var T850;
+        var wind850;
+        var slr;
+        var ptype;
+        var stick;
+        var cmh;
+        var snowApi;
+        var risk;
+
+        for (i = 0; i < times.length; i++) {
+          Traw = getValue(h, "temperature_2m", i, null);
+          RH = getValue(h, "relative_humidity_2m", i, null);
+
+          if (!finite(Traw) || !finite(RH)) {
+            continue;
+          }
+
+          column = buildColumn(h, i, elev, baseElev, coldBias);
+
+          if (!column.length) {
+            continue;
+          }
+
+          T = interpColumn(column, elev, "T");
+          TwSurface = interpColumn(column, elev, "Tw");
+
+          Praw = getValue(h, "precipitation", i, 0);
+          pop = getValue(h, "precipitation_probability", i, 100);
+
+          oro = orographicDiagnostics(h, i, oroFactor);
+          P = Praw * oro.precipMultiplier;
+
+          dryness = clamp((100 - RH) / 45, 0, 1);
+          evapCooling = clamp(
+            0.12 * Math.sqrt(Math.max(0, P)) +
+            0.30 * dryness * Math.sqrt(Math.max(0, P)),
+            0,
+            0.85
+          );
+
+          TwEff = TwSurface - evapCooling - oro.liftCooling;
+
+          phys = columnPhysics(column, elev, TwEff, P, oro, times[i]);
+
+          meltEnergy = Math.max(
+            0,
+            phys.meltEnergy -
+            95 * evapCooling -
+            65 * oro.liftCooling
+          );
+
+          refreezeEnergy = phys.refreezeEnergy;
+
+          survivalProb =
+            Math.exp(-meltEnergy / 360) *
+            clamp(1 + refreezeEnergy / 1400, 0.65, 1.45) *
+            clamp(1 - phys.lowWarmEnergy / 1350, 0.20, 1.00);
+
+          survivalProb = clamp(survivalProb, 0, 1);
+
+          snowLine = physicalSnowLine(column, 0.45, elev, TwEff);
+          FL = getValue(h, "freezing_level_height", i, null);
+
+          if (finite(FL)) {
+            snowLine = 0.72 * snowLine + 0.28 * (FL - 330);
+          }
+
+          snowLine = Math.max(
+            0,
+            snowLine -
+            evapCooling * 170 -
+            oro.liftCooling * 135
+          );
+
+          prob = snowProbability({
+            TwEff: TwEff,
+            snowLine: snowLine,
+            elev: elev,
+            P: P,
+            pop: pop,
+            meltEnergy: meltEnergy,
+            refreezeEnergy: refreezeEnergy,
+            warmDepth: phys.warmDepth,
+            lowWarmEnergy: phys.lowWarmEnergy,
+            survivalProb: survivalProb,
+            oroIndex: oro.oroIndex,
+            dgzScore: phys.dgzScore,
+            microSnowScore: phys.microSnowScore
+          });
+
+          ptype = classifyPrecipType({
+            TwEff: TwEff,
+            P: P,
+            elev: elev,
+            snowLine: snowLine,
+            meltEnergy: meltEnergy,
+            refreezeEnergy: refreezeEnergy,
+            warmDepth: phys.warmDepth,
+            lowWarmEnergy: phys.lowWarmEnergy,
+            dgzScore: phys.dgzScore,
+            microSnowScore: phys.microSnowScore,
+            survivalProb: survivalProb
+          });
+
+          T850 = getValue(h, "temperature_850hPa", i, null);
+          wind850 = getValue(h, "wind_speed_850hPa", i, getValue(h, "wind_speed_10m", i, 0));
+
+          slr = snowLiquidRatio(
+            TwEff,
+            T850,
+            wind850,
+            elev,
+            oro.oroIndex,
+            phys.dgzScore,
+            phys.microSnowScore,
+            meltEnergy,
+            ptype.idx
+          );
+
+          stick = stickingFactor(
+            TwEff,
+            P,
+            elev,
+            meltEnergy,
+            ptype.idx,
+            phys.surfaceAccumIndex,
+            times[i]
+          );
+
+          cmh = P * prob * slr / 10 * stick;
+
+          snowApi = getValue(h, "snowfall", i, null);
+
+          if (finite(snowApi) && snowApi > 0) {
+            cmh = 0.65 * cmh + 0.35 * snowApi;
+          }
+
+          risk = "Bajo";
+
+          if (
+            prob >= 0.72 &&
+            cmh >= 1.1 &&
+            TwEff <= 0.35 &&
+            meltEnergy < 500 &&
+            ptype.idx >= 4
+          ) {
+            risk = "Alto";
+          } else if (
+            prob >= 0.46 &&
+            cmh >= 0.25 &&
+            TwEff <= 1.15 &&
+            meltEnergy < 900 &&
+            ptype.idx >= 2
+          ) {
+            risk = "Medio";
+          }
+
+          out.push({
+            time: times[i],
+            key: isoHour(times[i]),
+            T: T,
+            TwEff: TwEff,
+            P: P,
+            snowLine: snowLine,
+            prob: prob,
+            cmh: cmh,
+            cmhMin: cmh,
+            cmhMax: cmh,
+            probMin: prob,
+            probMax: prob,
+            meltEnergy: meltEnergy,
+            refreezeEnergy: refreezeEnergy,
+            warmDepth: phys.warmDepth,
+            coldDepth: phys.coldDepth,
+            lowWarmEnergy: phys.lowWarmEnergy,
+            survivalProb: survivalProb,
+            oroIndex: oro.oroIndex,
+            froude: oro.Fr,
+            blocking: oro.blocking,
+            Uperp: oro.Uperp,
+            dgzDepth: phys.dgzDepth,
+            dgzRH: phys.dgzRH,
+            dgzScore: phys.dgzScore,
+            satDepth: phys.satDepth,
+            coldSatDepth: phys.coldSatDepth,
+            omegaProxy: phys.omegaProxy,
+            microSnowScore: phys.microSnowScore,
+            surfaceAccumIndex: phys.surfaceAccumIndex,
+            slr: slr,
+            ptypeIdx: ptype.idx,
+            ptypeLabel: ptype.label,
+            risk: risk,
+            confidence: 0.72,
+            members: 1,
+            sourceId: source.id,
+            sourceName: source.label,
+            sourceWeight: source.weight,
+            wg: null,
+            diff: null
+          });
+        }
+
+        return out;
+      }
+
+      function copyRow(x) {
+        var y = {};
+        var k;
+
+        for (k in x) {
+          if (Object.prototype.hasOwnProperty.call(x, k)) {
+            y[k] = x[k];
+          }
+        }
+
+        return y;
+      }
+
+      function rowWeight(row) {
+        return finite(row.sourceWeight) ? Number(row.sourceWeight) : 0.1;
+      }
+
+      function weightedMean(rows, key) {
+        var sw = 0;
+        var sx = 0;
+        var i;
+        var v;
+        var w;
+
+        for (i = 0; i < rows.length; i++) {
+          v = rows[i][key];
+
+          if (!finite(v)) {
+            continue;
+          }
+
+          w = rowWeight(rows[i]);
+          sw += w;
+          sx += w * v;
+        }
+
+        return sw > 0 ? sx / sw : null;
+      }
+
+      function weightedRisk(rows) {
+        var sw = 0;
+        var sx = 0;
+        var i;
+        var w;
+        var score;
+
+        for (i = 0; i < rows.length; i++) {
+          w = rowWeight(rows[i]);
+          sw += w;
+
+          if (rows[i].risk === "Alto") {
+            sx += 2 * w;
+          } else if (rows[i].risk === "Medio") {
+            sx += w;
+          }
+        }
+
+        score = sw > 0 ? sx / sw : 0;
+
+        if (score >= 1.35) {
+          return "Alto";
+        }
+
+        if (score >= 0.55) {
+          return "Medio";
+        }
+
+        return "Bajo";
+      }
+
+      function modalPtype(rows) {
+        var counts = {};
+        var best = null;
+        var bv = -1;
+        var i;
+        var k;
+
+        for (i = 0; i < rows.length; i++) {
+          k = String(rows[i].ptypeIdx);
+          counts[k] = (counts[k] || 0) + rowWeight(rows[i]);
+
+          if (counts[k] > bv) {
+            bv = counts[k];
+            best = rows[i];
+          }
+        }
+
+        return best ? {
+          idx: best.ptypeIdx,
+          label: best.ptypeLabel
+        } : {
+          idx: 0,
+          label: "—"
+        };
+      }
+
+      function ensembleConfidence(rows, avg) {
+        var probs = [];
+        var cmhs = [];
+        var types = [];
+        var i;
+        var pSpread;
+        var cSpread;
+        var tSpread;
+        var cMax;
+        var cMin;
+        var base;
+        var memberBonus;
+        var physicsBonus;
+        var conf;
+
+        for (i = 0; i < rows.length; i++) {
+          if (finite(rows[i].prob)) {
+            probs.push(rows[i].prob);
+          }
+
+          if (finite(rows[i].cmh)) {
+            cmhs.push(rows[i].cmh);
+          }
+
+          if (finite(rows[i].ptypeIdx)) {
+            types.push(rows[i].ptypeIdx);
+          }
+        }
+
+        if (rows.length <= 1) {
+          return 0.70;
+        }
+
+        if (!probs.length || !cmhs.length) {
+          return 0.50;
+        }
+
+        pSpread = Math.max.apply(null, probs) - Math.min.apply(null, probs);
+        cMax = Math.max.apply(null, cmhs);
+        cMin = Math.min.apply(null, cmhs);
+        cSpread = cMax > 0.05 ? (cMax - cMin) / Math.max(0.1, cMax) : 0.15;
+        tSpread = types.length ? (Math.max.apply(null, types) - Math.min.apply(null, types)) / 5 : 0.2;
+
+        base = 0.90 - 0.42 * pSpread - 0.22 * cSpread - 0.20 * tSpread;
+        memberBonus = rows.length >= 4 ? 0.04 : rows.length >= 3 ? 0.025 : 0.01;
+        physicsBonus = 0;
+
+        if (avg.TwEff <= 0.3 && avg.meltEnergy <= 350 && avg.prob >= 0.65) {
+          physicsBonus += 0.03;
+        }
+
+        if (avg.dgzScore >= 0.55 && avg.P >= 0.15) {
+          physicsBonus += 0.02;
+        }
+
+        conf = base + memberBonus + physicsBonus;
+
+        return clamp(conf, 0.15, 0.90);
+      }
+
+      function averageModels(packs) {
+        var byKey = {};
+        var out = [];
+        var p;
+        var i;
+        var j;
+        var row;
+        var key;
+        var rows;
+        var first;
+        var cmhVals;
+        var probVals;
+        var avg;
+        var pt;
+
+        if (packs.length === 1) {
+          for (i = 0; i < packs[0].model.length; i++) {
+            row = copyRow(packs[0].model[i]);
+            row.confidence = 0.72;
+            row.members = 1;
+            row.cmhMin = row.cmh;
+            row.cmhMax = row.cmh;
+            row.probMin = row.prob;
+            row.probMax = row.prob;
+            out.push(row);
+          }
+
+          return out;
+        }
+
+        for (p = 0; p < packs.length; p++) {
+          for (i = 0; i < packs[p].model.length; i++) {
+            row = packs[p].model[i];
+            key = row.key;
+
+            if (!byKey[key]) {
+              byKey[key] = [];
+            }
+
+            byKey[key].push(row);
+          }
+        }
+
+        for (key in byKey) {
+          if (Object.prototype.hasOwnProperty.call(byKey, key)) {
+            rows = byKey[key];
+            first = rows[0];
+            cmhVals = [];
+            probVals = [];
+
+            for (j = 0; j < rows.length; j++) {
+              if (finite(rows[j].cmh)) {
+                cmhVals.push(rows[j].cmh);
+              }
+
+              if (finite(rows[j].prob)) {
+                probVals.push(rows[j].prob);
+              }
+            }
+
+            pt = modalPtype(rows);
+
+            avg = {
+              time: first.time,
+              key: key,
+              T: weightedMean(rows, "T"),
+              TwEff: weightedMean(rows, "TwEff"),
+              P: weightedMean(rows, "P"),
+              snowLine: weightedMean(rows, "snowLine"),
+              prob: weightedMean(rows, "prob"),
+              cmh: weightedMean(rows, "cmh"),
+              cmhMin: cmhVals.length ? Math.min.apply(null, cmhVals) : null,
+              cmhMax: cmhVals.length ? Math.max.apply(null, cmhVals) : null,
+              probMin: probVals.length ? Math.min.apply(null, probVals) : null,
+              probMax: probVals.length ? Math.max.apply(null, probVals) : null,
+              meltEnergy: weightedMean(rows, "meltEnergy"),
+              refreezeEnergy: weightedMean(rows, "refreezeEnergy"),
+              warmDepth: weightedMean(rows, "warmDepth"),
+              coldDepth: weightedMean(rows, "coldDepth"),
+              lowWarmEnergy: weightedMean(rows, "lowWarmEnergy"),
+              survivalProb: weightedMean(rows, "survivalProb"),
+              oroIndex: weightedMean(rows, "oroIndex"),
+              froude: weightedMean(rows, "froude"),
+              blocking: weightedMean(rows, "blocking"),
+              Uperp: weightedMean(rows, "Uperp"),
+              dgzDepth: weightedMean(rows, "dgzDepth"),
+              dgzRH: weightedMean(rows, "dgzRH"),
+              dgzScore: weightedMean(rows, "dgzScore"),
+              satDepth: weightedMean(rows, "satDepth"),
+              coldSatDepth: weightedMean(rows, "coldSatDepth"),
+              omegaProxy: weightedMean(rows, "omegaProxy"),
+              microSnowScore: weightedMean(rows, "microSnowScore"),
+              surfaceAccumIndex: weightedMean(rows, "surfaceAccumIndex"),
+              slr: weightedMean(rows, "slr"),
+              ptypeIdx: pt.idx,
+              ptypeLabel: pt.label,
+              risk: weightedRisk(rows),
+              members: rows.length,
+              wg: null,
+              diff: null
+            };
+
+            avg.confidence = ensembleConfidence(rows, avg);
+            out.push(avg);
+          }
+        }
+
+        out.sort(function (a, b) {
+          return new Date(a.time) - new Date(b.time);
+        });
+
+        return out;
+      }
+
+      function summarize(model) {
+        var total = 0;
+        var peak = model[0];
+        var next = null;
+        var best6 = 0;
+        var meanConf = 0;
+        var confCount = 0;
+        var i;
+        var j;
+        var s;
+
+        if (!model.length) {
+          throw new Error("No hay datos modelados.");
+        }
+
+        for (i = 0; i < model.length; i++) {
+          total += model[i].cmh || 0;
+
+          if ((model[i].cmh || 0) > (peak.cmh || 0)) {
+            peak = model[i];
+          }
+
+          if (!next && model[i].prob >= 0.45 && model[i].P >= 0.12 && model[i].ptypeIdx >= 2) {
+            next = model[i];
+          }
+
+          if (finite(model[i].confidence)) {
+            meanConf += model[i].confidence;
+            confCount++;
+          }
+        }
+
+        for (i = 0; i < model.length; i++) {
+          s = 0;
+
+          for (j = i; j < Math.min(i + 6, model.length); j++) {
+            s += model[j].cmh || 0;
+          }
+
+          best6 = Math.max(best6, s);
+        }
+
+        meanConf = confCount ? meanConf / confCount : 0.70;
+
+        return {
+          total: total,
+          peak: peak,
+          next: next,
+          best6: best6,
+          meanConf: meanConf
+        };
+      }
+
+      function summarizePrecip(model) {
+        var total = 0;
+        var peak = model[0];
+        var next = null;
+        var best6 = 0;
+        var i;
+        var j;
+        var s;
+
+        for (i = 0; i < model.length; i++) {
+          total += model[i].P || 0;
+
+          if ((model[i].P || 0) > (peak.P || 0)) {
+            peak = model[i];
+          }
+
+          if (!next && model[i].P >= 0.15) {
+            next = model[i];
+          }
+        }
+
+        for (i = 0; i < model.length; i++) {
+          s = 0;
+
+          for (j = i; j < Math.min(i + 6, model.length); j++) {
+            s += model[j].P || 0;
+          }
+
+          best6 = Math.max(best6, s);
+        }
+
+        return {
+          total: total,
+          peak: peak,
+          next: next,
+          best6: best6
+        };
+      }
+
+      function snowScale(summary) {
+        var total = summary.total || 0;
+        var best6 = summary.best6 || 0;
+        var peak = summary.peak || {};
+        var next = summary.next;
+        var cmh = peak.cmh || 0;
+        var prob = peak.prob || 0;
+        var risk = peak.risk || "Bajo";
+        var pt = peak.ptypeIdx || 0;
+
+        if (total >= 10 || best6 >= 6 || risk === "Alto" || cmh >= 1.4 || pt >= 5) {
+          return {
+            label: "5 · Nevada importante",
+            cls: "red",
+            text: "Alta probabilidad de nieve acumuladora. Puede afectar calles, caminos internos, accesos y tránsito."
+          };
+        }
+
+        if (total >= 5 || best6 >= 3 || cmh >= 0.7 || pt >= 4) {
+          return {
+            label: "4 · Nieve acumulable",
+            cls: "orange",
+            text: "La nieve puede acumular de forma visible, sobre todo en césped, techos, banquinas, autos y sectores fríos."
+          };
+        }
+
+        if (total >= 1.5 || next || pt >= 3) {
+          return {
+            label: "3 · Mezcla marginal",
+            cls: "yellow",
+            text: "Puede haber lluvia con nieve, aguanieve o nieve húmeda. La acumulación sería limitada y dependiente de la intensidad."
+          };
+        }
+
+        if (total >= 0.5 || prob >= 0.25 || pt >= 1) {
+          return {
+            label: "2 · Copos débiles",
+            cls: "green",
+            text: "Puede verse algún copo o nieve muy húmeda, pero sin señal clara de acumulación relevante."
+          };
+        }
+
+        return {
+          label: "1 · Sin acumulación",
+          cls: "green",
+          text: "No hay señal meteorológica robusta de nieve acumuladora para el barrio seleccionado."
+        };
+      }
+
+      function precipScale(p) {
+        if (p.total >= 30 || p.best6 >= 12 || p.peak.P >= 4) {
+          return {
+            label: "5 · Precipitación intensa",
+            cls: "red",
+            text: "Precipitación importante. Puede haber períodos fuertes o acumulados altos."
+          };
+        }
+
+        if (p.total >= 15 || p.best6 >= 8 || p.peak.P >= 2.5) {
+          return {
+            label: "4 · Precipitación persistente",
+            cls: "orange",
+            text: "Precipitación sostenida o de varias horas, con acumulado relevante."
+          };
+        }
+
+        if (p.total >= 5 || p.best6 >= 3 || p.peak.P >= 0.8) {
+          return {
+            label: "3 · Intermitente",
+            cls: "yellow",
+            text: "Puede llover o nevar por momentos. La precipitación no sería continua todo el período."
+          };
+        }
+
+        if (p.total >= 1 || p.peak.P >= 0.2) {
+          return {
+            label: "2 · Débil",
+            cls: "green",
+            text: "Precipitación débil, aislada o de bajo acumulado."
+          };
+        }
+
+        return {
+          label: "1 · Casi seco",
+          cls: "green",
+          text: "No hay señal clara de precipitación relevante."
+        };
+      }
+
+      function badge(r) {
+        if (r === "Alto") {
+          return '<span class="badge high">Alto</span>';
+        }
+
+        if (r === "Medio") {
+          return '<span class="badge mid">Medio</span>';
+        }
+
+        return '<span class="badge low">Bajo</span>';
+      }
+
+      function render(model, summary) {
+        var sc = snowScale(summary);
+        var p = summary.peak;
+
+        $("verdict").className = sc.cls;
+        $("verdict").textContent = sc.label;
+        $("verdictText").textContent = sc.text;
+
+        $("nextSnow").textContent = summary.next ? localTime(summary.next.time) : "—";
+        $("nextSnowText").textContent = summary.next
+          ? "Tipo " + summary.next.ptypeLabel + ", prob. " + Math.round(summary.next.prob * 100) + "%, precip. " + fmt(summary.next.P) + " mm/h."
+          : "Sin ventana clara con precipitación y fase nieve.";
+
+        $("ptype").className = p.ptypeIdx >= 4 ? "red" : p.ptypeIdx >= 3 ? "orange" : p.ptypeIdx >= 2 ? "yellow" : "green";
+        $("ptype").textContent = p.ptypeLabel || "—";
+        $("ptypeText").textContent =
+          "Índice físico: " +
+          (finite(p.ptypeIdx) ? p.ptypeIdx : "—") +
+          "/5. Supervivencia del copo: " +
+          Math.round((p.survivalProb || 0) * 100) +
+          "%.";
+
+        $("accum").textContent = fmt(summary.total, 1) + " cm";
+        $("accumText").textContent =
+          "Mejor bloque 6 h: " +
+          fmt(summary.best6, 1) +
+          " cm. Pico: " +
+          fmt(summary.peak.cmh, 2) +
+          " cm/h.";
+
+        renderPrecip(model, summary);
+        renderDiagnosis(summary);
+        renderPhysics(summary);
+        renderRows(model);
+        drawChart(model);
+        updateChartMeta(summary);
+      }
+
+      function renderPrecip(model, summary) {
+        var p = summarizePrecip(model);
+        var sc = precipScale(p);
+        var conf = summary.meanConf || 0.70;
+
+        $("precipVerdict").className = sc.cls;
+        $("precipVerdict").textContent = sc.label;
+        $("precipVerdictText").textContent = sc.text;
+
+        $("nextPrecip").textContent = p.next ? localTime(p.next.time) : "—";
+        $("nextPrecipText").textContent = p.next
+          ? "Precipitación estimada " + fmt(p.next.P, 1) + " mm/h."
+          : "Sin precipitación horaria clara.";
+
+        $("peakPrecip").textContent = localTime(p.peak.time);
+        $("peakPrecipText").textContent =
+          "Pico " +
+          fmt(p.peak.P, 1) +
+          " mm/h. Prob. nieve " +
+          Math.round(p.peak.prob * 100) +
+          "%.";
+
+        $("confidence").className = conf >= 0.78 ? "green" : conf >= 0.55 ? "yellow" : "red";
+        $("confidence").textContent = Math.round(conf * 100) + "%";
+        $("confidenceText").textContent = "Confianza interna. Total precip.: " + fmt(p.total, 1) + " mm.";
+      }
+
+      function updateChartMeta(summary) {
+        var p = selectedPlace();
+
+        safeHTML(
+          "chartMeta",
+          "📍 " +
+          p.name +
+          " · " +
+          Math.round(p.elev) +
+          " m<br>Fuente: " +
+          latestSourceLabel +
+          "<br>Confianza: " +
+          Math.round((summary.meanConf || 0) * 100) +
+          "%"
+        );
+      }
+
+      function renderDiagnosis(summary) {
+        var p = summary.peak;
+
+        $("diagnosis").innerHTML =
+          "<b>Hora crítica:</b> " +
+          localTime(p.time) +
+          ". Tipo físico: <b>" +
+          p.ptypeLabel +
+          "</b>. Tw efectivo: <b>" +
+          fmt(p.TwEff) +
+          " °C</b>. Cota de nieve: <b>" +
+          Math.round(p.snowLine) +
+          " m</b>. Melt: <b>" +
+          fmt(p.meltEnergy, 0) +
+          " °C·m</b>. Recongelamiento: <b>" +
+          fmt(p.refreezeEnergy, 0) +
+          " °C·m</b>. DGZ: <b>" +
+          fmt(p.dgzScore, 2) +
+          "</b>. Supervivencia del copo: <b>" +
+          Math.round((p.survivalProb || 0) * 100) +
+          "%</b>. SLR: <b>" +
+          fmt(p.slr, 1) +
+          ":1</b>. Pico: <b>" +
+          fmt(p.cmh, 2) +
+          " cm/h</b>. Total: <b>" +
+          fmt(summary.total, 1) +
+          " cm</b>. Miembros disponibles: <b>" +
+          (p.members || 1) +
+          "</b>.";
+      }
+
+      function needClass(ok, mid) {
+        return ok ? "need-ok" : mid ? "need-mid" : "need-bad";
+      }
+
+      function needLabel(ok, mid) {
+        return ok ? "favorable" : mid ? "marginal" : "desfavorable";
+      }
+
+      function renderPhysics(summary) {
+        var p = summary.peak;
+        var elev = $("elev") ? num($("elev").value, 778) : 778;
+        var cotaDiff = p.snowLine - elev;
+
+        var twOk = p.TwEff <= 0.3;
+        var twMid = p.TwEff <= 1.1;
+        var cotaOk = cotaDiff <= 100;
+        var cotaMid = cotaDiff <= 350;
+        var meltOk = p.meltEnergy <= 350;
+        var meltMid = p.meltEnergy <= 850;
+        var precipOk = p.P >= 0.6;
+        var precipMid = p.P >= 0.15;
+        var dgzOk = p.dgzScore >= 0.65;
+        var dgzMid = p.dgzScore >= 0.3;
+        var ptypeOk = p.ptypeIdx >= 4;
+        var ptypeMid = p.ptypeIdx >= 2;
+
+        $("physicsColumn").innerHTML =
+          "Columna evaluada con superficie, 925, 850 y 700 hPa cuando están disponibles. En hora crítica: <b>Tw_eff = " +
+          fmt(p.TwEff) +
+          " °C</b>, cota estimada <b>" +
+          Math.round(p.snowLine) +
+          " m</b>.";
+
+        $("physicsEnergy").innerHTML =
+          "Fusión: <b>" +
+          fmt(p.meltEnergy, 0) +
+          " °C·m</b>. Recongelamiento: <b>" +
+          fmt(p.refreezeEnergy, 0) +
+          " °C·m</b>. Capa cálida: <b>" +
+          fmt(p.warmDepth, 0) +
+          " m</b>. Capa cálida baja: <b>" +
+          fmt(p.lowWarmEnergy, 0) +
+          " °C·m</b>. Supervivencia: <b>" +
+          Math.round((p.survivalProb || 0) * 100) +
+          "%</b>.";
+
+        $("physicsDgz").innerHTML =
+          "DGZ: <b>" +
+          fmt(p.dgzScore, 2) +
+          "</b>. Espesor: <b>" +
+          fmt(p.dgzDepth, 0) +
+          " m</b>. RH DGZ: <b>" +
+          fmt(p.dgzRH, 0) +
+          "%</b>. Microfísica nieve: <b>" +
+          fmt(p.microSnowScore, 2) +
+          "</b>.";
+
+        $("physicsOro").innerHTML =
+          "Orografía: <b>" +
+          fmt(p.oroIndex, 2) +
+          "</b>. Froude: <b>" +
+          fmt(p.froude, 2) +
+          "</b>. Viento perpendicular: <b>" +
+          fmt(p.Uperp, 1) +
+          " km/h</b>. Bloqueo: <b>" +
+          fmt((p.blocking || 0) * 100, 0) +
+          "%</b>. SLR: <b>" +
+          fmt(p.slr, 1) +
+          ":1</b>.";
+
+        $("snowNeeds").innerHTML =
+          '<div class="need"><span>Tipo físico ≥ nieve marginal</span><b class="' +
+          needClass(ptypeOk, ptypeMid) +
+          '">' +
+          needLabel(ptypeOk, ptypeMid) +
+          " · " +
+          p.ptypeLabel +
+          "</b></div>" +
+          '<div class="need"><span>Bulbo húmedo efectivo ≤ 0.3 °C</span><b class="' +
+          needClass(twOk, twMid) +
+          '">' +
+          needLabel(twOk, twMid) +
+          " · " +
+          fmt(p.TwEff) +
+          " °C</b></div>" +
+          '<div class="need"><span>Cota cerca o debajo del barrio</span><b class="' +
+          needClass(cotaOk, cotaMid) +
+          '">' +
+          needLabel(cotaOk, cotaMid) +
+          " · " +
+          Math.round(p.snowLine) +
+          " m</b></div>" +
+          '<div class="need"><span>Energía de fusión baja</span><b class="' +
+          needClass(meltOk, meltMid) +
+          '">' +
+          needLabel(meltOk, meltMid) +
+          " · " +
+          fmt(p.meltEnergy, 0) +
+          " °C·m</b></div>" +
+          '<div class="need"><span>Precipitación suficiente</span><b class="' +
+          needClass(precipOk, precipMid) +
+          '">' +
+          needLabel(precipOk, precipMid) +
+          " · " +
+          fmt(p.P) +
+          " mm/h</b></div>" +
+          '<div class="need"><span>DGZ húmeda y activa</span><b class="' +
+          needClass(dgzOk, dgzMid) +
+          '">' +
+          needLabel(dgzOk, dgzMid) +
+          " · " +
+          fmt(p.dgzScore, 2) +
+          "</b></div>";
+
+        var score = Math.round(
+          100 *
+          clamp(
+            0.22 * (ptypeOk ? 1 : ptypeMid ? 0.55 : 0.10) +
+            0.20 * (twOk ? 1 : twMid ? 0.55 : 0.15) +
+            0.18 * (cotaOk ? 1 : cotaMid ? 0.55 : 0.10) +
+            0.16 * (meltOk ? 1 : meltMid ? 0.55 : 0.10) +
+            0.12 * (precipOk ? 1 : precipMid ? 0.55 : 0.10) +
+            0.12 * (dgzOk ? 1 : dgzMid ? 0.55 : 0.10),
+            0,
+            1
+          )
+        );
+
+        $("snowNeedsText").innerHTML =
+          "Para nieve acumuladora clara se necesita columna baja más fría, menor fusión, cota más baja, precipitación sostenida y DGZ húmeda." +
+          '<div class="meter"><div class="meter-fill" style="width:' +
+          score +
+          '%"></div></div><br>Índice físico de entorno nivoso: <b>' +
+          score +
+          "/100</b>.";
+      }
+
+      function renderRows(model) {
+        var html = "";
+        var i;
+        var x;
+        var wg;
+        var diff;
+
+        for (i = 0; i < model.length; i++) {
+          x = model[i];
+          wg = finite(x.wg) ? fmt(x.wg, 2) : "—";
+          diff = finite(x.diff) ? fmt(x.diff, 2) : "—";
+
+          html +=
+            "<tr>" +
+            "<td>" + localTime(x.time) + "</td>" +
+            "<td>" + fmt(x.T) + " °C</td>" +
+            "<td>" + fmt(x.TwEff) + " °C</td>" +
+            "<td>" + fmt(x.P) + " mm/h</td>" +
+            "<td>" + Math.round(x.snowLine) + " m</td>" +
+            "<td>" + Math.round(x.prob * 100) + "%</td>" +
+            "<td>" + x.ptypeLabel + "</td>" +
+            "<td>" + fmt(x.cmh, 2) + "</td>" +
+            "<td>" + fmt(x.dgzScore, 2) + "</td>" +
+            "<td>" + fmt(x.meltEnergy, 0) + "</td>" +
+            "<td>" + fmt(x.refreezeEnergy, 0) + "</td>" +
+            "<td>" + fmt(x.oroIndex, 2) + "</td>" +
+            "<td>" + Math.round((x.confidence || 0) * 100) + "%</td>" +
+            '<td class="purple">' + wg + "</td>" +
+            "<td>" + diff + "</td>" +
+            "<td>" + badge(x.risk) + "</td>" +
+            "</tr>";
+        }
+
+        $("rows").innerHTML = html;
+      }
+
+      function prepareCanvas(canvas) {
+        var rect = canvas.getBoundingClientRect();
+        var dpr = Math.max(1, window.devicePixelRatio || 1);
+        var width = Math.max(320, Math.round(rect.width * dpr));
+        var height = Math.max(270, Math.round(rect.height * dpr));
+
+        if (canvas.width !== width || canvas.height !== height) {
+          canvas.width = width;
+          canvas.height = height;
+        }
+
+        return {
+          dpr: dpr,
+          width: width,
+          height: height
+        };
+      }
+
+      function drawLine(ctx, model, xAt, yFn, color, width, skipMissing) {
+        var i;
+        var x;
+        var y;
+        var started = false;
+
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+
+        for (i = 0; i < model.length; i++) {
+          if (skipMissing && !finite(model[i].wg)) {
+            continue;
+          }
+
+          x = xAt(i);
+          y = yFn(model[i]);
+
+          if (!started) {
+            ctx.moveTo(x, y);
+            started = true;
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+
+        if (started) {
+          ctx.stroke();
+        }
+      }
+
+      function drawBand(ctx, model, xAt, yCmh, color) {
+        var pts = [];
+        var i;
+        var p;
+
+        for (i = 0; i < model.length; i++) {
+          if (finite(model[i].cmhMin) && finite(model[i].cmhMax)) {
+            pts.push({
+              x: xAt(i),
+              low: yCmh(model[i].cmhMin),
+              high: yCmh(model[i].cmhMax)
+            });
+          }
+        }
+
+        if (pts.length < 2) {
+          return;
+        }
+
+        ctx.beginPath();
+        ctx.fillStyle = color;
+
+        for (i = 0; i < pts.length; i++) {
+          p = pts[i];
+
+          if (i === 0) {
+            ctx.moveTo(p.x, p.high);
+          } else {
+            ctx.lineTo(p.x, p.high);
+          }
+        }
+
+        for (i = pts.length - 1; i >= 0; i--) {
+          p = pts[i];
+          ctx.lineTo(p.x, p.low);
+        }
+
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      function modelHasWindguru(model) {
+        var i;
+
+        for (i = 0; i < model.length; i++) {
+          if (finite(model[i].wg)) {
+            return true;
+          }
+        }
+
+        return false;
+      }
+
+      function drawChart(model) {
+        var c = $("chart");
+
+        if (!c) {
+          return;
+        }
+
+        var info = prepareCanvas(c);
+        var ctx = c.getContext("2d");
+        var W = info.width;
+        var H = info.height;
+        var isMobile = W < 720;
+
+        var padL = isMobile ? 52 : 72;
+        var padR = isMobile ? 54 : 82;
+        var padT = isMobile ? 42 : 48;
+        var padB = isMobile ? 54 : 62;
+
+        var plotW = W - padL - padR;
+        var plotH = H - padT - padB;
+
+        var maxC = 1;
+        var maxP = 1;
+        var i;
+        var x;
+        var bh;
+        var bw;
+        var p;
+        var y;
+        var d;
+        var label;
+        var step;
+
+        for (i = 0; i < model.length; i++) {
+          maxC = Math.max(maxC, model[i].cmh || 0, model[i].cmhMax || 0);
+          maxP = Math.max(maxP, model[i].P || 0);
+
+          if (finite(model[i].wg)) {
+            maxC = Math.max(maxC, model[i].wg);
+          }
+        }
+
+        function xAt(i) {
+          return padL + plotW * i / Math.max(1, model.length - 1);
+        }
+
+        function yProb(v) {
+          return padT + (1 - v) * plotH;
+        }
+
+        function yCmh(v) {
+          return padT + (1 - v / maxC) * plotH;
+        }
+
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = "rgba(0,0,0,.20)";
+        ctx.fillRect(0, 0, W, H);
+
+        ctx.strokeStyle = "rgba(255,255,255,.14)";
+        ctx.lineWidth = 1 * info.dpr;
+        ctx.font = (isMobile ? 10 : 12) + "px system-ui";
+
+        for (i = 0; i <= 5; i++) {
+          p = i / 5;
+          y = yProb(p);
+
+          ctx.beginPath();
+          ctx.moveTo(padL, y);
+          ctx.lineTo(W - padR, y);
+          ctx.stroke();
+
+          ctx.fillStyle = "rgba(255,209,102,.9)";
+          ctx.textAlign = "right";
+          ctx.fillText(Math.round(p * 100) + "%", padL - 8, y + 4);
+
+          ctx.fillStyle = "rgba(124,255,178,.9)";
+          ctx.textAlign = "left";
+          ctx.fillText(fmt(maxC * p, 1), W - padR + 8, y + 4);
+        }
+
+        ctx.strokeStyle = "rgba(238,248,255,.75)";
+        ctx.lineWidth = 1.2 * info.dpr;
+        ctx.beginPath();
+        ctx.moveTo(padL, padT);
+        ctx.lineTo(padL, H - padB);
+        ctx.lineTo(W - padR, H - padB);
+        ctx.moveTo(W - padR, padT);
+        ctx.lineTo(W - padR, H - padB);
+        ctx.stroke();
+
+        for (i = 0; i < model.length; i++) {
+          x = model[i];
+          bh = ((x.P || 0) / maxP) * plotH;
+          bw = Math.max(2 * info.dpr, plotW / model.length * .72);
+
+          ctx.fillStyle = "rgba(101,221,255,.24)";
+          ctx.fillRect(xAt(i) - bw / 2, H - padB - bh, bw, bh);
+        }
+
+        drawBand(ctx, model, xAt, yCmh, "rgba(121,255,178,.14)");
+        drawLine(ctx, model, xAt, function (row) {
+          return yProb(row.prob || 0);
+        }, "#ffd166", 2.6 * info.dpr, false);
+
+        drawLine(ctx, model, xAt, function (row) {
+          return yCmh(row.cmh || 0);
+        }, "#79ffb2", 3.1 * info.dpr, false);
+
+        if (modelHasWindguru(model)) {
+          drawLine(ctx, model, xAt, function (row) {
+            return yCmh(row.wg);
+          }, "#c5a6ff", 2.4 * info.dpr, true);
+        }
+
+        ctx.textAlign = "left";
+        ctx.font = (isMobile ? 10 : 13) + "px system-ui";
+
+        ctx.fillStyle = "#79ffb2";
+        ctx.fillText("● cm/h", padL, isMobile ? 18 : 25);
+
+        ctx.fillStyle = "#ffd166";
+        ctx.fillText("● prob.", isMobile ? padL : padL + 76, isMobile ? 34 : 25);
+
+        ctx.fillStyle = "#65ddff";
+        ctx.fillText("■ precip.", isMobile ? padL + 92 : padL + 158, isMobile ? 18 : 25);
+
+        ctx.fillStyle = "#c5a6ff";
+        ctx.fillText("● Windguru", isMobile ? padL + 92 : padL + 260, isMobile ? 34 : 25);
+
+        ctx.fillStyle = "rgba(238,248,255,.72)";
+        ctx.textAlign = "center";
+        ctx.font = (isMobile ? 10 : 11) + "px system-ui";
+
+        step = Math.max(isMobile ? 12 : 6, Math.round(model.length / (isMobile ? 5 : 8)));
+
+        for (i = 0; i < model.length; i += step) {
+          d = new Date(model[i].time);
+          label = pad2(d.getDate()) + "/" + pad2(d.getHours()) + "h";
+          ctx.fillText(label, xAt(i), H - padB + 24);
+        }
+
+        ctx.fillStyle = "rgba(238,248,255,.75)";
+        ctx.font = (isMobile ? 11 : 13) + "px system-ui";
+        ctx.fillText("Tiempo local ART", padL + plotW / 2, H - 12);
+      }
+
+      function setLoading() {
+        safeText("verdict", "Calculando…");
+        $("verdict").className = "yellow";
+        safeText("verdictText", "Consultando Open-Meteo.");
+
+        safeText("nextSnow", "—");
+        safeText("nextSnowText", "Esperando datos.");
+
+        safeText("ptype", "—");
+        safeText("ptypeText", "Esperando datos.");
+
+        safeText("accum", "—");
+        safeText("accumText", "Esperando datos.");
+
+        safeText("precipVerdict", "Calculando…");
+        $("precipVerdict").className = "yellow";
+        safeText("precipVerdictText", "Consultando Open-Meteo.");
+
+        safeText("confidence", "—");
+        safeText("confidenceText", "Esperando datos.");
+
+        safeText("chartMeta", "Descargando datos…");
+      }
+
+      function renderSourceStatus(ok, fail) {
+        var html = "";
+        var labels = [];
+        var i;
+
+        for (i = 0; i < ok.length; i++) {
+          labels.push(ok[i].source.label);
+          html += '<span class="source-pill source-ok">✓ ' + ok[i].source.label + " · " + ok[i].mode + "</span>";
+        }
+
+        for (i = 0; i < fail.length; i++) {
+          html += '<span class="source-pill source-fail">× ' + fail[i].source.label + "</span>";
+        }
+
+        latestSourceLabel = labels.length ? labels.join(", ") : "—";
+
+        safeHTML("sourceStatus", html);
+      }
+
+      function run() {
+        updatePlaceBadge();
+
+        var sources = selectedSources();
+        var t0 = new Date().getTime();
+
+        setLoading();
+
+        safeText("status", "Iniciando corrida…");
+        safeHTML("sourceStatus", "");
+        safeHTML("debugBox", "DOM: OK<br>Fuentes seleccionadas: " + sources.length);
+
+        fetchAllSources(sources, 0, [], [], function (ok, fail) {
+          var ms = new Date().getTime() - t0;
+          var model;
+          var summary;
+          var i;
+          var urls = "";
+
+          renderSourceStatus(ok, fail);
+
+          for (i = 0; i < ok.length; i++) {
+            urls += ok[i].source.label + " (" + ok[i].mode + "): " + ok[i].url + "<br><br>";
+          }
+
+          if (!ok.length) {
+            safeText("status", "Error: no respondió ninguna fuente.");
+            safeText("verdict", "Error");
+            $("verdict").className = "red";
+            safeText("verdictText", "No respondió ninguna fuente automática.");
+            safeHTML(
+              "debugBox",
+              "DOM: OK<br>API: ERROR<br>Fuentes intentadas: " +
+              sources.length +
+              "<br>Fallidas: " +
+              fail.length +
+              "<br>Tiempo: " +
+              ms +
+              " ms"
+            );
+
+            return;
+          }
+
+          try {
+            model = averageModels(ok);
+            summary = summarize(model);
+            latestModel = model;
+
+            render(latestModel, summary);
+
+            safeText("status", "🟢 Listo · " + ok.length + " fuente(s) · " + ms + " ms");
+
+            safeHTML(
+              "debugBox",
+              "DOM: OK<br>API: OK<br>Fuentes OK: " +
+              ok.length +
+              "<br>Fuentes fallidas: " +
+              fail.length +
+              "<br>Tiempo total: " +
+              ms +
+              " ms<br>Horas modeladas: " +
+              latestModel.length +
+              "<br>Confianza media: " +
+              Math.round((summary.meanConf || 0) * 100) +
+              "%<br><br>" +
+              urls
+            );
+          } catch (e) {
+            safeText("status", "Error procesando ensamble: " + e.message);
+            safeText("verdict", "Error");
+            $("verdict").className = "red";
+            safeText("verdictText", e.message);
+
+            safeHTML(
+              "debugBox",
+              "API: OK, pero falló procesamiento.<br>Detalle: " +
+              e.message +
+              "<br>Fuentes OK: " +
+              ok.length +
+              "<br>Fuentes fallidas: " +
+              fail.length
+            );
+          }
+        });
+      }
+
+      function parseWindguru() {
+        var raw = $("windguruInput").value;
+        var lines;
+        var parsed;
+        var i;
+        var line;
+        var parts;
+        var value;
+
+        if (!raw) {
+          return [];
+        }
+
+        raw = raw.replace(/^\s+|\s+$/g, "");
+
+        if (!raw) {
+          return [];
+        }
+
+        lines = raw.split(/\n+/);
+        parsed = [];
+
+        for (i = 0; i < lines.length; i++) {
+          line = lines[i].replace(/^\s+|\s+$/g, "");
+
+          if (!line) {
+            continue;
+          }
+
+          parts = line.split(/[;,]/);
+
+          if (parts.length >= 2 && /\d{4}-\d{2}-\d{2}/.test(parts[0])) {
+            value = Number(String(parts[1]).replace(",", "."));
+
+            if (finite(value)) {
+              parsed.push({
+                key: normalizeKey(parts[0].replace("T", " ")),
+                value: value
+              });
+            }
+          } else {
+            value = Number(String(line).replace(",", "."));
+
+            if (finite(value)) {
+              parsed.push({
+                key: null,
+                value: value
+              });
+            }
+          }
+        }
+
+        return parsed;
+      }
+
+      function normalizeKey(s) {
+        var m = s.match(/(\d{4}-\d{2}-\d{2})\s+(\d{1,2})(?::(\d{2}))?/);
+
+        if (!m) {
+          return s;
+        }
+
+        return m[1] + " " + pad2(Number(m[2])) + ":00";
+      }
+
+      function compareWindguru() {
+        var parsed;
+        var hasDates;
+        var map;
+        var i;
+        var pairs;
+        var mae;
+        var bias;
+        var wgTotal;
+        var modelTotal;
+
+        if (!latestModel.length) {
+          return;
+        }
+
+        parsed = parseWindguru();
+
+        for (i = 0; i < latestModel.length; i++) {
+          latestModel[i].wg = null;
+          latestModel[i].diff = null;
+        }
+
+        if (!parsed.length) {
+          safeText("wgSummary", "No hay valores de Windguru cargados.");
+          render(latestModel, summarize(latestModel));
+          return;
+        }
+
+        hasDates = false;
+
+        for (i = 0; i < parsed.length; i++) {
+          if (parsed[i].key) {
+            hasDates = true;
+          }
+        }
+
+        if (hasDates) {
+          map = {};
+
+          for (i = 0; i < parsed.length; i++) {
+            if (parsed[i].key) {
+              map[parsed[i].key] = parsed[i].value;
+            }
+          }
+
+          for (i = 0; i < latestModel.length; i++) {
+            if (Object.prototype.hasOwnProperty.call(map, latestModel[i].key)) {
+              latestModel[i].wg = map[latestModel[i].key];
+              latestModel[i].diff = latestModel[i].cmh - latestModel[i].wg;
+            }
+          }
+        } else {
+          for (i = 0; i < Math.min(parsed.length, latestModel.length); i++) {
+            latestModel[i].wg = parsed[i].value;
+            latestModel[i].diff = latestModel[i].cmh - latestModel[i].wg;
+          }
+        }
+
+        render(latestModel, summarize(latestModel));
+
+        pairs = [];
+
+        for (i = 0; i < latestModel.length; i++) {
+          if (finite(latestModel[i].wg)) {
+            pairs.push(latestModel[i]);
+          }
+        }
+
+        if (!pairs.length) {
+          safeText("wgSummary", "No pude emparejar horarios.");
+          return;
+        }
+
+        mae = 0;
+        bias = 0;
+        wgTotal = 0;
+        modelTotal = 0;
+
+        for (i = 0; i < pairs.length; i++) {
+          mae += Math.abs(pairs[i].diff);
+          bias += pairs[i].diff;
+          wgTotal += pairs[i].wg;
+          modelTotal += pairs[i].cmh;
+        }
+
+        mae /= pairs.length;
+        bias /= pairs.length;
+
+        safeHTML(
+          "wgSummary",
+          "Comparados " +
+          pairs.length +
+          " puntos. Modelo: <b>" +
+          fmt(modelTotal, 1) +
+          " cm</b>, Windguru: <b>" +
+          fmt(wgTotal, 1) +
+          " cm</b>. MAE: <b>" +
+          fmt(mae, 2) +
+          " cm/h</b>. Sesgo modelo-Windguru: <b>" +
+          fmt(bias, 2) +
+          " cm/h</b>."
+        );
+      }
+
+      function clearWindguru() {
+        var i;
+
+        $("windguruInput").value = "";
+        safeText("wgSummary", "");
+
+        for (i = 0; i < latestModel.length; i++) {
+          latestModel[i].wg = null;
+          latestModel[i].diff = null;
+        }
+
+        if (latestModel.length) {
+          render(latestModel, summarize(latestModel));
+        }
+      }
+
+      function auditDom() {
+        var ids = [
+          "verdict",
+          "verdictText",
+          "nextSnow",
+          "nextSnowText",
+          "ptype",
+          "ptypeText",
+          "accum",
+          "accumText",
+          "precipVerdict",
+          "precipVerdictText",
+          "nextPrecip",
+          "nextPrecipText",
+          "peakPrecip",
+          "peakPrecipText",
+          "confidence",
+          "confidenceText",
+          "status",
+          "sourceStatus",
+          "debugBox",
+          "currentPlace",
+          "placeNote",
+          "locationPreset",
+          "lat",
+          "lon",
+          "elev",
+          "days",
+          "oro",
+          "coldBias",
+          "sourceMode",
+          "runBtn",
+          "windguruBtn",
+          "chart",
+          "chartMeta",
+          "diagnosis",
+          "windguruInput",
+          "compareBtn",
+          "clearWgBtn",
+          "wgSummary",
+          "physicsColumn",
+          "physicsEnergy",
+          "physicsDgz",
+          "physicsOro",
+          "snowNeeds",
+          "snowNeedsText",
+          "rows"
+        ];
+
+        var missing = [];
+        var i;
+
+        for (i = 0; i < ids.length; i++) {
+          if (!$(ids[i])) {
+            missing.push(ids[i]);
+          }
+        }
+
+        if (missing.length) {
+          safeText("status", "Error DOM: faltan IDs " + missing.join(", "));
+          safeHTML("debugBox", "Error DOM. Faltan IDs:<br>" + missing.join("<br>"));
+          return false;
+        }
+
+        return true;
+      }
+
+      function init() {
+        var settings;
+        var manualIds = ["lat", "lon", "elev", "oro", "coldBias"];
+        var i;
+        var el;
+
+        if (!auditDom()) {
+          return;
+        }
+
+        $("runBtn").onclick = run;
+        $("compareBtn").onclick = compareWindguru;
+        $("clearWgBtn").onclick = clearWindguru;
+
+        $("windguruBtn").onclick = function () {
+          window.open(WINDGURU_URL, "_blank", "noopener,noreferrer");
+        };
+
+        $("locationPreset").onchange = function () {
+          applyLocationPreset(true);
+        };
+
+        for (i = 0; i < manualIds.length; i++) {
+          el = $(manualIds[i]);
+
+          if (el) {
+            el.onchange = markCustomFromManual;
+          }
+        }
+
+        window.onresize = function () {
+          clearTimeout(resizeTimer);
+
+          resizeTimer = setTimeout(function () {
+            if (latestModel.length) {
+              drawChart(latestModel);
+            }
+          }, 120);
+        };
+
+        settings = $("settingsBox");
+
+        if (settings && window.innerWidth >= 981) {
+          settings.open = false;
+        }
+
+        applyLocationPreset(false);
+        run();
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
+    })();
+  </script>
 </body>
 </html>
