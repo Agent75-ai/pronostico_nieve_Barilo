@@ -1622,8 +1622,71 @@ O:
       }
 
       function renderQuickRead(summary,snow,rain){
-        var peak=summary.peak;
-        html("quickRead","<b>"+snow.label+"</b> para nieve y <b>"+rain.label+"</b> para lluvia. Nieve probable: <b>"+fmt(summary.snowQ50,1)+" cm</b> (P25-P75: <b>"+fmt(summary.snowQ25,1)+"-"+fmt(summary.snowQ75,1)+" cm</b>). Precipitación probable: <b>"+fmt(summary.rainQ50,1)+" mm</b>. Fase crítica: <b>"+(peak.phaseLabel||"—")+"</b>. Tendencia 12 h: <b>"+summary.trend.label+"</b>. Consenso operativo: <b>"+Math.round(summary.consensus*100)+"%</b>.");
+        var peak = summary.peak || {};
+        var snowName = String(snow.label || "").replace(/^\d+\s*·\s*/,"");
+        var rainName = String(rain.label || "").replace(/^\d+\s*·\s*/,"");
+        var snowLevel = Number(String(snow.label || "").charAt(0));
+        var rainLevel = Number(String(rain.label || "").charAt(0));
+
+        var snowPhrase = "";
+        var rainPhrase = "";
+        var dominance = "";
+
+        if(snowLevel === 1){
+          snowPhrase = "No se espera nieve. La señal de acumulación es prácticamente nula";
+        }else if(snowLevel === 2){
+          snowPhrase = "Podrían aparecer copitos diminutos o mezcla muy aislada, sin acumulación robusta";
+        }else if(snowLevel === 3){
+          snowPhrase = "El escenario nival es marginal: puede haber aguanieve, nieve húmeda o mezcla con lluvia";
+        }else if(snowLevel === 4){
+          snowPhrase = "Puede nevar poco, con acumulación ligera o moderada especialmente en superficies frías";
+        }else if(snowLevel === 5){
+          snowPhrase = "La señal de nieve es fuerte: puede nevar mucho y acumular con impacto operativo";
+        }else{
+          snowPhrase = "La señal de nieve es incierta";
+        }
+
+        if(rainLevel === 1){
+          rainPhrase = "La lluvia no aparece como un factor relevante";
+        }else if(rainLevel === 2){
+          rainPhrase = "Puede haber lluvia débil o aislada";
+        }else if(rainLevel === 3){
+          rainPhrase = "La lluvia puede ser intermitente, con pausas o intensidad variable";
+        }else if(rainLevel === 4){
+          rainPhrase = "La lluvia puede ser persistente y dejar acumulados relevantes";
+        }else if(rainLevel === 5){
+          rainPhrase = "La señal de lluvia es intensa, con acumulados altos o períodos fuertes";
+        }else{
+          rainPhrase = "La señal de lluvia es incierta";
+        }
+
+        if(snowLevel <= 1 && rainLevel >= 4){
+          dominance = "El evento está dominado por lluvia, no por nieve.";
+        }else if(snowLevel <= 2 && rainLevel >= 3){
+          dominance = "La precipitación principal sería lluvia; la nieve, si aparece, sería secundaria.";
+        }else if(snowLevel >= 4 && rainLevel <= 2){
+          dominance = "La señal principal es nival.";
+        }else if(snowLevel >= 3 && rainLevel >= 3){
+          dominance = "El escenario es mixto y sensible a pequeños cambios de temperatura, intensidad y cota.";
+        }else{
+          dominance = "El escenario no muestra una señal dominante extrema.";
+        }
+
+        html(
+          "quickRead",
+          "<b>"+snowName+"</b>. "+snowPhrase+". "+
+          "<br><br>"+
+          "<b>Lluvia: "+rainName+"</b>. "+rainPhrase+". "+
+          "<br><br>"+
+          dominance+
+          "<br><br>"+
+          "Nieve probable: <b>"+fmt(summary.snowQ50,1)+" cm</b> "+
+          "(rango P25-P75: <b>"+fmt(summary.snowQ25,1)+"-"+fmt(summary.snowQ75,1)+" cm</b>). "+
+          "Precipitación probable: <b>"+fmt(summary.rainQ50,1)+" mm</b>. "+
+          "Fase crítica: <b>"+(peak.phaseLabel||"—")+"</b>. "+
+          "Tendencia 12 h: <b>"+summary.trend.label+"</b>. "+
+          "Consenso operativo: <b>"+Math.round(summary.consensus*100)+"%</b>."
+        );
       }
 
       function renderScenarioTables(summary){
