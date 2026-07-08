@@ -40,7 +40,7 @@
 
     header{
       display:grid;
-      grid-template-columns:1.15fr .85fr;
+      grid-template-columns:1fr;
       gap:16px;
       margin-bottom:16px;
     }
@@ -58,7 +58,7 @@
     }
 
     .brand{
-      min-height:220px;
+      min-height:190px;
       display:flex;
       flex-direction:column;
       justify-content:flex-end;
@@ -112,21 +112,7 @@
     .lead{
       margin-top:14px;
       font-size:15.5px;
-    }
-
-    .chips{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
-
-    .chip{
-      padding:8px 11px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.075);
-      color:#e4f8ff;
-      font-size:12.5px;
+      max-width:940px;
     }
 
     .control{
@@ -305,6 +291,10 @@
     .kpis.compact{
       grid-template-columns:repeat(2,minmax(0,1fr));
       margin-bottom:0;
+    }
+
+    .event-windows{
+      grid-template-columns:repeat(4,1fr);
     }
 
     .kpi{
@@ -634,6 +624,10 @@
       .kpis.compact{
         grid-template-columns:repeat(2,minmax(0,1fr));
       }
+
+      .event-windows{
+        grid-template-columns:repeat(2,1fr);
+      }
     }
 
     @media (max-width:980px){
@@ -677,10 +671,6 @@
         padding:14px 0 34px;
       }
 
-      .hero{
-        display:none;
-      }
-
       .card,.panel,.control{
         border-radius:20px;
         padding:14px;
@@ -705,6 +695,7 @@
       .control-actions,
       .kpis,
       .kpis.compact,
+      .event-windows,
       .grid2,
       .grid3{
         grid-template-columns:1fr;
@@ -760,23 +751,6 @@
           de nieve, lluvia y fase probable por barrio.
         </div>
       </section>
-
-      <aside class="card hero">
-        <h2>Motor operativo</h2>
-        <div class="chips">
-          <span class="chip">📍 Lago Moreno</span>
-          <span class="chip">📍 Melipal</span>
-          <span class="chip">📍 Centro</span>
-          <span class="chip">📊 P25 / P50 / P75 / P90</span>
-          <span class="chip">🎯 Consenso multimodelo</span>
-          <span class="chip">🧊 Fase física local</span>
-          <span class="chip">📈 Tendencia 12 h</span>
-          <span class="chip">🟣 Windguru externo</span>
-        </div>
-        <div class="note" style="margin-top:14px">
-          El cálculo se renderiza apenas responde una fuente válida. Los modelos adicionales enriquecen el ensamble, pero no bloquean el pronóstico.
-        </div>
-      </aside>
     </header>
 
     <main>
@@ -870,6 +844,32 @@
         </div>
       </section>
 
+      <section class="kpis event-windows">
+        <div class="kpi rain">
+          <span>🌧️ Comienza lluvia</span>
+          <strong id="rainStart">—</strong>
+          <small id="rainStartText">Sin corrida.</small>
+        </div>
+
+        <div class="kpi rain">
+          <span>🌧️ Termina lluvia</span>
+          <strong id="rainEnd">—</strong>
+          <small id="rainEndText">Sin corrida.</small>
+        </div>
+
+        <div class="kpi snow">
+          <span>❄️ Comienza nieve/mezcla</span>
+          <strong id="snowStart">—</strong>
+          <small id="snowStartText">Sin corrida.</small>
+        </div>
+
+        <div class="kpi snow">
+          <span>❄️ Termina nieve/mezcla</span>
+          <strong id="snowEnd">—</strong>
+          <small id="snowEndText">Sin corrida.</small>
+        </div>
+      </section>
+
       <section class="panel chart-panel">
         <div class="chart-head">
           <div>
@@ -934,7 +934,7 @@
 
           <div class="science-card">
             <h3>🌧️ Escala práctica de lluvia</h3>
-            <div class="scale-level"><div class="scale-tag green">1<br>No llueve</div><div>No hay señal relevante de precipitación acumulada.</div></div>
+            <div class="scale-level"><div class="scale-tag green">1<br>Casi seco</div><div>No hay señal relevante de precipitación acumulada.</div></div>
             <div class="scale-level"><div class="scale-tag green">2<br>Débil</div><div>Precipitación menor, aislada o de bajo impacto.</div></div>
             <div class="scale-level"><div class="scale-tag yellow">3<br>Intermitente</div><div>Precipitación por momentos, con pausas o intensidad variable.</div></div>
             <div class="scale-level"><div class="scale-tag orange">4<br>Persistente</div><div>Precipitación sostenida o acumulado relevante.</div></div>
@@ -1535,6 +1535,102 @@ O:
         return {label:label,cls:cls,text:"Δ nieve "+fmt(snow.delta,2)+" cm/h; Δ precip. "+fmt(rain.delta,1)+" mm/h; Δ Tw "+fmt(tw.delta,1)+" °C; Δ cota "+fmt(cota.delta,0)+" m."};
       }
 
+      function detectWindow(model,type){
+        var blocks=[],active=null,i,x,ok;
+
+        function closeBlock(){
+          if(active){
+            active.hours=active.rows.length;
+            blocks.push(active);
+            active=null;
+          }
+        }
+
+        for(i=0;i<model.length;i++){
+          x=model[i];
+          ok=false;
+
+          if(type==="rain"){
+            ok = finite(x.P) && x.P>=0.20;
+          }else{
+            ok = finite(x.P) && x.P>=0.10 && finite(x.prob) && x.prob>=0.35 && phaseRankFromRow(x)>=1;
+          }
+
+          if(ok){
+            if(!active){
+              active={start:x,end:x,peak:x,rows:[],total:0};
+            }
+            active.end=x;
+            active.rows.push(x);
+
+            if(type==="rain"){
+              active.total += x.P||0;
+              if(!active.peak || (x.P||0)>(active.peak.P||0))active.peak=x;
+            }else{
+              active.total += x.cmh||0;
+              if(!active.peak || (x.cmh||0)>(active.peak.cmh||0))active.peak=x;
+            }
+          }else{
+            closeBlock();
+          }
+        }
+
+        closeBlock();
+
+        if(!blocks.length){
+          return {has:false,start:null,end:null,peak:null,hours:0,total:0,text:"Sin ventana clara"};
+        }
+
+        blocks.sort(function(a,b){
+          if(b.total!==a.total)return b.total-a.total;
+          return b.hours-a.hours;
+        });
+
+        var best=blocks[0];
+
+        return {
+          has:true,
+          start:best.start,
+          end:best.end,
+          peak:best.peak,
+          hours:best.hours,
+          total:best.total,
+          text:localTime(best.start.time)+" → "+localTime(best.end.time)
+        };
+      }
+
+      function renderEventWindows(model,summary){
+        var rainW=detectWindow(model,"rain");
+        var snowW=detectWindow(model,"snow");
+
+        summary.rainWindow=rainW;
+        summary.snowWindow=snowW;
+
+        if(rainW.has){
+          text("rainStart",localTime(rainW.start.time));
+          text("rainStartText","Ventana principal de lluvia. Pico: "+localTime(rainW.peak.time)+" con "+fmt(rainW.peak.P,1)+" mm/h.");
+          text("rainEnd",localTime(rainW.end.time));
+          text("rainEndText","Duración estimada: "+rainW.hours+" h. Acumulado de la ventana: "+fmt(rainW.total,1)+" mm.");
+        }else{
+          text("rainStart","—");
+          text("rainStartText","Sin lluvia relevante ≥ 0.2 mm/h.");
+          text("rainEnd","—");
+          text("rainEndText","No se detecta una ventana de lluvia principal.");
+        }
+
+        if(snowW.has){
+          text("snowStart",localTime(snowW.start.time));
+          text("snowStartText","Ventana principal con señal nival o mezcla. Pico: "+localTime(snowW.peak.time)+" con "+fmt(snowW.peak.cmh,2)+" cm/h.");
+          text("snowEnd",localTime(snowW.end.time));
+          text("snowEndText","Duración estimada: "+snowW.hours+" h. Acumulado de ventana: "+fmt(snowW.total,1)+" cm.");
+        }else{
+          text("snowStart","—");
+          text("snowStartText","Sin ventana nival clara.");
+          text("snowEnd","—");
+          text("snowEndText","No se detecta nieve/mezcla relevante.");
+        }
+      }
+
       function summarize(model,packs){
         var snowTotals=memberTotals(packs,"cmh");
         var rainTotals=memberTotals(packs,"P");
@@ -1552,7 +1648,8 @@ O:
           rainQ25:weightedQuantile(rainTotals,0.25),rainQ50:weightedQuantile(rainTotals,0.50),rainQ75:weightedQuantile(rainTotals,0.75),rainQ90:weightedQuantile(rainTotals,0.90),
           probSnowGt05:thresholdProb(snowTotals,0.5),probSnowGt1:thresholdProb(snowTotals,1),probSnowGt3:thresholdProb(snowTotals,3),probSnowGt5:thresholdProb(snowTotals,5),
           probRainGt10:thresholdProb(rainTotals,10),probRainGt20:thresholdProb(rainTotals,20),probRainGt40:thresholdProb(rainTotals,40),
-          peak:peak,next:next,consensus:consensusCount?meanConsensus/consensusCount:0.5,trend:calcTrend(model),sources:packs.length
+          peak:peak,next:next,consensus:consensusCount?meanConsensus/consensusCount:0.5,trend:calcTrend(model),sources:packs.length,
+          rainWindow:null,snowWindow:null
         };
       }
 
@@ -1580,7 +1677,7 @@ O:
         if(q50>=15||q75>=25||summary.probRainGt20>=0.35||peakP>=2.5)return {label:"4 · Precipitación persistente",cls:"orange",text:"Precipitación sostenida o acumulado relevante."};
         if(q50>=5||q75>=10||peakP>=0.8)return {label:"3 · Intermitente",cls:"yellow",text:"Precipitación por momentos, con intensidad variable."};
         if(q50>=1||q75>=2||peakP>=0.2)return {label:"2 · Débil",cls:"green",text:"Precipitación débil, aislada o de bajo acumulado."};
-        return {label:"1 · No llueve",cls:"green",text:"La señal de precipitación relevante es baja."};
+        return {label:"1 · Casi seco",cls:"green",text:"La señal de precipitación relevante es baja."};
       }
 
       function badge(r){
@@ -1597,6 +1694,8 @@ O:
 
       function render(model,summary){
         var snow=snowScale(summary),rain=rainScale(summary),peak=summary.peak,con=consensusLabel(summary.consensus);
+
+        renderEventWindows(model,summary);
 
         $("snowVerdict").className=snow.cls;text("snowVerdict",snow.label);text("snowVerdictText",snow.text);
         $("rainVerdict").className=rain.cls;text("rainVerdict",rain.label);text("rainVerdictText",rain.text);
@@ -1623,6 +1722,8 @@ O:
 
       function renderQuickRead(summary,snow,rain){
         var peak = summary.peak || {};
+        var rainW = summary.rainWindow || {has:false};
+        var snowW = summary.snowWindow || {has:false};
         var snowName = String(snow.label || "").replace(/^\d+\s*·\s*/,"");
         var rainName = String(rain.label || "").replace(/^\d+\s*·\s*/,"");
         var snowLevel = Number(String(snow.label || "").charAt(0));
@@ -1631,6 +1732,7 @@ O:
         var snowPhrase = "";
         var rainPhrase = "";
         var dominance = "";
+        var timing = "";
 
         if(snowLevel === 1){
           snowPhrase = "No se espera nieve. La señal de acumulación es prácticamente nula";
@@ -1672,6 +1774,16 @@ O:
           dominance = "El escenario no muestra una señal dominante extrema.";
         }
 
+        if(rainW.has && snowW.has){
+          timing = "La lluvia tendría su ventana principal entre <b>"+localTime(rainW.start.time)+"</b> y <b>"+localTime(rainW.end.time)+"</b>. La nieve o mezcla aparecería entre <b>"+localTime(snowW.start.time)+"</b> y <b>"+localTime(snowW.end.time)+"</b>.";
+        }else if(rainW.has && !snowW.has){
+          timing = "La lluvia tendría su ventana principal entre <b>"+localTime(rainW.start.time)+"</b> y <b>"+localTime(rainW.end.time)+"</b>. No aparece una ventana nival clara.";
+        }else if(!rainW.has && snowW.has){
+          timing = "No aparece una ventana de lluvia relevante. La nieve o mezcla tendría su ventana principal entre <b>"+localTime(snowW.start.time)+"</b> y <b>"+localTime(snowW.end.time)+"</b>.";
+        }else{
+          timing = "No se detecta una ventana clara de lluvia ni de nieve/mezcla con los umbrales actuales.";
+        }
+
         html(
           "quickRead",
           "<b>"+snowName+"</b>. "+snowPhrase+". "+
@@ -1679,6 +1791,8 @@ O:
           "<b>Lluvia: "+rainName+"</b>. "+rainPhrase+". "+
           "<br><br>"+
           dominance+
+          "<br><br>"+
+          timing+
           "<br><br>"+
           "Nieve probable: <b>"+fmt(summary.snowQ50,1)+" cm</b> "+
           "(rango P25-P75: <b>"+fmt(summary.snowQ25,1)+"-"+fmt(summary.snowQ75,1)+" cm</b>). "+
@@ -1782,6 +1896,10 @@ O:
         text("snowScenario","—");text("snowScenarioText","Esperando datos.");
         text("rainScenario","—");text("rainScenarioText","Esperando datos.");
         text("criticalWindow","—");text("criticalWindowText","Esperando datos.");
+        text("rainStart","—");text("rainStartText","Esperando datos.");
+        text("rainEnd","—");text("rainEndText","Esperando datos.");
+        text("snowStart","—");text("snowStartText","Esperando datos.");
+        text("snowEnd","—");text("snowEndText","Esperando datos.");
         text("quickRead","Corriendo modelo BariSnow.");
         text("chartMeta","Descargando datos…");
       }
@@ -2081,7 +2199,7 @@ O:
       }
 
       function auditDom(){
-        var ids=["status","sourceStatus","debugBox","currentPlace","placeNote","locationPreset","lat","lon","elev","days","oro","coldBias","sourceMode","runBtn","windguruBtn","quickRead","snowVerdict","snowVerdictText","rainVerdict","rainVerdictText","phaseVerdict","phaseVerdictText","ensembleConsensus","consensusText","trendVerdict","trendText","snowScenario","snowScenarioText","rainScenario","rainScenarioText","criticalWindow","criticalWindowText","chart","chartMeta","scenarioRows","thresholdRows","decomposition","diagnosis","physicsColumn","physicsEnergy","physicsDgz","physicsOro","snowNeeds","snowNeedsText","rows","windguruInput","compareBtn","clearWgBtn","wgSummary"];
+        var ids=["status","sourceStatus","debugBox","currentPlace","placeNote","locationPreset","lat","lon","elev","days","oro","coldBias","sourceMode","runBtn","windguruBtn","quickRead","snowVerdict","snowVerdictText","rainVerdict","rainVerdictText","phaseVerdict","phaseVerdictText","ensembleConsensus","consensusText","trendVerdict","trendText","snowScenario","snowScenarioText","rainScenario","rainScenarioText","criticalWindow","criticalWindowText","rainStart","rainStartText","rainEnd","rainEndText","snowStart","snowStartText","snowEnd","snowEndText","chart","chartMeta","scenarioRows","thresholdRows","decomposition","diagnosis","physicsColumn","physicsEnergy","physicsDgz","physicsOro","snowNeeds","snowNeedsText","rows","windguruInput","compareBtn","clearWgBtn","wgSummary"];
         var missing=[],i;
         for(i=0;i<ids.length;i++)if(!$(ids[i]))missing.push(ids[i]);
         if(missing.length){
