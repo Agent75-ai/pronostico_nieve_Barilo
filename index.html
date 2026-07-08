@@ -29,12 +29,9 @@
       --orange:#ff9f1c;
       --red:#ff6b7a;
       --purple:#c7a6ff;
-      --pink:#ff9bd2;
 
       --shadow:0 24px 80px rgba(0,0,0,.38);
       --soft:0 12px 34px rgba(0,0,0,.22);
-      --radius:28px;
-      --radius2:20px;
     }
 
     *{
@@ -659,41 +656,6 @@
     .mid{background:rgba(255,209,102,.14);color:var(--yellow)}
     .high{background:rgba(255,107,107,.16);color:var(--red)}
 
-    .factor-list{
-      display:grid;
-      gap:8px;
-    }
-
-    .factor{
-      display:grid;
-      grid-template-columns:170px 1fr;
-      gap:10px;
-      padding:11px;
-      border-radius:16px;
-      background:rgba(255,255,255,.058);
-      border:1px solid rgba(255,255,255,.10);
-      font-size:13.5px;
-    }
-
-    .scale-level{
-      display:grid;
-      grid-template-columns:128px 1fr;
-      gap:12px;
-      align-items:start;
-      padding:10px 0;
-      border-bottom:1px solid rgba(255,255,255,.10);
-      font-size:14px;
-      line-height:1.43;
-    }
-
-    .scale-level:last-child{
-      border-bottom:0;
-    }
-
-    .scale-tag{
-      font-weight:950;
-    }
-
     .science-card{
       padding:15px;
       border-radius:21px;
@@ -701,18 +663,6 @@
       background:
         linear-gradient(180deg,rgba(255,255,255,.070),rgba(255,255,255,.038));
       box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
-    }
-
-    .formula{
-      margin:10px 0;
-      padding:11px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.28);
-      color:#dff8ff;
-      overflow:auto;
-      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
-      font-size:13px;
     }
 
     .need{
@@ -925,10 +875,6 @@
         height:320px;
       }
 
-      .factor,.scale-level{
-        grid-template-columns:1fr;
-      }
-
       .need{
         flex-direction:column;
       }
@@ -1122,34 +1068,6 @@
       </section>
 
       <section class="panel">
-        <h2>🧩 Descomposición del veredicto</h2>
-        <div id="decomposition" class="factor-list"></div>
-      </section>
-
-      <section class="panel">
-        <h2>📘 Escalas BariSnow</h2>
-        <div class="grid2">
-          <div class="science-card">
-            <h3>❄️ Escala práctica de nieve</h3>
-            <div class="scale-level"><div class="scale-tag green">1<br>No nieva</div><div>No se espera nieve observable ni acumuladora.</div></div>
-            <div class="scale-level"><div class="scale-tag green">2<br>Copitos diminutos</div><div>Puede aparecer una señal muy débil de copos aislados o mezcla, sin acumulación robusta.</div></div>
-            <div class="scale-level"><div class="scale-tag yellow">3<br>Aguanieve</div><div>Escenario de mezcla: lluvia, aguanieve o nieve húmeda. La acumulación es incierta y sensible a la intensidad.</div></div>
-            <div class="scale-level"><div class="scale-tag orange">4<br>Nieva poco</div><div>Señal de nieve acumulable ligera o moderada, especialmente en superficies frías.</div></div>
-            <div class="scale-level"><div class="scale-tag red">5<br>Nieva mucho</div><div>Señal fuerte de nevada acumuladora con potencial impacto operativo.</div></div>
-          </div>
-
-          <div class="science-card">
-            <h3>🌧️ Escala práctica de lluvia</h3>
-            <div class="scale-level"><div class="scale-tag green">1<br>Casi seco</div><div>No hay señal relevante de precipitación acumulada.</div></div>
-            <div class="scale-level"><div class="scale-tag green">2<br>Débil</div><div>Precipitación menor, aislada o de bajo impacto.</div></div>
-            <div class="scale-level"><div class="scale-tag yellow">3<br>Intermitente</div><div>Precipitación por momentos, con pausas o intensidad variable.</div></div>
-            <div class="scale-level"><div class="scale-tag orange">4<br>Persistente</div><div>Precipitación sostenida o acumulado relevante.</div></div>
-            <div class="scale-level"><div class="scale-tag red">5<br>Intensa</div><div>Acumulados altos o períodos fuertes.</div></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel">
         <h2>🕒 Detalle horario</h2>
         <div class="tablebox">
           <table>
@@ -1191,56 +1109,20 @@ O:
         </section>
       </section>
 
-      <details class="panel" open>
-        <summary>🧪 Diagnóstico físico experto</summary>
-        <div class="note">
-          Postprocesamiento físico local: bulbo húmedo efectivo, cota estimada, supervivencia del copo,
-          realce orográfico, DGZ proxy, fase probable y adherencia.
-        </div>
-
-        <div class="grid2" style="margin-top:14px">
-          <div>
-            <div class="science-card">
-              <h3>🌡️ Columna termodinámica simplificada</h3>
-              <div class="formula">Tw_eff = Tw_superficie - enfriamiento evaporativo - enfriamiento orográfico proxy</div>
-              <div id="physicsColumn" class="diagnosis"></div>
-            </div>
-            <br>
-            <div class="science-card">
-              <h3>🔥 Fusión y supervivencia</h3>
-              <div class="formula">M+ proxy = max(Tw_eff + 0.1, 0) × 650 ; supervivencia = exp(-M+/380)</div>
-              <div id="physicsEnergy" class="diagnosis"></div>
-            </div>
-          </div>
-
-          <div>
-            <div class="science-card">
-              <h3>❄️ DGZ proxy</h3>
-              <div class="formula">DGZ proxy = humedad × precipitación × enfriamiento local</div>
-              <div id="physicsDgz" class="diagnosis"></div>
-            </div>
-            <br>
-            <div class="science-card">
-              <h3>⛰️ Orografía local</h3>
-              <div class="formula">Realce por viento W/NW, humedad y factor orográfico local.</div>
-              <div id="physicsOro" class="diagnosis"></div>
-            </div>
-          </div>
-        </div>
-
-        <br>
-
+      <section class="panel">
+        <h2>✅ Condiciones necesarias</h2>
         <div class="grid2">
           <div class="science-card">
-            <h3>✅ Condiciones necesarias</h3>
+            <h3>Chequeo físico de nieve/mezcla</h3>
             <div id="snowNeeds"></div>
           </div>
+
           <div class="science-card">
-            <h3>🧩 Diagnóstico práctico</h3>
-            <div id="snowNeedsText" class="diagnosis"></div>
+            <h3>Lectura práctica</h3>
+            <div id="snowNeedsText" class="diagnosis">Esperando corrida.</div>
           </div>
         </div>
-      </details>
+      </section>
 
       <details class="panel" id="settingsBox">
         <summary>⚙️ Configuración avanzada</summary>
@@ -1918,9 +1800,8 @@ O:
 
         renderQuickRead(summary,snow,rain);
         renderScenarioTables(summary);
-        renderDecomposition(summary,snow,rain);
         renderDiagnosis(summary);
-        renderPhysics(summary);
+        renderSnowNeeds(summary);
         renderRows(model);
         updateChartMeta(summary);
         drawChart(model);
@@ -2014,11 +1895,6 @@ O:
         html("thresholdRows","<tr><td>Nieve &gt; 0.5 cm</td><td>"+Math.round(summary.probSnowGt05*100)+"%</td><td>Copos visibles o blanqueo muy menor</td></tr><tr><td>Nieve &gt; 1 cm</td><td>"+Math.round(summary.probSnowGt1*100)+"%</td><td>Acumulación ligera detectable</td></tr><tr><td>Nieve &gt; 3 cm</td><td>"+Math.round(summary.probSnowGt3*100)+"%</td><td>Acumulación operativa en superficies frías</td></tr><tr><td>Nieve &gt; 5 cm</td><td>"+Math.round(summary.probSnowGt5*100)+"%</td><td>Evento acumulador relevante</td></tr><tr><td>Lluvia &gt; 10 mm</td><td>"+Math.round(summary.probRainGt10*100)+"%</td><td>Precipitación relevante</td></tr><tr><td>Lluvia &gt; 20 mm</td><td>"+Math.round(summary.probRainGt20*100)+"%</td><td>Evento húmedo importante</td></tr>");
       }
 
-      function renderDecomposition(summary,snow,rain){
-        var p=summary.peak,con=consensusLabel(summary.consensus);
-        html("decomposition",'<div class="factor"><b>Salida operativa</b><span>'+snow.label+" · "+rain.label+'</span></div><div class="factor"><b>Ensamble</b><span>Consenso <b class="'+con.cls+'">'+Math.round(summary.consensus*100)+"%</b>. Fuentes disponibles: "+summary.sources+'.</span></div><div class="factor"><b>Escenario probable</b><span>Nieve P50 <b>'+fmt(summary.snowQ50,1)+" cm</b>; precipitación P50 <b>"+fmt(summary.rainQ50,1)+" mm</b>; nieve P90 <b>"+fmt(summary.snowQ90,1)+" cm</b>.</span></div><div class=\"factor\"><b>Tendencia</b><span>"+summary.trend.label+". "+summary.trend.text+'</span></div><div class="factor"><b>Física local</b><span>Tw_eff <b>'+fmt(p.TwEff,1)+" °C</b>; cota <b>"+fmt(p.snowLine,0)+" m</b>; fusión <b>"+fmt(p.melt,0)+" °C·m</b>; DGZ proxy <b>"+fmt(p.dgzScore,2)+"</b>.</span></div>");
-      }
-
       function updateChartMeta(summary){
         var p=selectedPlace();
         html("chartMeta","📍 "+p.name+" · "+Math.round(p.elev)+" m<br>Fuente: "+latestSourceLabel+"<br>Consenso: "+Math.round((summary.consensus||0)*100)+"%");
@@ -2032,19 +1908,55 @@ O:
       function needClass(ok,mid){return ok?"need-ok":mid?"need-mid":"need-bad";}
       function needLabel(ok,mid){return ok?"favorable":mid?"marginal":"desfavorable";}
 
-      function renderPhysics(summary){
-        var p=summary.peak,elev=num($("elev").value,selectedPlace().elev),cotaDiff=p.snowLine-elev;
-        var twOk=p.TwEff<=0.3,twMid=p.TwEff<=1.1,cotaOk=cotaDiff<=100,cotaMid=cotaDiff<=350,meltOk=p.melt<=350,meltMid=p.melt<=850,precipOk=p.P>=0.6,precipMid=p.P>=0.15,dgzOk=p.dgzScore>=0.65,dgzMid=p.dgzScore>=0.3,phaseOk=phaseRankFromRow(p)>=3,phaseMid=phaseRankFromRow(p)>=2;
+      function renderSnowNeeds(summary){
+        var p=summary.peak;
+        var elev=num($("elev").value,selectedPlace().elev);
+        var cotaDiff=p.snowLine-elev;
 
-        html("physicsColumn","Postprocesamiento de superficie y barrio. En hora crítica: <b>Tw_eff = "+fmt(p.TwEff)+" °C</b>, cota estimada <b>"+Math.round(p.snowLine)+" m</b>, barrio <b>"+Math.round(elev)+" m</b>.");
-        html("physicsEnergy","Fusión proxy: <b>"+fmt(p.melt,0)+" °C·m</b>. Recongelamiento proxy: <b>"+fmt(p.refreeze,0)+" °C·m</b>. Supervivencia estimada del copo: <b>"+Math.round((p.survival||0)*100)+"%</b>.");
-        html("physicsDgz","DGZ proxy: <b>"+fmt(p.dgzScore,2)+"</b>. Humedad: <b>"+fmt(p.RH,0)+"%</b>. Precipitación crítica: <b>"+fmt(p.P,1)+" mm/h</b>.");
-        html("physicsOro","Orografía local: <b>"+fmt(p.oroIndex,2)+"</b>. Multiplicador aplicado: <b>"+fmt(p.oroMultiplier,2)+"×</b>. Viento: <b>"+fmt(p.wind,0)+" km/h</b>. Dirección: <b>"+fmt(p.dir,0)+"°</b>.");
+        var twOk=p.TwEff<=0.3;
+        var twMid=p.TwEff<=1.1;
+        var cotaOk=cotaDiff<=100;
+        var cotaMid=cotaDiff<=350;
+        var meltOk=p.melt<=350;
+        var meltMid=p.melt<=850;
+        var precipOk=p.P>=0.6;
+        var precipMid=p.P>=0.15;
+        var dgzOk=p.dgzScore>=0.65;
+        var dgzMid=p.dgzScore>=0.3;
+        var phaseOk=phaseRankFromRow(p)>=3;
+        var phaseMid=phaseRankFromRow(p)>=2;
 
-        html("snowNeeds",'<div class="need"><span>Fase dominante cercana a nieve</span><b class="'+needClass(phaseOk,phaseMid)+'">'+needLabel(phaseOk,phaseMid)+" · "+p.phaseLabel+'</b></div><div class="need"><span>Bulbo húmedo efectivo ≤ 0.3 °C</span><b class="'+needClass(twOk,twMid)+'">'+needLabel(twOk,twMid)+" · "+fmt(p.TwEff)+" °C</b></div>"+'<div class="need"><span>Cota cerca o debajo del barrio</span><b class="'+needClass(cotaOk,cotaMid)+'">'+needLabel(cotaOk,cotaMid)+" · "+Math.round(p.snowLine)+" m</b></div>"+'<div class="need"><span>Energía de fusión baja</span><b class="'+needClass(meltOk,meltMid)+'">'+needLabel(meltOk,meltMid)+" · "+fmt(p.melt,0)+" °C·m</b></div>"+'<div class="need"><span>Precipitación suficiente</span><b class="'+needClass(precipOk,precipMid)+'">'+needLabel(precipOk,precipMid)+" · "+fmt(p.P)+" mm/h</b></div>"+'<div class="need"><span>DGZ proxy favorable</span><b class="'+needClass(dgzOk,dgzMid)+'">'+needLabel(dgzOk,dgzMid)+" · "+fmt(p.dgzScore,2)+"</b></div>");
+        html("snowNeeds",
+          '<div class="need"><span>Fase dominante cercana a nieve</span><b class="'+needClass(phaseOk,phaseMid)+'">'+needLabel(phaseOk,phaseMid)+" · "+p.phaseLabel+'</b></div>'+
+          '<div class="need"><span>Bulbo húmedo efectivo ≤ 0.3 °C</span><b class="'+needClass(twOk,twMid)+'">'+needLabel(twOk,twMid)+" · "+fmt(p.TwEff)+" °C</b></div>"+
+          '<div class="need"><span>Cota cerca o debajo del barrio</span><b class="'+needClass(cotaOk,cotaMid)+'">'+needLabel(cotaOk,cotaMid)+" · "+Math.round(p.snowLine)+" m</b></div>"+
+          '<div class="need"><span>Energía de fusión baja</span><b class="'+needClass(meltOk,meltMid)+'">'+needLabel(meltOk,meltMid)+" · "+fmt(p.melt,0)+" °C·m</b></div>"+
+          '<div class="need"><span>Precipitación suficiente</span><b class="'+needClass(precipOk,precipMid)+'">'+needLabel(precipOk,precipMid)+" · "+fmt(p.P)+" mm/h</b></div>"+
+          '<div class="need"><span>DGZ proxy favorable</span><b class="'+needClass(dgzOk,dgzMid)+'">'+needLabel(dgzOk,dgzMid)+" · "+fmt(p.dgzScore,2)+"</b></div>"
+        );
 
-        var score=Math.round(100*clamp(0.22*(phaseOk?1:phaseMid?0.55:0.10)+0.20*(twOk?1:twMid?0.55:0.15)+0.18*(cotaOk?1:cotaMid?0.55:0.10)+0.16*(meltOk?1:meltMid?0.55:0.10)+0.12*(precipOk?1:precipMid?0.55:0.10)+0.12*(dgzOk?1:dgzMid?0.55:0.10),0,1));
-        html("snowNeedsText","Índice físico diagnóstico de entorno nivoso: <b>"+score+"/100</b>. Resume si el entorno térmico, la cota, la precipitación, la fase y la microfísica acompañan la señal del ensamble.<div class=\"meter\"><div class=\"meter-fill\" style=\"width:"+score+"%\"></div></div>");
+        var score=Math.round(100*clamp(
+          0.22*(phaseOk?1:phaseMid?0.55:0.10)+
+          0.20*(twOk?1:twMid?0.55:0.15)+
+          0.18*(cotaOk?1:cotaMid?0.55:0.10)+
+          0.16*(meltOk?1:meltMid?0.55:0.10)+
+          0.12*(precipOk?1:precipMid?0.55:0.10)+
+          0.12*(dgzOk?1:dgzMid?0.55:0.10),0,1));
+
+        var lectura;
+        if(score>=75){
+          lectura="El entorno físico acompaña bien una posible señal de nieve o mezcla. La limitante principal pasa a ser la intensidad y persistencia de la precipitación.";
+        }else if(score>=45){
+          lectura="El entorno es marginal. Pequeños cambios de temperatura, cota o intensidad pueden mover el resultado entre lluvia, aguanieve y nieve húmeda.";
+        }else{
+          lectura="El entorno físico no favorece nieve acumuladora. Aunque haya precipitación, la fase dominante tiende a lluvia o mezcla muy débil.";
+        }
+
+        html(
+          "snowNeedsText",
+          "Índice físico diagnóstico de entorno nivoso: <b>"+score+"/100</b>. "+lectura+
+          "<div class=\"meter\"><div class=\"meter-fill\" style=\"width:"+score+"%\"></div></div>"
+        );
       }
 
       function renderRows(model){
@@ -2108,6 +2020,7 @@ O:
         text("snowEnd","—");text("snowEndText","Esperando datos.");
         text("quickRead","Corriendo modelo BariSnow.");
         text("chartMeta","Descargando datos…");
+        text("snowNeedsText","Esperando datos.");
       }
 
       function run(){
@@ -2405,7 +2318,7 @@ O:
       }
 
       function auditDom(){
-        var ids=["status","sourceStatus","debugBox","currentPlace","placeNote","locationPreset","lat","lon","elev","days","oro","coldBias","sourceMode","runBtn","windguruBtn","quickRead","snowVerdict","snowVerdictText","rainVerdict","rainVerdictText","phaseVerdict","phaseVerdictText","ensembleConsensus","consensusText","trendVerdict","trendText","snowScenario","snowScenarioText","rainScenario","rainScenarioText","criticalWindow","criticalWindowText","rainStart","rainStartText","rainEnd","rainEndText","snowStart","snowStartText","snowEnd","snowEndText","chart","chartMeta","scenarioRows","thresholdRows","decomposition","diagnosis","physicsColumn","physicsEnergy","physicsDgz","physicsOro","snowNeeds","snowNeedsText","rows","windguruInput","compareBtn","clearWgBtn","wgSummary"];
+        var ids=["status","sourceStatus","debugBox","currentPlace","placeNote","locationPreset","lat","lon","elev","days","oro","coldBias","sourceMode","runBtn","windguruBtn","quickRead","snowVerdict","snowVerdictText","rainVerdict","rainVerdictText","phaseVerdict","phaseVerdictText","ensembleConsensus","consensusText","trendVerdict","trendText","snowScenario","snowScenarioText","rainScenario","rainScenarioText","criticalWindow","criticalWindowText","rainStart","rainStartText","rainEnd","rainEndText","snowStart","snowStartText","snowEnd","snowEndText","chart","chartMeta","scenarioRows","thresholdRows","diagnosis","snowNeeds","snowNeedsText","rows","windguruInput","compareBtn","clearWgBtn","wgSummary"];
         var missing=[],i;
         for(i=0;i<ids.length;i++)if(!$(ids[i]))missing.push(ids[i]);
         if(missing.length){
