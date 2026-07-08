@@ -250,7 +250,7 @@
 
     .morning{
       display:grid;
-      grid-template-columns:minmax(420px,.95fr) minmax(460px,1.05fr);
+      grid-template-columns:minmax(0,1fr) minmax(300px,380px);
       grid-template-areas:"qualitative quick";
       gap:16px;
       margin-bottom:16px;
@@ -263,19 +263,22 @@
 
     .quick-right{
       grid-area:quick;
+      justify-self:end;
     }
 
     .quick{
+      width:100%;
+      max-width:380px;
       min-height:100%;
-      padding:20px;
-      border-radius:26px;
+      padding:16px;
+      border-radius:24px;
       border:1px solid rgba(97,220,255,.28);
       background:
         radial-gradient(circle at 4% 4%,rgba(97,220,255,.18),transparent 32%),
         linear-gradient(180deg,rgba(97,220,255,.11),rgba(255,255,255,.045));
       color:#e8fbff;
-      font-size:16px;
-      line-height:1.58;
+      font-size:15px;
+      line-height:1.52;
       box-shadow:var(--shadow);
     }
 
@@ -619,7 +622,12 @@
           "qualitative";
       }
 
+      .quick-right{
+        justify-self:stretch;
+      }
+
       .quick{
+        max-width:none;
         min-height:auto;
       }
 
