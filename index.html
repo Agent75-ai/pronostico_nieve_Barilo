@@ -934,7 +934,7 @@
 
           <div class="science-card">
             <h3>🌧️ Escala práctica de lluvia</h3>
-            <div class="scale-level"><div class="scale-tag green">1<br>Casi seco</div><div>No hay señal relevante de precipitación acumulada.</div></div>
+            <div class="scale-level"><div class="scale-tag green">1<br>No llueve</div><div>No hay señal relevante de precipitación acumulada.</div></div>
             <div class="scale-level"><div class="scale-tag green">2<br>Débil</div><div>Precipitación menor, aislada o de bajo impacto.</div></div>
             <div class="scale-level"><div class="scale-tag yellow">3<br>Intermitente</div><div>Precipitación por momentos, con pausas o intensidad variable.</div></div>
             <div class="scale-level"><div class="scale-tag orange">4<br>Persistente</div><div>Precipitación sostenida o acumulado relevante.</div></div>
@@ -1580,7 +1580,7 @@ O:
         if(q50>=15||q75>=25||summary.probRainGt20>=0.35||peakP>=2.5)return {label:"4 · Precipitación persistente",cls:"orange",text:"Precipitación sostenida o acumulado relevante."};
         if(q50>=5||q75>=10||peakP>=0.8)return {label:"3 · Intermitente",cls:"yellow",text:"Precipitación por momentos, con intensidad variable."};
         if(q50>=1||q75>=2||peakP>=0.2)return {label:"2 · Débil",cls:"green",text:"Precipitación débil, aislada o de bajo acumulado."};
-        return {label:"1 · Casi seco",cls:"green",text:"La señal de precipitación relevante es baja."};
+        return {label:"1 · No llueve",cls:"green",text:"La señal de precipitación relevante es baja."};
       }
 
       function badge(r){
