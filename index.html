@@ -7,64 +7,49 @@
 
   <style>
     :root {
-      --bg0: #030817;
-      --bg1: #07172a;
-      --bg2: #162a45;
-      --card: rgba(255,255,255,.075);
-      --card2: rgba(255,255,255,.045);
-      --line: rgba(255,255,255,.15);
-      --txt: #f4fbff;
-      --mut: #bfd0df;
-      --mut2: #8fa9bd;
-      --blue: #61dcff;
-      --green: #79ffb2;
-      --yellow: #ffd166;
-      --orange: #ff9f1c;
-      --red: #ff6b6b;
-      --purple: #c5a6ff;
-      --shadow: 0 22px 70px rgba(0,0,0,.32);
+      --bg0:#020817;
+      --bg1:#07172a;
+      --bg2:#142943;
+      --card:rgba(255,255,255,.075);
+      --card2:rgba(255,255,255,.045);
+      --line:rgba(255,255,255,.16);
+      --txt:#f4fbff;
+      --mut:#bfd0df;
+      --blue:#61dcff;
+      --green:#79ffb2;
+      --yellow:#ffd166;
+      --orange:#ff9f1c;
+      --red:#ff6b6b;
+      --purple:#c5a6ff;
+      --shadow:0 20px 60px rgba(0,0,0,.34);
     }
 
     * {
-      box-sizing: border-box;
+      box-sizing:border-box;
     }
 
     body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--txt);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin:0;
+      min-height:100vh;
+      color:var(--txt);
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
       background:
-        radial-gradient(circle at 10% -10%, rgba(97,220,255,.30), transparent 32%),
-        radial-gradient(circle at 92% 0%, rgba(197,166,255,.20), transparent 34%),
-        linear-gradient(135deg, var(--bg0), var(--bg1) 48%, var(--bg2));
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
-      background-size: 42px 42px;
-      mask-image: linear-gradient(to bottom, rgba(0,0,0,.75), transparent 78%);
+        radial-gradient(circle at 8% -10%,rgba(97,220,255,.32),transparent 32%),
+        radial-gradient(circle at 92% 0%,rgba(197,166,255,.22),transparent 34%),
+        linear-gradient(135deg,var(--bg0),var(--bg1) 48%,var(--bg2));
     }
 
     .wrap {
-      position: relative;
-      z-index: 1;
-      width: min(1240px, calc(100% - 26px));
-      margin: auto;
-      padding: 22px 0 46px;
+      width:min(1220px,calc(100% - 26px));
+      margin:auto;
+      padding:22px 0 44px;
     }
 
     header {
-      display: grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap: 16px;
-      margin-bottom: 16px;
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:16px;
+      margin-bottom:16px;
     }
 
     .card,
@@ -72,742 +57,660 @@
     .kpi,
     .control,
     .statusbar {
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, var(--card), var(--card2));
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(16px);
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,var(--card),var(--card2));
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(14px);
     }
 
     .card {
-      border-radius: 32px;
-      padding: 24px;
+      border-radius:30px;
+      padding:24px;
     }
 
     .brand {
-      min-height: 230px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      background:
-        linear-gradient(135deg, rgba(97,220,255,.12), transparent 52%),
-        linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.035));
+      min-height:220px;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
     }
 
     .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      align-self: flex-start;
-      margin-bottom: 12px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(97,220,255,.32);
-      background: rgba(97,220,255,.10);
-      color: #e6fbff;
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: .02em;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      align-self:flex-start;
+      margin-bottom:12px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(97,220,255,.34);
+      background:rgba(97,220,255,.10);
+      font-size:12px;
+      font-weight:900;
     }
 
     .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 18px var(--green);
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--green);
+      box-shadow:0 0 18px var(--green);
     }
 
     h1 {
-      margin: 0;
-      font-size: clamp(58px, 8vw, 108px);
-      line-height: .86;
-      letter-spacing: -.084em;
+      margin:0;
+      font-size:clamp(58px,8vw,108px);
+      line-height:.86;
+      letter-spacing:-.084em;
     }
 
     h2 {
-      margin: 0 0 12px;
-      font-size: 18px;
-      letter-spacing: -.02em;
+      margin:0 0 12px;
+      font-size:18px;
     }
 
     h3 {
-      margin: 0 0 10px;
-      font-size: 15px;
+      margin:0 0 10px;
+      font-size:15px;
+    }
+
+    .lead,
+    .note {
+      color:var(--mut);
+      line-height:1.48;
+      font-size:14px;
     }
 
     .lead {
-      margin-top: 14px;
-      max-width: 880px;
-      color: var(--mut);
-      line-height: 1.48;
-      font-size: 15.5px;
+      margin-top:14px;
+      font-size:15.5px;
     }
 
-    .chipbox {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+    .chips {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
     }
 
     .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 11px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.075);
-      color: #e4f8ff;
-      font-size: 12.5px;
-      line-height: 1;
-    }
-
-    .hero-note {
-      margin-top: 14px;
-      color: var(--mut);
-      line-height: 1.45;
-      font-size: 13px;
+      padding:8px 11px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.075);
+      color:#e4f8ff;
+      font-size:12.5px;
     }
 
     .control {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 14px;
-      align-items: center;
-      border-radius: 26px;
-      padding: 16px;
-      margin-bottom: 14px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:14px;
+      align-items:center;
+      border-radius:26px;
+      padding:16px;
+      margin-bottom:14px;
     }
 
     .location-title {
-      margin-bottom: 8px;
-      color: var(--mut);
-      font-size: 13px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: .05em;
+      margin-bottom:8px;
+      color:var(--mut);
+      font-size:13px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.05em;
     }
 
     .location-active {
-      font-size: 20px;
-      font-weight: 950;
-      letter-spacing: -.02em;
+      font-size:20px;
+      font-weight:950;
     }
 
     .location-note {
-      margin-top: 6px;
-      color: var(--mut);
-      font-size: 13px;
-      line-height: 1.42;
+      margin-top:6px;
+      color:var(--mut);
+      font-size:13px;
     }
 
     .control-actions {
-      display: grid;
-      grid-template-columns: 270px 170px;
-      gap: 10px;
-      align-items: end;
+      display:grid;
+      grid-template-columns:270px 170px;
+      gap:10px;
+      align-items:end;
+    }
+
+    .field {
+      display:flex;
+      flex-direction:column;
+      gap:6px;
     }
 
     label {
-      color: var(--mut);
-      font-size: 12px;
-      font-weight: 850;
+      color:var(--mut);
+      font-size:12px;
+      font-weight:850;
     }
 
     input,
     select,
     textarea,
     button {
-      width: 100%;
-      padding: 11px 12px;
-      border-radius: 15px;
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.30);
-      color: var(--txt);
-      outline: none;
-      font-size: 14px;
+      width:100%;
+      padding:11px 12px;
+      border-radius:15px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.30);
+      color:var(--txt);
+      outline:none;
+      font-size:14px;
     }
 
     select option {
-      background: #102033;
-      color: #fff;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: rgba(97,220,255,.76);
-      box-shadow: 0 0 0 3px rgba(97,220,255,.13);
+      background:#102033;
+      color:#fff;
     }
 
     button {
-      cursor: pointer;
-      border: 0;
-      background: linear-gradient(135deg, var(--blue), #cff7ff);
-      color: #03131f;
-      font-weight: 950;
+      cursor:pointer;
+      border:0;
+      background:linear-gradient(135deg,var(--blue),#cff7ff);
+      color:#03131f;
+      font-weight:950;
     }
 
     button.secondary {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.10);
-      color: var(--txt);
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.10);
+      color:var(--txt);
     }
 
     .statusbar {
-      border-radius: 20px;
-      padding: 12px 14px;
-      margin-bottom: 16px;
-      color: #d2f7ff;
-      font-size: 13px;
-      line-height: 1.4;
+      border-radius:20px;
+      padding:12px 14px;
+      margin-bottom:16px;
+      color:#d2f7ff;
+      font-size:13px;
+      line-height:1.45;
     }
 
-    .statusline {
-      font-weight: 900;
+    .debug {
+      margin-top:8px;
+      padding:10px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.22);
+      color:#cfe3f2;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+      font-size:12px;
+      word-break:break-word;
     }
 
     .sources {
-      margin-top: 6px;
-      color: var(--mut);
+      margin-top:6px;
+      color:var(--mut);
     }
 
     .source-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      margin: 4px 4px 0 0;
-      padding: 5px 8px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.08);
-      font-size: 12px;
+      display:inline-flex;
+      margin:4px 4px 0 0;
+      padding:5px 8px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.08);
+      font-size:12px;
     }
 
     .source-ok {
-      color: var(--green);
+      color:var(--green);
     }
 
     .source-fail {
-      color: var(--red);
+      color:var(--red);
     }
 
     .morning {
-      display: grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap: 16px;
-      margin-bottom: 16px;
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:16px;
+      margin-bottom:16px;
     }
 
     .quick {
-      min-height: 100%;
-      padding: 18px;
-      border-radius: 26px;
-      border: 1px solid rgba(97,220,255,.28);
+      min-height:100%;
+      padding:18px;
+      border-radius:26px;
+      border:1px solid rgba(97,220,255,.28);
       background:
-        radial-gradient(circle at 4% 4%, rgba(97,220,255,.18), transparent 32%),
-        linear-gradient(180deg, rgba(97,220,255,.11), rgba(255,255,255,.045));
-      color: #e8fbff;
-      font-size: 16px;
-      line-height: 1.58;
-      box-shadow: var(--shadow);
+        radial-gradient(circle at 4% 4%,rgba(97,220,255,.18),transparent 32%),
+        linear-gradient(180deg,rgba(97,220,255,.11),rgba(255,255,255,.045));
+      color:#e8fbff;
+      font-size:16px;
+      line-height:1.58;
+      box-shadow:var(--shadow);
     }
 
     .quick b {
-      color: #fff;
+      color:white;
     }
 
     .quick-label {
-      margin-bottom: 8px;
-      color: var(--blue);
-      font-size: 12px;
-      font-weight: 950;
-      text-transform: uppercase;
-      letter-spacing: .06em;
+      margin-bottom:8px;
+      color:var(--blue);
+      font-size:12px;
+      font-weight:950;
+      text-transform:uppercase;
+      letter-spacing:.06em;
     }
 
     .kpis {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin-bottom:16px;
     }
 
     .kpis.compact {
-      grid-template-columns: repeat(2, 1fr);
-      margin-bottom: 0;
+      grid-template-columns:repeat(2,1fr);
+      margin-bottom:0;
     }
 
     .kpi {
-      position: relative;
-      overflow: hidden;
-      min-height: 126px;
-      border-radius: 22px;
-      padding: 15px;
-    }
-
-    .kpi::after {
-      content: "";
-      position: absolute;
-      right: -34px;
-      bottom: -58px;
-      width: 126px;
-      height: 126px;
-      border-radius: 50%;
-      background: rgba(97,220,255,.10);
-      filter: blur(2px);
-    }
-
-    .kpi.snow::after {
-      background: rgba(121,255,178,.12);
-    }
-
-    .kpi.rain::after {
-      background: rgba(97,220,255,.13);
-    }
-
-    .kpi.hot::after {
-      background: rgba(255,107,107,.12);
+      position:relative;
+      overflow:hidden;
+      min-height:126px;
+      border-radius:22px;
+      padding:15px;
     }
 
     .kpi span {
-      position: relative;
-      z-index: 1;
-      display: block;
-      color: var(--mut);
-      font-size: 11.5px;
-      font-weight: 950;
-      text-transform: uppercase;
-      letter-spacing: .055em;
+      display:block;
+      color:var(--mut);
+      font-size:11.5px;
+      font-weight:950;
+      text-transform:uppercase;
+      letter-spacing:.055em;
     }
 
     .kpi strong {
-      position: relative;
-      z-index: 1;
-      display: block;
-      margin: 9px 0 5px;
-      font-size: 26px;
-      line-height: 1.02;
-      letter-spacing: -.055em;
-      word-break: break-word;
+      display:block;
+      margin:9px 0 5px;
+      font-size:26px;
+      line-height:1.05;
+      letter-spacing:-.05em;
     }
 
     .kpi small {
-      position: relative;
-      z-index: 1;
-      color: var(--mut);
-      line-height: 1.35;
-      font-size: 12.5px;
+      color:var(--mut);
+      line-height:1.35;
+      font-size:12.5px;
     }
 
-    .green { color: var(--green); }
-    .yellow { color: var(--yellow); }
-    .orange { color: var(--orange); }
-    .red { color: var(--red); }
-    .purple { color: var(--purple); }
-    .blue { color: var(--blue); }
+    .green { color:var(--green); }
+    .yellow { color:var(--yellow); }
+    .orange { color:var(--orange); }
+    .red { color:var(--red); }
+    .purple { color:var(--purple); }
+    .blue { color:var(--blue); }
 
     .panel {
-      border-radius: 26px;
-      padding: 18px;
-      margin-bottom: 16px;
+      border-radius:26px;
+      padding:18px;
+      margin-bottom:16px;
     }
 
     .chart-panel {
-      padding: 0;
-      overflow: hidden;
+      padding:0;
+      overflow:hidden;
     }
 
     .chart-head {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      align-items: start;
-      padding: 18px 18px 10px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      align-items:start;
+      padding:18px 18px 10px;
     }
 
     .chart-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 8px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:8px;
     }
 
     .legend-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 6px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.09);
-      background: rgba(255,255,255,.055);
-      color: #ddecf6;
-      font-size: 12px;
-      white-space: nowrap;
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      padding:6px 9px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.09);
+      background:rgba(255,255,255,.055);
+      color:#ddecf6;
+      font-size:12px;
     }
 
     .legend-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 999px;
-      display: inline-block;
+      width:9px;
+      height:9px;
+      border-radius:999px;
+      display:inline-block;
     }
 
     .legend-bar {
-      width: 13px;
-      height: 9px;
-      border-radius: 3px;
-      display: inline-block;
+      width:13px;
+      height:9px;
+      border-radius:3px;
+      display:inline-block;
     }
 
     .chart-meta {
-      min-width: 250px;
-      color: var(--mut);
-      font-size: 13px;
-      line-height: 1.4;
-      text-align: right;
+      min-width:250px;
+      color:var(--mut);
+      font-size:13px;
+      line-height:1.4;
+      text-align:right;
     }
 
     .chart-wrap {
-      padding: 0 14px 14px;
+      padding:0 14px 14px;
     }
 
     canvas {
-      display: block;
-      width: 100%;
-      height: 450px;
-      border-radius: 22px;
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.25);
+      display:block;
+      width:100%;
+      height:440px;
+      border-radius:22px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.25);
     }
 
     .grid2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 16px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+      margin-bottom:16px;
     }
 
     .grid3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 11px;
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:11px;
     }
 
     .full {
-      grid-column: 1 / -1;
+      grid-column:1 / -1;
     }
 
     .diagnosis {
-      color: #dcefff;
-      font-size: 14px;
-      line-height: 1.58;
+      color:#dcefff;
+      font-size:14px;
+      line-height:1.58;
     }
 
     .diagnosis b {
-      color: #fff;
+      color:white;
     }
 
     .tablebox {
-      max-height: 520px;
-      overflow: auto;
-      margin-top: 16px;
-      border-radius: 20px;
-      border: 1px solid var(--line);
+      max-height:520px;
+      overflow:auto;
+      margin-top:16px;
+      border-radius:20px;
+      border:1px solid var(--line);
     }
 
     table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
+      width:100%;
+      border-collapse:collapse;
+      font-size:13px;
     }
 
     th,
     td {
-      padding: 10px;
-      border-bottom: 1px solid rgba(255,255,255,.10);
-      white-space: nowrap;
-      text-align: left;
+      padding:10px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      white-space:nowrap;
+      text-align:left;
     }
 
     th {
-      position: sticky;
-      top: 0;
-      z-index: 1;
-      background: #101b2c;
-      color: #c5d8e8;
+      position:sticky;
+      top:0;
+      z-index:1;
+      background:#101b2c;
+      color:#c5d8e8;
     }
 
     .badge {
-      display: inline-block;
-      padding: 4px 9px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 950;
+      display:inline-block;
+      padding:4px 9px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:950;
     }
 
     .low {
-      background: rgba(124,255,178,.14);
-      color: var(--green);
+      background:rgba(124,255,178,.14);
+      color:var(--green);
     }
 
     .mid {
-      background: rgba(255,209,102,.14);
-      color: var(--yellow);
+      background:rgba(255,209,102,.14);
+      color:var(--yellow);
     }
 
     .high {
-      background: rgba(255,107,107,.16);
-      color: var(--red);
+      background:rgba(255,107,107,.16);
+      color:var(--red);
     }
 
     .factor-list {
-      display: grid;
-      gap: 8px;
+      display:grid;
+      gap:8px;
     }
 
     .factor {
-      display: grid;
-      grid-template-columns: 170px 1fr;
-      gap: 10px;
-      padding: 10px;
-      border-radius: 14px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      font-size: 13.5px;
-    }
-
-    .factor b {
-      color: #fff;
+      display:grid;
+      grid-template-columns:170px 1fr;
+      gap:10px;
+      padding:10px;
+      border-radius:14px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      font-size:13.5px;
     }
 
     .scale-level {
-      display: grid;
-      grid-template-columns: 128px 1fr;
-      gap: 12px;
-      align-items: start;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,.10);
-      font-size: 14px;
-      line-height: 1.42;
+      display:grid;
+      grid-template-columns:128px 1fr;
+      gap:12px;
+      align-items:start;
+      padding:10px 0;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      font-size:14px;
+      line-height:1.42;
     }
 
     .scale-level:last-child {
-      border-bottom: 0;
+      border-bottom:0;
     }
 
     .scale-tag {
-      font-weight: 950;
+      font-weight:950;
     }
 
     .science-card {
-      padding: 14px;
-      border-radius: 19px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.065);
+      padding:14px;
+      border-radius:19px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.065);
     }
 
     .formula {
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 13px;
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.28);
-      color: #dff8ff;
-      overflow: auto;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 13px;
+      margin:10px 0;
+      padding:10px;
+      border-radius:13px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.28);
+      color:#dff8ff;
+      overflow:auto;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+      font-size:13px;
     }
 
     .need {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,.10);
-      font-size: 14px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px 0;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      font-size:14px;
     }
 
     .need:last-child {
-      border-bottom: 0;
+      border-bottom:0;
     }
 
     .need b {
-      text-align: right;
+      text-align:right;
     }
 
-    .need-ok { color: var(--green) !important; }
-    .need-mid { color: var(--yellow) !important; }
-    .need-bad { color: var(--red) !important; }
+    .need-ok { color:var(--green)!important; }
+    .need-mid { color:var(--yellow)!important; }
+    .need-bad { color:var(--red)!important; }
 
     .meter {
-      height: 10px;
-      margin-top: 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.12);
-      overflow: hidden;
+      height:10px;
+      margin-top:12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.12);
+      overflow:hidden;
     }
 
     .meter-fill {
-      height: 100%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, var(--red), var(--yellow), var(--green));
+      height:100%;
+      border-radius:999px;
+      background:linear-gradient(90deg,var(--red),var(--yellow),var(--green));
     }
 
     textarea {
-      min-height: 126px;
-      resize: vertical;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 13px;
-      line-height: 1.45;
+      min-height:126px;
+      resize:vertical;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+      font-size:13px;
+      line-height:1.45;
     }
 
     details summary {
-      cursor: pointer;
-      list-style: none;
-      font-size: 18px;
-      font-weight: 900;
+      cursor:pointer;
+      list-style:none;
+      font-size:18px;
+      font-weight:900;
     }
 
     details summary::-webkit-details-marker {
-      display: none;
+      display:none;
     }
 
     details summary::after {
-      content: "Abrir";
-      float: right;
-      padding: 5px 10px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, var(--blue), #cff7ff);
-      color: #03131f;
-      font-size: 12px;
+      content:"Abrir";
+      float:right;
+      padding:5px 10px;
+      border-radius:999px;
+      background:linear-gradient(135deg,var(--blue),#cff7ff);
+      color:#03131f;
+      font-size:12px;
     }
 
     details[open] summary::after {
-      content: "Cerrar";
+      content:"Cerrar";
     }
 
-    .debug {
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.20);
-      color: #cfe3f2;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 12px;
-      line-height: 1.45;
-      white-space: normal;
-      word-break: break-word;
-    }
-
-    .note {
-      margin-top: 10px;
-      color: var(--mut);
-      font-size: 12.5px;
-      line-height: 1.45;
-    }
-
-    @media (min-width: 981px) {
+    @media (min-width:981px) {
       details summary::after {
-        display: none;
+        display:none;
       }
     }
 
-    @media (max-width: 1080px) {
+    @media (max-width:1080px) {
       .morning {
-        grid-template-columns: 1fr;
+        grid-template-columns:1fr;
       }
 
       .kpis.compact {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns:repeat(4,1fr);
       }
     }
 
-    @media (max-width: 980px) {
+    @media (max-width:980px) {
       header,
       .control,
       .grid2 {
-        grid-template-columns: 1fr;
+        grid-template-columns:1fr;
       }
 
       .brand {
-        min-height: auto;
+        min-height:auto;
       }
 
       .control-actions {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns:1fr 1fr;
       }
 
       .kpis,
       .kpis.compact {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns:1fr 1fr;
       }
 
       .grid3 {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns:1fr 1fr;
       }
 
       .chart-head {
-        grid-template-columns: 1fr;
+        grid-template-columns:1fr;
       }
 
       .chart-meta {
-        min-width: 0;
-        text-align: left;
+        min-width:0;
+        text-align:left;
       }
 
       canvas {
-        height: 380px;
+        height:370px;
       }
     }
 
-    @media (max-width: 620px) {
+    @media (max-width:620px) {
       .wrap {
-        width: min(100% - 18px, 1240px);
-        padding: 14px 0 34px;
+        width:min(100% - 18px,1220px);
+        padding:14px 0 34px;
       }
 
-      header {
-        gap: 10px;
-      }
-
-      .hero-card {
-        display: none;
+      .hero {
+        display:none;
       }
 
       .card,
       .panel,
       .control {
-        border-radius: 20px;
-        padding: 14px;
+        border-radius:20px;
+        padding:14px;
       }
 
       .chart-panel {
-        padding: 0;
+        padding:0;
       }
 
       .chart-head {
-        padding: 14px 14px 8px;
+        padding:14px 14px 8px;
       }
 
       .chart-wrap {
-        padding: 0 9px 9px;
+        padding:0 9px 9px;
       }
 
       h1 {
-        font-size: 50px;
-        line-height: .92;
-      }
-
-      .lead {
-        font-size: 13.5px;
+        font-size:50px;
       }
 
       .control-actions,
@@ -815,39 +718,34 @@
       .kpis.compact,
       .grid2,
       .grid3 {
-        grid-template-columns: 1fr;
+        grid-template-columns:1fr;
       }
 
       .kpi {
-        min-height: auto;
-      }
-
-      .quick {
-        font-size: 14px;
-        border-radius: 20px;
+        min-height:auto;
       }
 
       canvas {
-        height: 330px;
+        height:320px;
       }
 
       .factor,
       .scale-level {
-        grid-template-columns: 1fr;
+        grid-template-columns:1fr;
       }
 
       .need {
-        flex-direction: column;
+        flex-direction:column;
       }
 
       .need b {
-        text-align: left;
+        text-align:left;
       }
 
       th,
       td {
-        padding: 8px;
-        font-size: 12px;
+        padding:8px;
+        font-size:12px;
       }
     }
   </style>
@@ -869,9 +767,9 @@
         </div>
       </section>
 
-      <aside class="card hero-card">
+      <aside class="card hero">
         <h2>Motor operativo</h2>
-        <div class="chipbox">
+        <div class="chips">
           <span class="chip">📍 Lago Moreno</span>
           <span class="chip">📍 Melipal</span>
           <span class="chip">📍 Centro</span>
@@ -881,7 +779,7 @@
           <span class="chip">📈 Tendencia 12 h</span>
           <span class="chip">🟣 Windguru externo</span>
         </div>
-        <div class="hero-note">
+        <div class="note" style="margin-top:14px">
           El cálculo se renderiza apenas responde una fuente válida. Los modelos adicionales enriquecen el ensamble, pero no bloquean el pronóstico.
         </div>
       </aside>
@@ -914,10 +812,15 @@
       </section>
 
       <section class="statusbar">
-        <div id="status" class="statusline">JS todavía no inició. Si ves este texto fijo, el script no se está ejecutando.</div>
+        <div id="status"><b>HTML cargado.</b> Si este texto no cambia a “JS activo”, el script no se está ejecutando.</div>
         <div id="sourceStatus" class="sources">Esperando corrida.</div>
-        <div id="debugBox" class="debug">Diagnóstico técnico: esperando inicialización.</div>
+        <div id="debugBox" class="debug">Diagnóstico técnico: esperando JavaScript.</div>
       </section>
+
+      <script>
+        document.getElementById("status").innerHTML = "<b>JS activo.</b> Iniciando BariSnow...";
+        document.getElementById("debugBox").innerHTML = "Boot JS: OK. Si el modelo no calcula, el problema ya no es que el script esté bloqueado.";
+      </script>
 
       <section class="morning">
         <div class="quick">
@@ -992,6 +895,7 @@
           </div>
           <div id="chartMeta" class="chart-meta">Esperando corrida.</div>
         </div>
+
         <div class="chart-wrap">
           <canvas id="chart"></canvas>
         </div>
@@ -1226,13 +1130,12 @@ O:
 
       var WINDGURU_URL = "https://www.windguru.cz/366613";
       var API_TIMEOUT_MS = 15000;
-
       var latestModel = [];
       var latestPacks = [];
       var latestSummary = null;
       var latestSourceLabel = "—";
-      var resizeTimer = null;
       var currentRunId = 0;
+      var resizeTimer = null;
 
       var SOURCES = [
         { id: "best_match", label: "Best Match", endpoint: "https://api.open-meteo.com/v1/forecast", weight: 0.34 },
@@ -1306,23 +1209,23 @@ O:
         return n < 10 ? "0" + n : String(n);
       }
 
-      function safeText(id, txt) {
+      function text(id, value) {
         var el = $(id);
-        if (el) el.textContent = txt;
+        if (el) el.textContent = value;
       }
 
-      function safeHTML(id, html) {
+      function html(id, value) {
         var el = $(id);
-        if (el) el.innerHTML = html;
+        if (el) el.innerHTML = value;
       }
 
-      function logDebug(txt) {
-        safeHTML("debugBox", txt);
+      function debug(value) {
+        html("debugBox", value);
       }
 
       window.onerror = function (msg, src, line) {
-        safeText("status", "Error JavaScript: " + msg + " · línea " + line);
-        logDebug("Fallo de JavaScript.<br>Mensaje: " + msg + "<br>Línea: " + line + "<br>Archivo: " + src);
+        text("status", "Error JavaScript: " + msg + " · línea " + line);
+        debug("Fallo JavaScript.<br>Mensaje: " + msg + "<br>Línea: " + line + "<br>Archivo: " + src);
       };
 
       function selectedPlace() {
@@ -1348,9 +1251,9 @@ O:
       function updatePlaceBadge() {
         var p = selectedPlace();
 
-        safeText("currentPlace", "📍 " + p.name + " · " + Math.round(p.elev) + " m");
+        text("currentPlace", "📍 " + p.name + " · " + Math.round(p.elev) + " m");
 
-        safeText(
+        text(
           "placeNote",
           p.note +
           " Coordenadas activas: " +
@@ -1364,7 +1267,7 @@ O:
           " °C."
         );
 
-        safeText("windguruBtn", "🟣 Abrir Windguru");
+        text("windguruBtn", "🟣 Abrir Windguru");
       }
 
       function applyLocationPreset(runAfterChange) {
@@ -1406,9 +1309,7 @@ O:
 
       function localTime(t) {
         var s = String(t || "").replace("T", " ");
-        if (s.length >= 13) {
-          return s.slice(5, 10).replace("-", "/") + " " + s.slice(11, 13) + "h";
-        }
+        if (s.length >= 13) return s.slice(5, 10).replace("-", "/") + " " + s.slice(11, 13) + "h";
         return s || "—";
       }
 
@@ -1544,7 +1445,6 @@ O:
             callback(null, {
               source: source,
               model: model,
-              mode: "core",
               url: url,
               status: status
             });
@@ -1575,8 +1475,7 @@ O:
         return {
           oroIndex: oroIndex,
           multiplier: multiplier,
-          cooling: cooling,
-          windward: windward
+          cooling: cooling
         };
       }
 
@@ -1888,7 +1787,6 @@ O:
       function rowConsensus(rows, avg) {
         var phase = phaseDist(rows);
         var phaseAgree = phase.total > 0 ? phase.dominantWeight / phase.total : 0.5;
-
         var cmh25 = qRows(rows, "cmh", 0.25);
         var cmh75 = qRows(rows, "cmh", 0.75);
         var p25 = qRows(rows, "P", 0.25);
@@ -1953,8 +1851,7 @@ O:
             ptypeIdx: qRows(rows, "ptypeIdx", 0.50),
             risk: weightedRisk(rows),
             wg: null,
-            diff: null,
-            memberRows: rows
+            diff: null
           };
 
           var fields = [
@@ -1967,7 +1864,6 @@ O:
             avg[fields[i]] = weightedMean(rows, fields[i]);
           }
 
-          avg.cmhP10 = qRows(rows, "cmh", 0.10);
           avg.cmhP25 = qRows(rows, "cmh", 0.25);
           avg.cmhP50 = qRows(rows, "cmh", 0.50);
           avg.cmhP75 = qRows(rows, "cmh", 0.75);
@@ -2049,8 +1945,6 @@ O:
         }
 
         return {
-          first: c1 ? first / c1 : null,
-          last: c2 ? last / c2 : null,
           delta: c1 && c2 ? last / c2 - first / c1 : null
         };
       }
@@ -2130,13 +2024,11 @@ O:
         }
 
         return {
-          snowQ10: weightedQuantile(snowTotals, 0.10),
           snowQ25: weightedQuantile(snowTotals, 0.25),
           snowQ50: weightedQuantile(snowTotals, 0.50),
           snowQ75: weightedQuantile(snowTotals, 0.75),
           snowQ90: weightedQuantile(snowTotals, 0.90),
 
-          rainQ10: weightedQuantile(rainTotals, 0.10),
           rainQ25: weightedQuantile(rainTotals, 0.25),
           rainQ50: weightedQuantile(rainTotals, 0.50),
           rainQ75: weightedQuantile(rainTotals, 0.75),
@@ -2147,7 +2039,6 @@ O:
           probSnowGt3: thresholdProb(snowTotals, 3),
           probSnowGt5: thresholdProb(snowTotals, 5),
 
-          probRainGt5: thresholdProb(rainTotals, 5),
           probRainGt10: thresholdProb(rainTotals, 10),
           probRainGt20: thresholdProb(rainTotals, 20),
           probRainGt40: thresholdProb(rainTotals, 40),
@@ -2170,47 +2061,22 @@ O:
         var phase = phaseRankFromRow(peak);
 
         if (q50 >= 8 || q75 >= 12 || q90 >= 18 || p5 >= 0.55 || peak.risk === "Alto") {
-          return {
-            level: 5,
-            label: "5 · Nevada importante",
-            cls: "red",
-            text: "Señal fuerte de nieve acumuladora o escenario alto significativo."
-          };
+          return { label: "5 · Nevada importante", cls: "red", text: "Señal fuerte de nieve acumuladora o escenario alto significativo." };
         }
 
         if (q50 >= 3 || q75 >= 5 || p1 >= 0.60 || phase >= 3 || peak.cmh >= 0.8) {
-          return {
-            level: 4,
-            label: "4 · Nieve acumulable",
-            cls: "orange",
-            text: "La señal permite acumulación visible, especialmente en superficies frías."
-          };
+          return { label: "4 · Nieve acumulable", cls: "orange", text: "La señal permite acumulación visible, especialmente en superficies frías." };
         }
 
         if (q50 >= 0.8 || q75 >= 1.5 || p1 >= 0.30 || phase >= 2 || summary.next) {
-          return {
-            level: 3,
-            label: "3 · Mezcla marginal",
-            cls: "yellow",
-            text: "Escenario compatible con lluvia, aguanieve o nieve húmeda; acumulación sensible a intensidad y horario."
-          };
+          return { label: "3 · Mezcla marginal", cls: "yellow", text: "Escenario compatible con lluvia, aguanieve o nieve húmeda; acumulación sensible a intensidad y horario." };
         }
 
         if (q75 >= 0.4 || summary.probSnowGt05 >= 0.20 || phase >= 1) {
-          return {
-            level: 2,
-            label: "2 · Señal muy débil",
-            cls: "green",
-            text: "Existe señal menor de copos o mezcla, sin acumulación robusta."
-          };
+          return { label: "2 · Señal muy débil", cls: "green", text: "Existe señal menor de copos o mezcla, sin acumulación robusta." };
         }
 
-        return {
-          level: 1,
-          label: "1 · Sin acumulación",
-          cls: "green",
-          text: "La señal actual favorece ausencia de acumulación de nieve."
-        };
+        return { label: "1 · Sin acumulación", cls: "green", text: "La señal actual favorece ausencia de acumulación de nieve." };
       }
 
       function rainScale(summary) {
@@ -2220,47 +2086,22 @@ O:
         var peakP = summary.peak ? summary.peak.P || 0 : 0;
 
         if (q50 >= 30 || q75 >= 45 || q90 >= 60 || summary.probRainGt40 >= 0.45 || peakP >= 5) {
-          return {
-            level: 5,
-            label: "5 · Precipitación intensa",
-            cls: "red",
-            text: "Acumulado alto o períodos fuertes con impacto posible."
-          };
+          return { label: "5 · Precipitación intensa", cls: "red", text: "Acumulado alto o períodos fuertes con impacto posible." };
         }
 
         if (q50 >= 15 || q75 >= 25 || summary.probRainGt20 >= 0.35 || peakP >= 2.5) {
-          return {
-            level: 4,
-            label: "4 · Precipitación persistente",
-            cls: "orange",
-            text: "Precipitación sostenida o acumulado relevante."
-          };
+          return { label: "4 · Precipitación persistente", cls: "orange", text: "Precipitación sostenida o acumulado relevante." };
         }
 
-        if (q50 >= 5 || q75 >= 10 || summary.probRainGt5 >= 0.45 || peakP >= 0.8) {
-          return {
-            level: 3,
-            label: "3 · Intermitente",
-            cls: "yellow",
-            text: "Precipitación por momentos, con intensidad variable."
-          };
+        if (q50 >= 5 || q75 >= 10 || peakP >= 0.8) {
+          return { label: "3 · Intermitente", cls: "yellow", text: "Precipitación por momentos, con intensidad variable." };
         }
 
         if (q50 >= 1 || q75 >= 2 || peakP >= 0.2) {
-          return {
-            level: 2,
-            label: "2 · Débil",
-            cls: "green",
-            text: "Precipitación débil, aislada o de bajo acumulado."
-          };
+          return { label: "2 · Débil", cls: "green", text: "Precipitación débil, aislada o de bajo acumulado." };
         }
 
-        return {
-          level: 1,
-          label: "1 · Casi seco",
-          cls: "green",
-          text: "La señal de precipitación relevante es baja."
-        };
+        return { label: "1 · Casi seco", cls: "green", text: "La señal de precipitación relevante es baja." };
       }
 
       function badge(r) {
@@ -2282,17 +2123,17 @@ O:
         var con = consensusLabel(summary.consensus);
 
         $("snowVerdict").className = snow.cls;
-        safeText("snowVerdict", snow.label);
-        safeText("snowVerdictText", snow.text);
+        text("snowVerdict", snow.label);
+        text("snowVerdictText", snow.text);
 
         $("rainVerdict").className = rain.cls;
-        safeText("rainVerdict", rain.label);
-        safeText("rainVerdictText", rain.text);
+        text("rainVerdict", rain.label);
+        text("rainVerdictText", rain.text);
 
         $("phaseVerdict").className = phaseRankFromRow(peak) >= 3 ? "orange" : phaseRankFromRow(peak) >= 2 ? "yellow" : "green";
-        safeText("phaseVerdict", peak.phaseLabel || "—");
+        text("phaseVerdict", peak.phaseLabel || "—");
 
-        safeText(
+        text(
           "phaseVerdictText",
           "Hora crítica: " +
           localTime(peak.time) +
@@ -2306,21 +2147,21 @@ O:
         );
 
         $("ensembleConsensus").className = con.cls;
-        safeText("ensembleConsensus", Math.round(summary.consensus * 100) + "%");
-        safeText("consensusText", "Consenso " + con.txt + " entre modelos y postprocesamiento local.");
+        text("ensembleConsensus", Math.round(summary.consensus * 100) + "%");
+        text("consensusText", "Consenso " + con.txt + " entre modelos y postprocesamiento local.");
 
         $("trendVerdict").className = summary.trend.cls;
-        safeText("trendVerdict", summary.trend.label);
-        safeText("trendText", summary.trend.text);
+        text("trendVerdict", summary.trend.label);
+        text("trendText", summary.trend.text);
 
-        safeText("snowScenario", fmt(summary.snowQ50, 1) + " cm");
-        safeText("snowScenarioText", "P25-P75: " + fmt(summary.snowQ25, 1) + "-" + fmt(summary.snowQ75, 1) + " cm. P90: " + fmt(summary.snowQ90, 1) + " cm.");
+        text("snowScenario", fmt(summary.snowQ50, 1) + " cm");
+        text("snowScenarioText", "P25-P75: " + fmt(summary.snowQ25, 1) + "-" + fmt(summary.snowQ75, 1) + " cm. P90: " + fmt(summary.snowQ90, 1) + " cm.");
 
-        safeText("rainScenario", fmt(summary.rainQ50, 1) + " mm");
-        safeText("rainScenarioText", "P25-P75: " + fmt(summary.rainQ25, 1) + "-" + fmt(summary.rainQ75, 1) + " mm. P90: " + fmt(summary.rainQ90, 1) + " mm.");
+        text("rainScenario", fmt(summary.rainQ50, 1) + " mm");
+        text("rainScenarioText", "P25-P75: " + fmt(summary.rainQ25, 1) + "-" + fmt(summary.rainQ75, 1) + " mm. P90: " + fmt(summary.rainQ90, 1) + " mm.");
 
-        safeText("criticalWindow", summary.next ? localTime(summary.next.time) : localTime(peak.time));
-        safeText("criticalWindowText", summary.next ? "Primera ventana con fase nieve/mezcla." : "Hora de mayor tasa de nieve estimada.");
+        text("criticalWindow", summary.next ? localTime(summary.next.time) : localTime(peak.time));
+        text("criticalWindowText", summary.next ? "Primera ventana con fase nieve/mezcla." : "Hora de mayor tasa de nieve estimada.");
 
         renderQuickRead(summary, snow, rain);
         renderScenarioTables(summary);
@@ -2334,7 +2175,8 @@ O:
 
       function renderQuickRead(summary, snow, rain) {
         var peak = summary.peak;
-        safeHTML(
+
+        html(
           "quickRead",
           "<b>" +
           snow.label +
@@ -2359,7 +2201,7 @@ O:
       }
 
       function renderScenarioTables(summary) {
-        safeHTML(
+        html(
           "scenarioRows",
           "<tr>" +
             "<td>Nieve acumulada</td>" +
@@ -2377,7 +2219,7 @@ O:
           "</tr>"
         );
 
-        safeHTML(
+        html(
           "thresholdRows",
           "<tr><td>Nieve &gt; 0.5 cm</td><td>" + Math.round(summary.probSnowGt05 * 100) + "%</td><td>Copos visibles o blanqueo muy menor</td></tr>" +
           "<tr><td>Nieve &gt; 1 cm</td><td>" + Math.round(summary.probSnowGt1 * 100) + "%</td><td>Acumulación ligera detectable</td></tr>" +
@@ -2392,7 +2234,7 @@ O:
         var p = summary.peak;
         var con = consensusLabel(summary.consensus);
 
-        safeHTML(
+        html(
           "decomposition",
           '<div class="factor"><b>Salida operativa</b><span>' + snow.label + " · " + rain.label + "</span></div>" +
           '<div class="factor"><b>Ensamble</b><span>Consenso <b class="' + con.cls + '">' + Math.round(summary.consensus * 100) + "%</b>. Fuentes disponibles: " + summary.sources + ".</span></div>" +
@@ -2405,7 +2247,8 @@ O:
 
       function updateChartMeta(summary) {
         var p = selectedPlace();
-        safeHTML(
+
+        html(
           "chartMeta",
           "📍 " +
           p.name +
@@ -2422,7 +2265,7 @@ O:
       function renderDiagnosis(summary) {
         var p = summary.peak;
 
-        safeHTML(
+        html(
           "diagnosis",
           "<b>Hora crítica:</b> " +
           localTime(p.time) +
@@ -2478,7 +2321,7 @@ O:
         var phaseOk = phaseRankFromRow(p) >= 3;
         var phaseMid = phaseRankFromRow(p) >= 2;
 
-        safeHTML(
+        html(
           "physicsColumn",
           "Postprocesamiento de superficie y barrio. En hora crítica: <b>Tw_eff = " +
           fmt(p.TwEff) +
@@ -2489,7 +2332,7 @@ O:
           " m</b>."
         );
 
-        safeHTML(
+        html(
           "physicsEnergy",
           "Fusión proxy: <b>" +
           fmt(p.melt, 0) +
@@ -2500,7 +2343,7 @@ O:
           "%</b>."
         );
 
-        safeHTML(
+        html(
           "physicsDgz",
           "DGZ proxy: <b>" +
           fmt(p.dgzScore, 2) +
@@ -2511,7 +2354,7 @@ O:
           " mm/h</b>."
         );
 
-        safeHTML(
+        html(
           "physicsOro",
           "Orografía local: <b>" +
           fmt(p.oroIndex, 2) +
@@ -2524,7 +2367,7 @@ O:
           "°</b>."
         );
 
-        safeHTML(
+        html(
           "snowNeeds",
           '<div class="need"><span>Fase dominante cercana a nieve</span><b class="' + needClass(phaseOk, phaseMid) + '">' + needLabel(phaseOk, phaseMid) + " · " + p.phaseLabel + "</b></div>" +
           '<div class="need"><span>Bulbo húmedo efectivo ≤ 0.3 °C</span><b class="' + needClass(twOk, twMid) + '">' + needLabel(twOk, twMid) + " · " + fmt(p.TwEff) + " °C</b></div>" +
@@ -2548,7 +2391,7 @@ O:
           )
         );
 
-        safeHTML(
+        html(
           "snowNeedsText",
           "Índice físico diagnóstico de entorno nivoso: <b>" +
           score +
@@ -2560,7 +2403,7 @@ O:
       }
 
       function renderRows(model) {
-        var html = "";
+        var out = "";
         var i;
 
         for (i = 0; i < model.length; i++) {
@@ -2568,7 +2411,7 @@ O:
           var wg = finite(x.wg) ? fmt(x.wg, 2) : "—";
           var diff = finite(x.diff) ? fmt(x.diff, 2) : "—";
 
-          html +=
+          out +=
             "<tr>" +
             "<td>" + localTime(x.time) + "</td>" +
             "<td>" + fmt(x.T) + " °C</td>" +
@@ -2589,42 +2432,43 @@ O:
             "</tr>";
         }
 
-        safeHTML("rows", html);
+        html("rows", out);
       }
 
       function renderSourceStatus(ok, fail) {
-        var html = "";
+        var out = "";
         var labels = [];
         var i;
 
         for (i = 0; i < ok.length; i++) {
           labels.push(ok[i].source.label);
-          html += '<span class="source-pill source-ok">✓ ' + ok[i].source.label + "</span>";
+          out += '<span class="source-pill source-ok">✓ ' + ok[i].source.label + "</span>";
         }
 
         for (i = 0; i < fail.length; i++) {
-          html += '<span class="source-pill source-fail">× ' + fail[i].source.label + "</span>";
+          out += '<span class="source-pill source-fail">× ' + fail[i].source.label + "</span>";
         }
 
         latestSourceLabel = labels.length ? labels.join(", ") : "—";
-        safeHTML("sourceStatus", html || "Sin fuentes cargadas.");
+        html("sourceStatus", out || "Sin fuentes cargadas.");
       }
 
       function renderAfterOk(okPacks, failPacks, ms, partial) {
         try {
           var model = aggregateHourly(okPacks);
           var summary = summarize(model, okPacks);
-          var urls;
-          var errors;
+          var urls = "";
+          var errors = "";
+          var i;
 
           latestModel = model;
           latestPacks = okPacks;
           latestSummary = summary;
 
-          render(latestModel, summary);
+          render(model, summary);
           renderSourceStatus(okPacks, failPacks);
 
-          safeText(
+          text(
             "status",
             (partial ? "🟡 Resultado parcial ya calculado" : "🟢 Corrida completa") +
             " · " +
@@ -2636,66 +2480,66 @@ O:
             " ms"
           );
 
-          urls = okPacks.map(function (pack) {
-            return pack.source.label + ": " + pack.url;
-          }).join("<br><br>");
+          for (i = 0; i < okPacks.length; i++) {
+            urls += okPacks[i].source.label + ": " + okPacks[i].url + "<br><br>";
+          }
 
-          errors = failPacks.map(function (f) {
-            return f.source.label + ": " + f.error;
-          }).join("<br>");
+          for (i = 0; i < failPacks.length; i++) {
+            errors += failPacks[i].source.label + ": " + failPacks[i].error + "<br>";
+          }
 
-          logDebug(
+          debug(
             "JS: OK<br>API: OK<br>Fuentes OK: " +
             okPacks.length +
             "<br>Fuentes fallidas: " +
             failPacks.length +
             "<br>Horas modeladas: " +
-            latestModel.length +
+            model.length +
             "<br>Tiempo: " +
             ms +
             " ms<br><br>URLs OK:<br>" +
             (urls || "—") +
-            "<br><br>Fallos:<br>" +
+            "<br>Fallos:<br>" +
             (errors || "—")
           );
         } catch (e) {
-          safeText("status", "Error procesando datos: " + e.message);
-          safeText("snowVerdict", "Error");
+          text("status", "Error procesando datos: " + e.message);
+          text("snowVerdict", "Error");
           $("snowVerdict").className = "red";
-          safeText("snowVerdictText", e.message);
-          logDebug("API respondió, pero falló el procesamiento.<br>Detalle: " + e.message);
+          text("snowVerdictText", e.message);
+          debug("API respondió, pero falló el procesamiento.<br>Detalle: " + e.message);
         }
       }
 
       function setLoading() {
-        safeText("snowVerdict", "Calculando…");
+        text("snowVerdict", "Calculando…");
         $("snowVerdict").className = "yellow";
-        safeText("snowVerdictText", "Ejecutando postprocesamiento.");
+        text("snowVerdictText", "Ejecutando postprocesamiento.");
 
-        safeText("rainVerdict", "Calculando…");
+        text("rainVerdict", "Calculando…");
         $("rainVerdict").className = "yellow";
-        safeText("rainVerdictText", "Descargando datos meteorológicos.");
+        text("rainVerdictText", "Descargando datos meteorológicos.");
 
-        safeText("phaseVerdict", "—");
-        safeText("phaseVerdictText", "Esperando datos.");
+        text("phaseVerdict", "—");
+        text("phaseVerdictText", "Esperando datos.");
 
-        safeText("ensembleConsensus", "—");
-        safeText("consensusText", "Calculando acuerdo operativo.");
+        text("ensembleConsensus", "—");
+        text("consensusText", "Calculando acuerdo operativo.");
 
-        safeText("trendVerdict", "—");
-        safeText("trendText", "Esperando datos.");
+        text("trendVerdict", "—");
+        text("trendText", "Esperando datos.");
 
-        safeText("snowScenario", "—");
-        safeText("snowScenarioText", "Esperando datos.");
+        text("snowScenario", "—");
+        text("snowScenarioText", "Esperando datos.");
 
-        safeText("rainScenario", "—");
-        safeText("rainScenarioText", "Esperando datos.");
+        text("rainScenario", "—");
+        text("rainScenarioText", "Esperando datos.");
 
-        safeText("criticalWindow", "—");
-        safeText("criticalWindowText", "Esperando datos.");
+        text("criticalWindow", "—");
+        text("criticalWindowText", "Esperando datos.");
 
-        safeText("quickRead", "Corriendo modelo BariSnow.");
-        safeText("chartMeta", "Descargando datos…");
+        text("quickRead", "Corriendo modelo BariSnow.");
+        text("chartMeta", "Descargando datos…");
       }
 
       function run() {
@@ -2711,9 +2555,9 @@ O:
         updatePlaceBadge();
         setLoading();
 
-        safeText("status", "Iniciando corrida. JS activo y descargando API…");
-        safeHTML("sourceStatus", "Solicitando fuentes…");
-        logDebug("JS: OK<br>Corrida: " + runId + "<br>Fuentes seleccionadas: " + sources.length + "<br>Primera fuente: " + sources[0].label);
+        text("status", "JS activo. Descargando datos de Open-Meteo…");
+        html("sourceStatus", "Solicitando fuentes…");
+        debug("JS: OK<br>Corrida: " + runId + "<br>Fuentes seleccionadas: " + sources.length + "<br>Primera fuente: " + sources[0].label);
 
         function oneFinished() {
           var ms = new Date().getTime() - t0;
@@ -2733,12 +2577,12 @@ O:
               return;
             }
 
-            safeText("status", "Error: no respondió ninguna fuente.");
-            safeText("snowVerdict", "Error");
+            text("status", "Error: no respondió ninguna fuente.");
+            text("snowVerdict", "Error");
             $("snowVerdict").className = "red";
-            safeText("snowVerdictText", "No se pudo obtener datos de Open-Meteo.");
+            text("snowVerdictText", "No se pudo obtener datos de Open-Meteo.");
 
-            logDebug(
+            debug(
               "JS: OK<br>API: ERROR<br>Fuentes intentadas: " +
               sources.length +
               "<br><br>" +
@@ -2760,7 +2604,7 @@ O:
 
               pending--;
 
-              safeText(
+              text(
                 "status",
                 "Descarga multimodelo: " +
                 ok.length +
@@ -2798,22 +2642,6 @@ O:
         };
       }
 
-      function drawRoundRect(ctx, x, y, w, h, r) {
-        r = Math.min(r, Math.abs(w) / 2, Math.abs(h) / 2);
-
-        ctx.beginPath();
-        ctx.moveTo(x + r, y);
-        ctx.lineTo(x + w - r, y);
-        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-        ctx.lineTo(x + w, y + h - r);
-        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-        ctx.lineTo(x + r, y + h);
-        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-        ctx.lineTo(x, y + r);
-        ctx.quadraticCurveTo(x, y, x + r, y);
-        ctx.closePath();
-      }
-
       function drawLine(ctx, model, xAt, yFn, color, width, skipMissing, dashed) {
         var i;
         var started = false;
@@ -2843,38 +2671,6 @@ O:
 
         if (started) ctx.stroke();
         ctx.restore();
-      }
-
-      function drawBand(ctx, model, xAt, yCmh, color) {
-        var pts = [];
-        var i;
-
-        for (i = 0; i < model.length; i++) {
-          if (finite(model[i].cmhP25) && finite(model[i].cmhP75)) {
-            pts.push({
-              x: xAt(i),
-              low: yCmh(model[i].cmhP25),
-              high: yCmh(model[i].cmhP75)
-            });
-          }
-        }
-
-        if (pts.length < 2) return;
-
-        ctx.beginPath();
-        ctx.fillStyle = color;
-
-        for (i = 0; i < pts.length; i++) {
-          if (i === 0) ctx.moveTo(pts[i].x, pts[i].high);
-          else ctx.lineTo(pts[i].x, pts[i].high);
-        }
-
-        for (i = pts.length - 1; i >= 0; i--) {
-          ctx.lineTo(pts[i].x, pts[i].low);
-        }
-
-        ctx.closePath();
-        ctx.fill();
       }
 
       function modelHasWindguru(model) {
@@ -2941,18 +2737,8 @@ O:
         ctx.fillStyle = bg;
         ctx.fillRect(0, 0, W, H);
 
-        drawRoundRect(ctx, padL, padT, plotW, plotH, 16);
         ctx.fillStyle = "rgba(255,255,255,.028)";
-        ctx.fill();
-
-        var zoneY = yProb(0.65);
-        drawRoundRect(ctx, padL, padT, plotW, zoneY - padT, 16);
-        ctx.fillStyle = "rgba(121,255,178,.045)";
-        ctx.fill();
-
-        zoneY = yProb(0.35);
-        ctx.fillStyle = "rgba(255,209,102,.035)";
-        ctx.fillRect(padL, zoneY, plotW, padT + plotH - zoneY);
+        ctx.fillRect(padL, padT, plotW, plotH);
 
         ctx.strokeStyle = "rgba(255,255,255,.12)";
         ctx.lineWidth = 1;
@@ -3000,16 +2786,9 @@ O:
           var barTop = H - padB - bh;
           var barAlpha = clamp(0.18 + ((model[i].P || 0) / maxP) * 0.62, 0.18, 0.82);
 
-          var barGrad = ctx.createLinearGradient(0, barTop, 0, H - padB);
-          barGrad.addColorStop(0, "rgba(97,220,255," + barAlpha + ")");
-          barGrad.addColorStop(1, "rgba(97,220,255,.05)");
-
-          drawRoundRect(ctx, x - bw / 2, barTop, bw, bh, 4);
-          ctx.fillStyle = barGrad;
-          ctx.fill();
+          ctx.fillStyle = "rgba(97,220,255," + barAlpha + ")";
+          ctx.fillRect(x - bw / 2, barTop, bw, bh);
         }
-
-        drawBand(ctx, model, xAt, yCmh, "rgba(121,255,178,.16)");
 
         drawLine(ctx, model, xAt, function (row) {
           return yProb(row.prob || 0);
@@ -3055,16 +2834,8 @@ O:
         var step = Math.max(isMobile ? 12 : 6, Math.round(model.length / (isMobile ? 5 : 9)));
 
         for (i = 0; i < model.length; i += step) {
-          var label = localTime(model[i].time);
-          ctx.fillText(label, xAt(i), H - padB + 23);
+          ctx.fillText(localTime(model[i].time), xAt(i), H - padB + 23);
         }
-
-        ctx.strokeStyle = "rgba(255,255,255,.30)";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(xAt(0), padT);
-        ctx.lineTo(xAt(0), H - padB);
-        ctx.stroke();
 
         ctx.fillStyle = "rgba(238,248,255,.85)";
         ctx.font = (isMobile ? 11 : 13) + "px system-ui";
@@ -3143,7 +2914,7 @@ O:
         }
 
         if (!parsed.length) {
-          safeText("wgSummary", "No hay valores de Windguru cargados.");
+          text("wgSummary", "No hay valores de Windguru cargados.");
           render(latestModel, latestSummary);
           return;
         }
@@ -3184,7 +2955,7 @@ O:
         }
 
         if (!pairs.length) {
-          safeText("wgSummary", "No pude emparejar horarios.");
+          text("wgSummary", "No pude emparejar horarios.");
           return;
         }
 
@@ -3203,7 +2974,7 @@ O:
         mae /= pairs.length;
         bias /= pairs.length;
 
-        safeHTML(
+        html(
           "wgSummary",
           "Comparados " +
           pairs.length +
@@ -3223,7 +2994,7 @@ O:
         var i;
 
         $("windguruInput").value = "";
-        safeText("wgSummary", "");
+        text("wgSummary", "");
 
         for (i = 0; i < latestModel.length; i++) {
           latestModel[i].wg = null;
@@ -3259,8 +3030,8 @@ O:
         }
 
         if (missing.length) {
-          safeText("status", "Error DOM: faltan IDs " + missing.join(", "));
-          logDebug("Faltan IDs:<br>" + missing.join("<br>"));
+          text("status", "Error DOM: faltan IDs " + missing.join(", "));
+          debug("Faltan IDs:<br>" + missing.join("<br>"));
           return false;
         }
 
@@ -3269,7 +3040,7 @@ O:
 
       function init() {
         try {
-          safeText("status", "JS iniciado. Verificando DOM…");
+          text("status", "JS activo. Verificando DOM…");
 
           if (!auditDom()) return;
 
@@ -3304,19 +3075,15 @@ O:
           if (settings && window.innerWidth >= 981) settings.open = false;
 
           applyLocationPreset(false);
-          logDebug("JS: OK<br>DOM: OK<br>Inicializando corrida automática.");
+          debug("JS: OK<br>DOM: OK<br>Inicializando corrida automática.");
           run();
         } catch (e) {
-          safeText("status", "Error inicializando: " + e.message);
-          logDebug("Error en init():<br>" + e.message);
+          text("status", "Error inicializando: " + e.message);
+          debug("Error en init():<br>" + e.message);
         }
       }
 
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init);
-      } else {
-        init();
-      }
+      init();
     })();
   </script>
 </body>
