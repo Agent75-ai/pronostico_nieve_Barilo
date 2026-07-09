@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>BariSnow</title>
-
   <style>
     :root{
       --bg0:#020814;--bg1:#061326;--bg2:#0b213c;--bg3:#123454;
@@ -15,20 +14,23 @@
 
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
-
     body{
-      margin:0;min-height:100vh;color:var(--txt);
+      margin:0;
+      min-height:100vh;
+      color:var(--txt);
       font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
       background:
         radial-gradient(circle at 8% -12%,rgba(103,220,255,.36),transparent 33%),
         radial-gradient(circle at 92% -8%,rgba(199,166,255,.26),transparent 32%),
-        radial-gradient(circle at 70% 112%,rgba(121,255,178,.13),transparent 34%),
         linear-gradient(135deg,var(--bg0),var(--bg1) 44%,var(--bg2) 72%,var(--bg3));
       overflow-x:hidden;
     }
 
     body::before{
-      content:"";position:fixed;inset:0;pointer-events:none;
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
       background:
         linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
         linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);
@@ -37,48 +39,83 @@
       z-index:-2;
     }
 
-    body::after{
-      content:"";position:fixed;width:620px;height:620px;right:-260px;top:18vh;
-      border-radius:999px;background:radial-gradient(circle,rgba(103,220,255,.13),transparent 68%);
-      filter:blur(8px);pointer-events:none;z-index:-1;
-    }
-
+    a{color:#a9f1ff;text-decoration:none;font-weight:900}
     #debugBox,#sourceStatus{display:none!important}
-
     .wrap{width:min(1240px,calc(100% - 28px));margin:auto;padding:22px 0 48px}
     header{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:16px}
 
-    .card,.panel,.kpi,.control,.statusbar,.quick,.weather-group,.map-card{
-      position:relative;border:1px solid var(--line);
+    .card,.panel,.kpi,.control,.statusbar,.quick,.weather-group,.map-card,.realobs-card{
+      position:relative;
+      border:1px solid var(--line);
       background:linear-gradient(180deg,rgba(255,255,255,.095),rgba(255,255,255,.045));
-      box-shadow:var(--shadow);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
     }
 
     .card{overflow:hidden;border-radius:34px;padding:28px}
 
     .brand{
-      min-height:230px;
+      min-height:315px;
       display:flex;
       flex-direction:column;
       justify-content:center;
       align-items:center;
       text-align:center;
+      isolation:isolate;
+      background:linear-gradient(135deg,#071b32,#0d3658);
+    }
+
+    .hero-image{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:0;
+      opacity:.88;
+    }
+
+    .brand::before{
+      content:"";
+      position:absolute;
+      inset:0;
       background:
-        radial-gradient(circle at 4% 0%,rgba(103,220,255,.24),transparent 32%),
-        radial-gradient(circle at 84% 0%,rgba(199,166,255,.18),transparent 34%),
-        linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.045));
+        linear-gradient(90deg,rgba(2,8,20,.72),rgba(2,8,20,.18),rgba(2,8,20,.72)),
+        linear-gradient(180deg,rgba(2,8,20,.05),rgba(2,8,20,.88));
+      z-index:1;
+      pointer-events:none;
     }
 
     .brand::after{
-      content:"❄";position:absolute;right:28px;top:22px;color:rgba(255,255,255,.13);
-      font-size:96px;line-height:1;transform:rotate(12deg);pointer-events:none;
+      content:"❄";
+      position:absolute;
+      right:28px;
+      top:22px;
+      color:rgba(255,255,255,.17);
+      font-size:96px;
+      line-height:1;
+      transform:rotate(12deg);
+      pointer-events:none;
+      z-index:2;
     }
 
+    .brand > *:not(.hero-image){position:relative;z-index:2}
+
     .eyebrow{
-      display:inline-flex;align-items:center;gap:9px;align-self:center;margin-bottom:14px;
-      padding:9px 13px;border-radius:999px;border:1px solid rgba(103,220,255,.34);
-      background:rgba(103,220,255,.105);color:#dbf8ff;font-size:12px;font-weight:950;
-      letter-spacing:.02em;box-shadow:0 0 28px rgba(103,220,255,.09);
+      display:inline-flex;
+      align-items:center;
+      gap:9px;
+      align-self:center;
+      margin-bottom:14px;
+      padding:9px 13px;
+      border-radius:999px;
+      border:1px solid rgba(103,220,255,.34);
+      background:rgba(4,14,28,.46);
+      color:#dbf8ff;
+      font-size:12px;
+      font-weight:950;
+      letter-spacing:.02em;
+      box-shadow:0 0 28px rgba(103,220,255,.09);
     }
 
     .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 18px var(--green)}
@@ -90,60 +127,99 @@
       font-size:clamp(62px,8vw,116px);
       line-height:.84;
       letter-spacing:-.088em;
-      text-shadow:0 16px 48px rgba(0,0,0,.34);
+      color:#fff;
+      text-shadow:0 8px 28px rgba(0,0,0,.75),0 0 38px rgba(103,220,255,.35);
     }
 
     h2{margin:0 0 12px;font-size:18px;letter-spacing:-.02em}
     h3{margin:0 0 10px;font-size:15px;letter-spacing:-.01em}
 
     .lead,.note{color:var(--mut);line-height:1.5;font-size:14px}
-    .lead{margin:16px auto 0;max-width:980px;font-size:15.5px;text-align:center}
-    .credit{margin-top:10px;color:#d7f7ff;font-size:13px;text-align:center}
-    .credit a, footer a{color:#a9f1ff;text-decoration:none;font-weight:900}
+    .lead{
+      margin:16px auto 0;
+      max-width:980px;
+      font-size:15.5px;
+      text-align:center;
+      color:#eef9ff;
+      text-shadow:0 4px 18px rgba(0,0,0,.70);
+    }
+
+    .credit{
+      margin-top:10px;
+      color:#f4fdff;
+      font-size:13px;
+      text-align:center;
+      text-shadow:0 4px 16px rgba(0,0,0,.70);
+    }
 
     .control{
-      overflow:hidden;border-radius:28px;margin-bottom:14px;
+      overflow:hidden;
+      border-radius:28px;
+      margin-bottom:14px;
       background:
         radial-gradient(circle at 0% 0%,rgba(103,220,255,.12),transparent 38%),
         linear-gradient(180deg,rgba(255,255,255,.088),rgba(255,255,255,.042));
     }
 
     .control-simple{
-      display:grid;grid-template-columns:minmax(260px,420px) 172px;
-      justify-content:start;align-items:end;gap:10px;padding:14px;
+      display:grid;
+      grid-template-columns:minmax(260px,420px) 172px;
+      justify-content:start;
+      align-items:end;
+      gap:10px;
+      padding:14px;
     }
 
     .hidden-location-meta{
-      position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;
-      clip:rect(0 0 0 0)!important;white-space:nowrap!important;opacity:0!important;pointer-events:none!important;
+      position:absolute!important;
+      width:1px!important;
+      height:1px!important;
+      overflow:hidden!important;
+      clip:rect(0 0 0 0)!important;
+      white-space:nowrap!important;
+      opacity:0!important;
+      pointer-events:none!important;
     }
 
     .field{display:flex;flex-direction:column;gap:6px}
     label{color:var(--mut);font-size:12px;font-weight:850}
 
     input,select,textarea,button{
-      width:100%;padding:12px 13px;border-radius:16px;border:1px solid rgba(255,255,255,.14);
-      background:rgba(2,8,20,.45);color:var(--txt);outline:none;font-size:14px;
+      width:100%;
+      padding:12px 13px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(2,8,20,.45);
+      color:var(--txt);
+      outline:none;
+      font-size:14px;
       box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
     }
 
     input:focus,select:focus,textarea:focus{
-      border-color:rgba(103,220,255,.62);box-shadow:0 0 0 4px rgba(103,220,255,.10);
+      border-color:rgba(103,220,255,.62);
+      box-shadow:0 0 0 4px rgba(103,220,255,.10);
     }
 
     select option{background:#102033;color:#fff}
 
     button{
-      cursor:pointer;border:0;background:linear-gradient(135deg,#74e3ff,#d8fbff);
-      color:#03131f;font-weight:950;box-shadow:0 14px 34px rgba(103,220,255,.20);
+      cursor:pointer;
+      border:0;
+      background:linear-gradient(135deg,#74e3ff,#d8fbff);
+      color:#03131f;
+      font-weight:950;
+      box-shadow:0 14px 34px rgba(103,220,255,.20);
       transition:transform .16s ease,filter .16s ease,box-shadow .16s ease;
     }
 
     button:hover{transform:translateY(-1px);filter:saturate(1.08);box-shadow:0 18px 40px rgba(103,220,255,.28)}
 
     button.secondary{
-      border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.075);
-      color:var(--txt);box-shadow:none;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.075);
+      color:var(--txt);
+      box-shadow:none;
     }
 
     button.danger{
@@ -152,44 +228,43 @@
     }
 
     .statusbar{
-      overflow:hidden;border-radius:20px;padding:13px 15px;margin-bottom:16px;color:#d2f7ff;
-      font-size:13px;line-height:1.45;
+      overflow:hidden;
+      border-radius:20px;
+      padding:13px 15px;
+      margin-bottom:16px;
+      color:#d2f7ff;
+      font-size:13px;
+      line-height:1.45;
       background:linear-gradient(90deg,rgba(121,255,178,.10),rgba(103,220,255,.08),rgba(199,166,255,.07));
       box-shadow:var(--soft);
     }
 
     .debug{
-      margin-top:8px;padding:10px;border-radius:14px;border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.22);color:#cfe3f2;
+      margin-top:8px;
+      padding:10px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.22);
+      color:#cfe3f2;
       font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
-      font-size:12px;word-break:break-word;
+      font-size:12px;
+      word-break:break-word;
     }
-
-    .sources{margin-top:6px;color:var(--mut)}
-    .source-pill{
-      display:inline-flex;margin:4px 4px 0 0;padding:5px 8px;border-radius:999px;
-      border:1px solid var(--line);background:rgba(255,255,255,.08);font-size:12px;
-    }
-
-    .source-ok{color:var(--green)}
-    .source-fail{color:var(--red)}
 
     .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
 
     .kpi{
-      overflow:hidden;min-height:128px;border-radius:24px;padding:16px;
+      overflow:hidden;
+      min-height:128px;
+      border-radius:24px;
+      padding:16px;
       background:
         radial-gradient(circle at 0% 0%,rgba(103,220,255,.075),transparent 42%),
         linear-gradient(180deg,rgba(255,255,255,.088),rgba(255,255,255,.042));
       transition:transform .16s ease,border-color .16s ease,background .16s ease;
     }
 
-    .kpi:hover{
-      transform:translateY(-2px);border-color:rgba(103,220,255,.30);
-      background:
-        radial-gradient(circle at 0% 0%,rgba(103,220,255,.12),transparent 42%),
-        linear-gradient(180deg,rgba(255,255,255,.105),rgba(255,255,255,.052));
-    }
+    .kpi:hover{transform:translateY(-2px);border-color:rgba(103,220,255,.30)}
 
     .kpi.snow{
       background:
@@ -209,48 +284,234 @@
         linear-gradient(180deg,rgba(255,255,255,.088),rgba(255,255,255,.042));
     }
 
-    .kpi span{
-      display:block;color:var(--mut);font-size:11.2px;font-weight:950;
-      text-transform:uppercase;letter-spacing:.062em;
+    .kpi span,.realobs-card span{
+      display:block;
+      color:var(--mut);
+      font-size:11.2px;
+      font-weight:950;
+      text-transform:uppercase;
+      letter-spacing:.062em;
     }
 
-    .kpi strong{
-      display:block;margin:10px 0 6px;font-size:26px;line-height:1.04;
-      letter-spacing:-.052em;text-wrap:balance;
+    .kpi strong,.realobs-card strong{
+      display:block;
+      margin:10px 0 6px;
+      font-size:26px;
+      line-height:1.04;
+      letter-spacing:-.052em;
+      text-wrap:balance;
     }
 
-    .kpi small{color:var(--mut);line-height:1.36;font-size:12.5px}
+    .kpi small,.realobs-card small{color:var(--mut);line-height:1.36;font-size:12.5px}
+
+    .green{color:var(--green)}
+    .yellow{color:var(--yellow)}
+    .orange{color:var(--orange)}
+    .red{color:var(--red)}
+    .purple{color:var(--purple)}
+    .blue{color:var(--blue)}
 
     .quick{
-      width:100%;overflow:hidden;padding:18px;border-radius:28px;margin-bottom:16px;
+      width:100%;
+      overflow:hidden;
+      padding:18px;
+      border-radius:28px;
+      margin-bottom:16px;
       border:1px solid rgba(103,220,255,.28);
       background:
         radial-gradient(circle at 0% 0%,rgba(103,220,255,.20),transparent 38%),
         radial-gradient(circle at 100% 0%,rgba(199,166,255,.13),transparent 38%),
         linear-gradient(180deg,rgba(255,255,255,.105),rgba(255,255,255,.047));
-      color:#e8fbff;font-size:15px;line-height:1.56;box-shadow:var(--shadow);
+      color:#e8fbff;
+      font-size:15px;
+      line-height:1.56;
+      box-shadow:var(--shadow);
     }
 
     .quick b{color:#fff}
 
     .quick-label{
-      display:inline-flex;align-items:center;gap:7px;margin-bottom:10px;padding:7px 10px;
-      border-radius:999px;background:rgba(103,220,255,.10);color:#a9f1ff;
-      font-size:11.5px;font-weight:950;text-transform:uppercase;letter-spacing:.075em;
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      margin-bottom:10px;
+      padding:7px 10px;
+      border-radius:999px;
+      background:rgba(103,220,255,.10);
+      color:#a9f1ff;
+      font-size:11.5px;
+      font-weight:950;
+      text-transform:uppercase;
+      letter-spacing:.075em;
     }
 
     .panel{overflow:hidden;border-radius:28px;padding:18px;margin-bottom:16px}
 
+    .realobs-panel{
+      margin-bottom:16px;
+      border-radius:28px;
+      padding:18px;
+      border:1px solid rgba(121,255,178,.22);
+      background:
+        radial-gradient(circle at 0% 0%,rgba(121,255,178,.12),transparent 38%),
+        linear-gradient(180deg,rgba(255,255,255,.090),rgba(255,255,255,.042));
+      box-shadow:var(--shadow);
+    }
+
+    .realobs-head{
+      display:grid;
+      grid-template-columns:1fr 180px;
+      gap:12px;
+      align-items:start;
+      margin-bottom:12px;
+    }
+
+    .realobs-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .realobs-card{
+      overflow:hidden;
+      border-radius:24px;
+      padding:16px;
+      background:
+        radial-gradient(circle at 0% 0%,rgba(121,255,178,.12),transparent 42%),
+        linear-gradient(180deg,rgba(255,255,255,.088),rgba(255,255,255,.042));
+      box-shadow:var(--soft);
+    }
+
+    .realobs-raw{
+      margin-top:12px;
+      padding:12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.18);
+      color:#dff7ff;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+      font-size:12px;
+      line-height:1.45;
+      word-break:break-word;
+    }
+
+    .daily9-panel{
+      border:1px solid rgba(103,220,255,.22);
+      background:
+        radial-gradient(circle at 0% 0%,rgba(103,220,255,.13),transparent 38%),
+        linear-gradient(180deg,rgba(255,255,255,.090),rgba(255,255,255,.042));
+    }
+
+    .daily9-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .daily9-card{
+      border-radius:24px;
+      padding:15px;
+      border:1px solid rgba(255,255,255,.13);
+      background:
+        radial-gradient(circle at 0% 0%,rgba(255,255,255,.09),transparent 42%),
+        linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));
+      box-shadow:0 12px 34px rgba(0,0,0,.22);
+    }
+
+    .daily9-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .daily9-date{
+      font-size:23px;
+      font-weight:950;
+      letter-spacing:-.06em;
+    }
+
+    .daily9-day{
+      display:block;
+      margin-top:2px;
+      color:var(--mut);
+      font-size:12px;
+      font-weight:850;
+      letter-spacing:0;
+    }
+
+    .daily9-badge{
+      padding:6px 9px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:950;
+      white-space:nowrap;
+    }
+
+    .daily9-badge.green{background:rgba(121,255,178,.13)}
+    .daily9-badge.yellow{background:rgba(255,209,102,.14)}
+    .daily9-badge.orange{background:rgba(255,159,28,.15)}
+    .daily9-badge.red{background:rgba(255,107,122,.16)}
+
+    .daily9-main{
+      margin:8px 0 11px;
+      color:#eefaff;
+      font-size:14px;
+      line-height:1.45;
+    }
+
+    .daily9-metrics{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+
+    .daily9-metric{
+      padding:9px;
+      border-radius:15px;
+      border:1px solid rgba(255,255,255,.09);
+      background:rgba(255,255,255,.055);
+    }
+
+    .daily9-metric span{
+      display:block;
+      color:var(--mut2);
+      font-size:10px;
+      font-weight:950;
+      text-transform:uppercase;
+      letter-spacing:.055em;
+    }
+
+    .daily9-metric strong{
+      display:block;
+      margin-top:4px;
+      font-size:15px;
+      letter-spacing:-.035em;
+    }
+
     .map-head{
-      display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;margin-bottom:12px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      align-items:start;
+      margin-bottom:12px;
     }
 
     .map-layout{
-      display:grid;grid-template-columns:minmax(360px,1.05fr) minmax(360px,1fr);gap:14px;align-items:stretch;
+      display:grid;
+      grid-template-columns:minmax(360px,1.05fr) minmax(360px,1fr);
+      gap:14px;
+      align-items:stretch;
     }
 
     .bari-map{
-      position:relative;min-height:430px;border-radius:26px;overflow:hidden;
+      position:relative;
+      min-height:430px;
+      border-radius:26px;
+      overflow:hidden;
       border:1px solid rgba(255,255,255,.13);
       background:
         radial-gradient(ellipse at 17% 44%,rgba(103,220,255,.32) 0%,rgba(103,220,255,.22) 22%,transparent 38%),
@@ -261,23 +522,28 @@
 
     .bari-map::before{
       content:"Nahuel Huapi / Bariloche";
-      position:absolute;left:18px;top:16px;color:rgba(230,250,255,.68);
-      font-size:12px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;z-index:2;
+      position:absolute;
+      left:18px;
+      top:16px;
+      color:rgba(230,250,255,.68);
+      font-size:12px;
+      font-weight:950;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      z-index:2;
     }
 
     .bari-map::after{
       content:"Cordillera";
-      position:absolute;left:18px;bottom:16px;color:rgba(230,250,255,.42);
-      font-size:12px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;z-index:2;
-    }
-
-    .ridge{
-      position:absolute;left:-5%;right:-5%;bottom:0;height:32%;
-      background:
-        linear-gradient(140deg,transparent 0 10%,rgba(255,255,255,.08) 10% 15%,transparent 15% 27%,rgba(255,255,255,.07) 27% 33%,transparent 33% 50%,rgba(255,255,255,.09) 50% 56%,transparent 56%),
-        linear-gradient(180deg,transparent,rgba(255,255,255,.06));
-      clip-path:polygon(0 100%,0 64%,12% 42%,24% 66%,36% 28%,49% 60%,61% 34%,75% 66%,89% 40%,100% 64%,100% 100%);
-      pointer-events:none;z-index:2;
+      position:absolute;
+      left:18px;
+      bottom:16px;
+      color:rgba(230,250,255,.42);
+      font-size:12px;
+      font-weight:950;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      z-index:2;
     }
 
     .map-svg{
@@ -307,40 +573,54 @@
       stroke-linejoin:round;
     }
 
-    .map-road.secondary{
-      stroke:rgba(255,255,255,.13);
-      stroke-width:2.2;
-    }
+    .map-road.secondary{stroke:rgba(255,255,255,.13);stroke-width:2.2}
+    .map-lake{fill:rgba(97,220,255,.18);stroke:rgba(97,220,255,.34);stroke-width:2}
+    .map-zone{fill:rgba(255,255,255,.03);stroke:rgba(255,255,255,.06);stroke-width:1.2}
 
-    .map-lake{
-      fill:rgba(97,220,255,.18);
-      stroke:rgba(97,220,255,.34);
-      stroke-width:2;
-    }
-
-    .map-zone{
-      fill:rgba(255,255,255,.03);
-      stroke:rgba(255,255,255,.06);
-      stroke-width:1.2;
+    .ridge{
+      position:absolute;
+      left:-5%;
+      right:-5%;
+      bottom:0;
+      height:32%;
+      background:
+        linear-gradient(140deg,transparent 0 10%,rgba(255,255,255,.08) 10% 15%,transparent 15% 27%,rgba(255,255,255,.07) 27% 33%,transparent 33% 50%,rgba(255,255,255,.09) 50% 56%,transparent 56%),
+        linear-gradient(180deg,transparent,rgba(255,255,255,.06));
+      clip-path:polygon(0 100%,0 64%,12% 42%,24% 66%,36% 28%,49% 60%,61% 34%,75% 66%,89% 40%,100% 64%,100% 100%);
+      pointer-events:none;
+      z-index:2;
     }
 
     .map-point{
-      position:absolute;width:46px;height:46px;border-radius:999px;border:1px solid rgba(255,255,255,.28);
-      transform:translate(-50%,-50%);display:grid;place-items:center;z-index:4;
-      background:rgba(255,255,255,.12);color:#02111d;font-weight:950;box-shadow:0 12px 30px rgba(0,0,0,.35);
+      position:absolute;
+      width:46px;
+      height:46px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.28);
+      transform:translate(-50%,-50%);
+      display:grid;
+      place-items:center;
+      z-index:4;
+      background:rgba(255,255,255,.12);
+      color:#02111d;
+      font-weight:950;
+      box-shadow:0 12px 30px rgba(0,0,0,.35);
       padding:0;
       transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease;
     }
 
-    .map-point:hover,
-    .map-point.active{
+    .map-point:hover,.map-point.active{
       transform:translate(-50%,-50%) scale(1.08);
       border-color:rgba(255,255,255,.42);
       box-shadow:0 16px 34px rgba(0,0,0,.42);
     }
 
     .map-point::before{
-      content:"";position:absolute;inset:6px;border-radius:999px;background:var(--blue);
+      content:"";
+      position:absolute;
+      inset:6px;
+      border-radius:999px;
+      background:var(--blue);
       box-shadow:0 0 22px currentColor;
     }
 
@@ -352,9 +632,18 @@
     .map-point.red::before{background:var(--red)}
 
     .map-label{
-      position:absolute;left:50%;top:100%;transform:translateX(-50%);
-      margin-top:6px;padding:4px 7px;border-radius:999px;white-space:nowrap;
-      background:rgba(0,0,0,.38);color:#eaf8ff;font-size:11px;font-weight:850;
+      position:absolute;
+      left:50%;
+      top:100%;
+      transform:translateX(-50%);
+      margin-top:6px;
+      padding:4px 7px;
+      border-radius:999px;
+      white-space:nowrap;
+      background:rgba(0,0,0,.38);
+      color:#eaf8ff;
+      font-size:11px;
+      font-weight:850;
       border:1px solid rgba(255,255,255,.12);
     }
 
@@ -379,64 +668,43 @@
     }
 
     .map-tooltip.show{opacity:1}
-
-    .map-tooltip b{
-      display:block;
-      margin-bottom:6px;
-      font-size:13px;
-      color:#fff;
-    }
-
-    .map-tooltip .tt-row{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      padding:2px 0;
-    }
-
+    .map-tooltip b{display:block;margin-bottom:6px;font-size:13px;color:#fff}
+    .map-tooltip .tt-row{display:flex;justify-content:space-between;gap:10px;padding:2px 0}
     .map-tooltip .tt-row span:first-child{color:#a7bed0}
-
-    .map-tooltip .tt-foot{
-      margin-top:7px;
-      padding-top:7px;
-      border-top:1px solid rgba(255,255,255,.08);
-      color:#dff7ff;
-    }
+    .map-tooltip .tt-foot{margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,.08);color:#dff7ff}
 
     .map-cards{
-      display:grid;grid-template-columns:1fr;gap:10px;max-height:430px;overflow:auto;padding-right:2px;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      max-height:430px;
+      overflow:auto;
+      padding-right:2px;
     }
 
     .map-card{
-      border-radius:22px;padding:13px;box-shadow:var(--soft);cursor:pointer;
+      border-radius:22px;
+      padding:13px;
+      box-shadow:var(--soft);
+      cursor:pointer;
       transition:transform .15s ease,border-color .15s ease;
     }
 
     .map-card:hover{transform:translateY(-2px);border-color:rgba(103,220,255,.38)}
-
-    .map-card-top{
-      display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;
-    }
-
+    .map-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}
     .map-card b{font-size:15px}
     .map-card small{display:block;color:var(--mut);line-height:1.35;margin-top:3px}
 
-    .map-mini{
-      display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px;
-    }
-
-    .map-mini div{
-      padding:8px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
-    }
-
+    .map-mini{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}
+    .map-mini div{padding:8px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)}
     .map-mini span{display:block;color:var(--mut2);font-size:10px;text-transform:uppercase;font-weight:950;letter-spacing:.05em}
     .map-mini strong{display:block;margin-top:3px;font-size:14px;letter-spacing:-.03em}
 
     .event-summary{display:grid;gap:12px;margin-bottom:16px}
     .event-top{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .weather-groups{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-
     .weather-group{overflow:hidden;border-radius:28px;padding:14px}
+
     .rain-group{
       background:
         radial-gradient(circle at 0% 0%,rgba(90,154,255,.18),transparent 42%),
@@ -450,53 +718,48 @@
     }
 
     .weather-head{display:flex;align-items:center;gap:11px;margin-bottom:12px;padding:4px 2px 2px}
-    .weather-icon{
-      width:42px;height:42px;display:grid;place-items:center;border-radius:16px;
-      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);font-size:20px;
-    }
-
+    .weather-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);font-size:20px}
     .weather-head b{display:block;font-size:18px;letter-spacing:-.025em}
     .weather-head small{display:block;color:var(--mut);margin-top:2px;font-size:12.5px;line-height:1.35}
-
     .group-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .group-grid .kpi{min-height:116px;box-shadow:none}
     .group-grid .kpi:first-child{grid-column:1/-1}
 
-    .green{color:var(--green)}
-    .yellow{color:var(--yellow)}
-    .orange{color:var(--orange)}
-    .red{color:var(--red)}
-    .purple{color:var(--purple)}
-    .blue{color:var(--blue)}
-
     .chart-panel{
-      padding:0;overflow:hidden;
+      padding:0;
+      overflow:hidden;
       background:
         radial-gradient(circle at 10% 0%,rgba(103,220,255,.13),transparent 38%),
         linear-gradient(180deg,rgba(255,255,255,.087),rgba(255,255,255,.042));
     }
 
-    .chart-head{
-      display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;
-      padding:20px 20px 12px;
-    }
-
+    .chart-head{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;padding:20px 20px 12px}
     .chart-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}
+
     .legend-pill{
-      display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.06);
-      color:#ddecf6;font-size:12px;
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.06);
+      color:#ddecf6;
+      font-size:12px;
     }
 
     .legend-dot{width:9px;height:9px;border-radius:999px;display:inline-block;box-shadow:0 0 18px currentColor}
     .legend-bar{width:13px;height:9px;border-radius:3px;display:inline-block}
-
     .chart-meta{min-width:250px;color:var(--mut);font-size:13px;line-height:1.45;text-align:right}
     .chart-wrap{padding:0 14px 14px}
 
     canvas{
-      display:block;width:100%;height:448px;border-radius:24px;
-      border:1px solid rgba(255,255,255,.13);background:rgba(0,0,0,.25);
+      display:block;
+      width:100%;
+      height:448px;
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.13);
+      background:rgba(0,0,0,.25);
       box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
     }
 
@@ -508,8 +771,12 @@
     .diagnosis b{color:#fff}
 
     .tablebox{
-      max-height:520px;overflow:auto;margin-top:16px;border-radius:22px;
-      border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.14);
+      max-height:520px;
+      overflow:auto;
+      margin-top:16px;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.14);
     }
 
     table{width:100%;border-collapse:collapse;font-size:13px}
@@ -523,65 +790,38 @@
     .high{background:rgba(255,107,107,.16);color:var(--red)}
 
     .science-card{
-      padding:15px;border-radius:21px;border:1px solid rgba(255,255,255,.12);
+      padding:15px;
+      border-radius:21px;
+      border:1px solid rgba(255,255,255,.12);
       background:linear-gradient(180deg,rgba(255,255,255,.070),rgba(255,255,255,.038));
       box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
-    }
-
-    .need{
-      display:flex;justify-content:space-between;gap:12px;padding:10px 0;
-      border-bottom:1px solid rgba(255,255,255,.10);font-size:14px;
-    }
-
-    .need:last-child{border-bottom:0}
-    .need b{text-align:right}
-    .need-ok{color:var(--green)!important}
-    .need-mid{color:var(--yellow)!important}
-    .need-bad{color:var(--red)!important}
-
-    .meter{height:10px;margin-top:12px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
-    .meter-fill{
-      height:100%;border-radius:999px;background:linear-gradient(90deg,var(--red),var(--yellow),var(--green));
-      box-shadow:0 0 18px rgba(121,255,178,.25);
-    }
-
-    textarea{
-      min-height:126px;resize:vertical;
-      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
-      font-size:13px;line-height:1.45;
     }
 
     details summary{cursor:pointer;list-style:none;font-size:18px;font-weight:950;letter-spacing:-.02em}
     details summary::-webkit-details-marker{display:none}
     details summary::after{
-      content:"Abrir";float:right;padding:6px 11px;border-radius:999px;
-      background:linear-gradient(135deg,var(--blue),#cff7ff);color:#03131f;font-size:12px;
+      content:"Abrir";
+      float:right;
+      padding:6px 11px;
+      border-radius:999px;
+      background:linear-gradient(135deg,var(--blue),#cff7ff);
+      color:#03131f;
+      font-size:12px;
     }
 
     details[open] summary::after{content:"Cerrar"}
 
-    .admin-locked{
-      display:grid;grid-template-columns:minmax(240px,360px) 160px;gap:10px;align-items:end;margin-bottom:14px;
-    }
-
-    .admin-panel{display:none}
-    .admin-panel.active{display:block}
-
-    .admin-actions{
-      display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0;
-    }
-
-    .mini-stat{
-      display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0;
-    }
-
-    .mini-stat .science-card{padding:12px}
-    .mini-stat b{display:block;font-size:22px;letter-spacing:-.04em;margin-top:4px}
-    .mini-stat span{color:var(--mut);font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.05em}
+    .admin-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
 
     footer{
-      margin-top:22px;padding:18px;border-radius:24px;border:1px solid var(--line);
-      background:rgba(255,255,255,.055);color:var(--mut);font-size:13px;text-align:center;
+      margin-top:22px;
+      padding:18px;
+      border-radius:24px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.055);
+      color:var(--mut);
+      font-size:13px;
+      text-align:center;
     }
 
     @media (max-width:1080px){
@@ -591,37 +831,35 @@
 
     @media (max-width:980px){
       header,.control,.grid2{grid-template-columns:1fr}
-      .brand{min-height:auto}
-      .kpis{grid-template-columns:1fr 1fr}
+      .brand{min-height:250px}
+      .kpis,.realobs-grid{grid-template-columns:1fr 1fr}
       .grid3{grid-template-columns:1fr 1fr}
       .event-top{grid-template-columns:1fr 1fr}
-      .chart-head,.map-head{grid-template-columns:1fr}
+      .chart-head,.map-head,.realobs-head{grid-template-columns:1fr}
       .chart-meta{min-width:0;text-align:left}
-      .admin-actions{grid-template-columns:1fr 1fr}
-      .mini-stat{grid-template-columns:1fr}
+      .admin-actions{grid-template-columns:1fr}
+      .daily9-grid{grid-template-columns:1fr 1fr}
       canvas{height:370px}
     }
 
     @media (max-width:620px){
       .wrap{width:min(100% - 18px,1220px);padding:14px 0 34px}
-      .card,.panel,.control{border-radius:22px;padding:14px}
-      .brand{border-radius:26px}
+      .card,.panel,.control,.realobs-panel{border-radius:22px;padding:14px}
+      .brand{border-radius:26px;min-height:230px}
       .brand::after{font-size:64px;right:18px;top:16px}
       .lead{font-size:14px}
-      .control-simple,.kpis,.grid2,.grid3,.event-top,.weather-groups,.group-grid,.admin-locked,.admin-actions{grid-template-columns:1fr}
+      .control-simple,.kpis,.realobs-grid,.grid2,.grid3,.event-top,.weather-groups,.group-grid,.daily9-grid{grid-template-columns:1fr}
       .chart-panel{padding:0}
       .chart-head{padding:14px 14px 8px}
       .chart-wrap{padding:0 9px 9px}
       h1{font-size:52px}
       .quick{padding:16px;border-radius:22px;font-size:15px}
       .kpi{min-height:auto;border-radius:20px}
-      .kpi strong{font-size:24px}
+      .kpi strong,.realobs-card strong{font-size:24px}
       .bari-map{min-height:360px}
       .map-mini{grid-template-columns:1fr 1fr}
       .map-tooltip{min-width:190px;max-width:230px;font-size:11.5px}
       canvas{height:320px}
-      .need{flex-direction:column}
-      .need b{text-align:left}
       th,td{padding:8px;font-size:12px}
     }
   </style>
@@ -631,6 +869,47 @@
   <div class="wrap">
     <header>
       <section class="card brand">
+        <svg class="hero-image" viewBox="0 0 1600 620" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <defs>
+            <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#89d8ff"/>
+              <stop offset="42%" stop-color="#4da9dc"/>
+              <stop offset="100%" stop-color="#0c2944"/>
+            </linearGradient>
+            <linearGradient id="lake" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#57c8ff"/>
+              <stop offset="60%" stop-color="#1f79a7"/>
+              <stop offset="100%" stop-color="#082236"/>
+            </linearGradient>
+            <linearGradient id="mountain" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#e9f7ff"/>
+              <stop offset="33%" stop-color="#87a7bb"/>
+              <stop offset="100%" stop-color="#20384b"/>
+            </linearGradient>
+            <linearGradient id="forest" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#326d62"/>
+              <stop offset="100%" stop-color="#071b23"/>
+            </linearGradient>
+            <filter id="grain">
+              <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" stitchTiles="stitch"/>
+              <feColorMatrix type="saturate" values="0"/>
+              <feComponentTransfer><feFuncA type="table" tableValues="0 .15"/></feComponentTransfer>
+            </filter>
+          </defs>
+
+          <rect width="1600" height="620" fill="url(#sky)"/>
+          <circle cx="1240" cy="105" r="72" fill="#fff6c8" opacity=".48"/>
+          <path d="M0 322 C180 242 290 260 430 170 C545 96 625 250 735 142 C830 48 930 220 1035 128 C1160 15 1265 258 1400 170 C1495 110 1540 160 1600 130 L1600 470 L0 470 Z" fill="url(#mountain)" opacity=".95"/>
+          <path d="M110 336 L335 180 L424 334 Z" fill="#f3fbff" opacity=".48"/>
+          <path d="M705 280 L860 112 L1010 285 Z" fill="#f3fbff" opacity=".54"/>
+          <path d="M1110 290 L1264 92 L1455 300 Z" fill="#f3fbff" opacity=".50"/>
+          <path d="M0 385 C240 345 380 370 540 330 C740 282 905 388 1100 318 C1260 260 1435 320 1600 286 L1600 620 L0 620 Z" fill="url(#lake)" opacity=".92"/>
+          <path d="M0 524 C150 478 290 496 430 468 C615 432 764 504 930 462 C1132 410 1320 448 1600 405 L1600 620 L0 620 Z" fill="url(#forest)" opacity=".88"/>
+          <path d="M0 448 C190 468 300 424 490 445 C690 468 820 420 1010 446 C1225 475 1390 425 1600 456" stroke="#d7f7ff" stroke-width="8" opacity=".18" fill="none"/>
+          <path d="M0 402 C240 420 392 392 560 410 C745 430 904 392 1102 412 C1280 430 1430 404 1600 418" stroke="#ffffff" stroke-width="3" opacity=".16" fill="none"/>
+          <rect width="1600" height="620" filter="url(#grain)" opacity=".36"/>
+        </svg>
+
         <div class="eyebrow"><span class="dot"></span> Método BariSnow</div>
         <h1>BariSnow</h1>
         <div class="lead">
@@ -677,27 +956,97 @@
         <div id="debugBox" class="debug">Diagnóstico técnico oculto.</div>
       </section>
 
+      <section class="realobs-panel">
+        <div class="realobs-head">
+          <div>
+            <h2>📡 Observaciones reales automáticas</h2>
+            <div class="note">
+              Dato observado automático desde METAR SAZS/BRC, aeropuerto Bariloche. Sirve para comparar la realidad actual contra el pronóstico BariSnow.
+            </div>
+          </div>
+          <button id="refreshObsBtn" class="secondary" type="button">📡 Actualizar obs.</button>
+        </div>
+
+        <div id="realObsStatus" class="statusbar" style="box-shadow:none;margin-bottom:12px">
+          Esperando observación real.
+        </div>
+
+        <div class="realobs-grid">
+          <div class="realobs-card">
+            <span>🌡️ Temp. observada</span>
+            <strong id="obsTemp">—</strong>
+            <small id="obsAge">Sin dato.</small>
+          </div>
+
+          <div class="realobs-card">
+            <span>💧 Humedad observada</span>
+            <strong id="obsRH">—</strong>
+            <small>Calculada desde temperatura y punto de rocío.</small>
+          </div>
+
+          <div class="realobs-card">
+            <span>🌬️ Viento observado</span>
+            <strong id="obsWind">—</strong>
+            <small>METAR aeropuerto Bariloche.</small>
+          </div>
+
+          <div class="realobs-card">
+            <span>🧪 Fenómeno real</span>
+            <strong id="obsPhenomena">—</strong>
+            <small>Detectado desde METAR crudo.</small>
+          </div>
+        </div>
+
+        <div class="realobs-grid">
+          <div class="realobs-card">
+            <span>📊 Sesgo térmico ahora</span>
+            <strong id="obsBias">—</strong>
+            <small id="obsBiasText">Se calcula contra la hora actual del pronóstico seleccionado.</small>
+          </div>
+
+          <div class="realobs-card">
+            <span>📍 Estación</span>
+            <strong>SAZS/BRC</strong>
+            <small>Aeropuerto Bariloche. No representa perfecto todos los barrios.</small>
+          </div>
+
+          <div class="realobs-card">
+            <span>⚠️ Uso meteorológico</span>
+            <strong>Validación</strong>
+            <small>No reemplaza el pronóstico; lo compara y ayuda a calibrar.</small>
+          </div>
+
+          <div class="realobs-card">
+            <span>🧠 Calibración</span>
+            <strong>Automática</strong>
+            <small>Guarda sesgos reales sin cargar datos manualmente.</small>
+          </div>
+        </div>
+
+        <div id="obsRaw" class="realobs-raw">METAR crudo: —</div>
+      </section>
+
       <section class="kpis main-indicators">
         <div class="kpi snow">
-          <span>❄️ Nivel BariSnow nieve</span>
+          <span>❄️ Nivel nieve +3 h</span>
           <strong id="snowVerdict">—</strong>
-          <small id="snowVerdictText">Sin corrida.</small>
+          <small id="snowVerdictText">Pronóstico a tres horas.</small>
         </div>
 
         <div class="kpi rain">
-          <span>🌧️ Nivel lluvia</span>
+          <span>🌧️ Nivel lluvia +3 h</span>
           <strong id="rainVerdict">—</strong>
-          <small id="rainVerdictText">Sin corrida.</small>
+          <small id="rainVerdictText">Pronóstico a tres horas.</small>
         </div>
 
         <div class="kpi">
-          <span>🧪 Fase probable</span>
+          <span>🧪 Fase ahora / +3 h</span>
           <strong id="phaseVerdict">—</strong>
           <small id="phaseVerdictText">—</small>
         </div>
 
         <div class="kpi">
-          <span>🎯 Acuerdo entre modelos</span>
+          <span>🎯 Acuerdo modelos ahora / +3 h</span>
           <strong id="ensembleConsensus">—</strong>
           <small id="consensusText">Acuerdo entre fuentes.</small>
         </div>
@@ -705,13 +1054,13 @@
 
       <section class="kpis temp-indicators">
         <div class="kpi">
-          <span>🌡️ Temperatura</span>
+          <span>🌡️ Temperatura ahora / +3 h</span>
           <strong id="tempNow">—</strong>
           <small id="tempNowText">Sin corrida.</small>
         </div>
 
         <div class="kpi">
-          <span>🥶 Sensación térmica</span>
+          <span>🥶 Sensación ahora / +3 h</span>
           <strong id="feelsNow">—</strong>
           <small id="feelsNowText">Sin corrida.</small>
         </div>
@@ -734,12 +1083,31 @@
         <div id="quickRead">Esperando corrida inicial.</div>
       </section>
 
+      <section class="panel daily9-panel">
+        <div class="map-head">
+          <div>
+            <h2>📅 Pronóstico a 9 días</h2>
+            <div class="note">
+              Resumen diario desde ahora: temperatura mínima y máxima, lluvia acumulada, nieve estimada, fase dominante y momento más activo.
+            </div>
+          </div>
+        </div>
+
+        <div id="daily9Status" class="statusbar" style="box-shadow:none;margin-bottom:12px">
+          Esperando pronóstico diario.
+        </div>
+
+        <div id="daily9Grid" class="daily9-grid">
+          <div class="daily9-card">Esperando datos.</div>
+        </div>
+      </section>
+
       <section class="panel">
         <div class="map-head">
           <div>
             <h2>🗺️ Mapa BariSnow por barrios</h2>
             <div class="note">
-              Pasá el cursor sobre cada punto para ver temperatura, sensación térmica, lluvia, nieve, fase, acuerdo y coordenadas del barrio.
+              Pasá el cursor sobre cada punto para ver valores por barrio. El color del punto prioriza el pronóstico a +3 horas.
             </div>
           </div>
           <button id="refreshMapBtn" class="secondary" type="button">🔄 Actualizar mapa</button>
@@ -778,7 +1146,7 @@
             <div class="weather-head">
               <div class="weather-icon">🌧️</div>
               <div>
-                <b>Lluvia</b>
+                <b>Lluvia prevista</b>
                 <small>Total esperado, comienzo, pico y final del bloque principal.</small>
               </div>
             </div>
@@ -814,7 +1182,7 @@
             <div class="weather-head">
               <div class="weather-icon">❄️</div>
               <div>
-                <b>Nieve / mezcla</b>
+                <b>Nieve / mezcla prevista</b>
                 <small>Acumulado, posible aguanieve y ventana térmica favorable.</small>
               </div>
             </div>
@@ -856,7 +1224,6 @@
               <span class="legend-pill"><span class="legend-dot" style="background:#79ffb2"></span>Nieve cm/h</span>
               <span class="legend-pill"><span class="legend-dot" style="background:#ffd166"></span>Prob. nieve</span>
               <span class="legend-pill"><span class="legend-bar" style="background:#61dcff"></span>Lluvia / precip.</span>
-              <span class="legend-pill"><span class="legend-dot" style="background:#c5a6ff"></span>Windguru</span>
             </div>
           </div>
           <div id="chartMeta" class="chart-meta">Esperando corrida.</div>
@@ -866,50 +1233,39 @@
         </div>
       </section>
 
-      <section class="panel">
-        <h2>✅ Condiciones necesarias</h2>
-        <div class="grid2">
-          <div class="science-card">
-            <h3>Semáforo de nieve/mezcla</h3>
-            <div id="snowNeeds"></div>
-          </div>
-
-          <div class="science-card">
-            <h3>Lectura práctica</h3>
-            <div id="snowNeedsText" class="diagnosis">Esperando corrida.</div>
-          </div>
-        </div>
-      </section>
-
       <details class="panel" id="technicalBox">
-        <summary>🔬 Ver detalle técnico</summary>
+        <summary>🔬 Ver detalle técnico e historial automático</summary>
 
         <div class="note" style="margin:10px 0 16px">
-          Percentiles, umbrales, tabla horaria, diagnóstico físico, Windguru y configuración avanzada.
+          Tabla horaria, diagnóstico físico, observación real automática y archivo local de verificación. No hay carga manual.
         </div>
 
         <section class="grid2">
           <section class="science-card">
-            <h2>📊 Escenarios cuantitativos</h2>
-            <div class="tablebox" style="max-height:none">
-              <table>
-                <thead>
-                  <tr><th>Variable</th><th>P25</th><th>P50</th><th>P75</th><th>P90</th></tr>
-                </thead>
-                <tbody id="scenarioRows"></tbody>
-              </table>
-            </div>
+            <h2>🧭 Diagnóstico meteorológico</h2>
+            <div id="diagnosis" class="diagnosis">Ejecutá el modelo para generar el análisis.</div>
           </section>
 
           <section class="science-card">
-            <h2>🎚️ Probabilidad de umbrales</h2>
-            <div class="tablebox" style="max-height:none">
-              <table>
-                <thead>
-                  <tr><th>Umbral</th><th>Probabilidad</th><th>Lectura</th></tr>
-                </thead>
-                <tbody id="thresholdRows"></tbody>
-              </table>
+            <h2>⚙️ Configuración avanzada</h2>
+            <div class="grid3" style="margin-top:14px">
+              <div class="field"><label>📍 Latitud</label><input id="lat" type="number" step="0.0001" value="-41.1000"></div>
+              <div class="field"><label>📍 Longitud</label><input id="lon" type="number" step="0.0001" value="-71.4500"></div>
+              <div class="field"><label>⛰️ Altitud, m</label><input id="elev" type="number" value="778"></div>
+              <div class="field"><label>📅 Días</label><input id="days" type="number" min="9" max="9" value="9"></div>
+              <div class="field"><label>⛰️ Factor orográfico local</label><input id="oro" type="number" step="0.05" value="0.42"></div>
+              <div class="field"><label>🌡️ Ajuste térmico local °C</label><input id="coldBias" type="number" step="0.1" value="0.0"></div>
+
+              <div class="field full">
+                <label>🛰️ Fuentes</label>
+                <select id="sourceMode">
+                  <option value="ensemble" selected>Ensamble multimodelo recomendado</option>
+                  <option value="best_match">Solo Best Match</option>
+                  <option value="ecmwf">Solo ECMWF IFS</option>
+                  <option value="gfs">Solo NOAA GFS</option>
+                  <option value="gem">Solo CMC GEM</option>
+                </select>
+              </div>
             </div>
           </section>
         </section>
@@ -921,8 +1277,7 @@
               <thead>
                 <tr>
                   <th>Hora</th><th>T</th><th>Sens.</th><th>Tw eff</th><th>Precip</th><th>Cota</th><th>Prob. nieve</th>
-                  <th>Fase</th><th>Nieve P50</th><th>Rango P25-P75</th><th>Consenso</th><th>Modelos</th>
-                  <th>DGZ proxy</th><th>Melt</th><th>Windguru</th><th>Dif.</th><th>Riesgo</th>
+                  <th>Fase</th><th>Nieve P50</th><th>Consenso</th><th>Modelos</th><th>Riesgo</th>
                 </tr>
               </thead>
               <tbody id="rows"></tbody>
@@ -930,140 +1285,30 @@
           </div>
         </section>
 
-        <section class="grid2">
-          <section class="science-card">
-            <h2>🧭 Diagnóstico meteorológico</h2>
-            <div id="diagnosis" class="diagnosis">Ejecutá el modelo para generar el análisis.</div>
-          </section>
-
-          <section class="science-card">
-            <h2>🟣 Comparar con Windguru</h2>
-            <div class="diagnosis">
-              Windguru funciona como contraste externo. BariSnow conserva su propio veredicto multimodelo.
-            </div>
-            <textarea id="windguruInput" placeholder="2026-07-07 06:00, 0.4
-2026-07-07 07:00, 1.2
-
-O:
-0
-0.4
-1.2"></textarea>
-            <div class="grid2" style="margin-top:10px">
-              <button id="compareBtn" class="secondary" type="button">🟣 Comparar</button>
-              <button id="clearWgBtn" class="secondary" type="button">🧹 Limpiar</button>
-            </div>
-            <div id="wgSummary" class="statusbar" style="box-shadow:none;margin:10px 0 0"></div>
-          </section>
-        </section>
-
-        <section class="science-card" id="settingsBox">
-          <h2>⚙️ Configuración avanzada</h2>
-          <div class="grid3" style="margin-top:14px">
-            <div class="field"><label>📍 Latitud</label><input id="lat" type="number" step="0.0001" value="-41.1000"></div>
-            <div class="field"><label>📍 Longitud</label><input id="lon" type="number" step="0.0001" value="-71.4500"></div>
-            <div class="field"><label>⛰️ Altitud, m</label><input id="elev" type="number" value="778"></div>
-            <div class="field"><label>📅 Días</label><input id="days" type="number" min="1" max="9" value="9"></div>
-            <div class="field"><label>⛰️ Factor orográfico local</label><input id="oro" type="number" step="0.05" value="0.42"></div>
-            <div class="field"><label>🌡️ Ajuste térmico local °C</label><input id="coldBias" type="number" step="0.1" value="0.0"></div>
-
-            <div class="field full">
-              <label>🛰️ Fuentes</label>
-              <select id="sourceMode">
-                <option value="ensemble" selected>Ensamble multimodelo recomendado</option>
-                <option value="best_match">Solo Best Match</option>
-                <option value="ecmwf">Solo ECMWF IFS</option>
-                <option value="gfs">Solo NOAA GFS</option>
-                <option value="gem">Solo CMC GEM</option>
-              </select>
-            </div>
-
-            <div class="field full">
-              <button id="windguruBtn" class="secondary" type="button">🟣 Abrir Windguru</button>
-            </div>
-          </div>
-        </section>
-      </details>
-
-      <details class="panel" id="adminBox">
-        <summary>🔐 Administrador</summary>
-
-        <div class="note" style="margin:10px 0 16px">
-          Archivo local automático para construir historial. Clave por defecto: <b>barisnow</b>. No es seguridad real de servidor.
-        </div>
-
-        <div id="adminLock" class="admin-locked">
-          <div class="field">
-            <label for="adminKey">Clave administrador</label>
-            <input id="adminKey" type="password" placeholder="Clave">
-          </div>
-          <div class="field">
-            <label>&nbsp;</label>
-            <button id="unlockAdminBtn" type="button">🔓 Entrar</button>
-          </div>
-        </div>
-
-        <div id="adminLockMsg" class="note" style="margin-bottom:12px"></div>
-
-        <div id="adminPanel" class="admin-panel">
-          <div class="mini-stat">
-            <div class="science-card"><span>Corridas guardadas</span><b id="archiveCount">0</b></div>
-            <div class="science-card"><span>Última corrida</span><b id="archiveLast">—</b></div>
-            <div class="science-card"><span>Observaciones</span><b id="obsCount">0</b></div>
+        <section class="science-card">
+          <h2>📁 Historial automático local</h2>
+          <div class="note">
+            Guarda automáticamente cada corrida con observación METAR disponible y sesgo contra la hora actual del barrio seleccionado.
           </div>
 
           <div class="admin-actions">
             <button id="exportCsvBtn" class="secondary" type="button">⬇️ Exportar CSV</button>
             <button id="exportJsonBtn" class="secondary" type="button">⬇️ Exportar JSON</button>
-            <button id="refreshArchiveBtn" class="secondary" type="button">🔄 Actualizar vista</button>
             <button id="clearArchiveBtn" class="danger" type="button">🧹 Borrar historial</button>
           </div>
 
-          <section class="science-card" style="margin-bottom:16px">
-            <h2>📝 Cargar observación posterior</h2>
-            <div class="grid3" style="margin-top:12px">
-              <div class="field full">
-                <label for="obsForecastKey">Corrida</label>
-                <select id="obsForecastKey"></select>
-              </div>
-              <div class="field"><label>Lluvia observada, mm</label><input id="obsRain" type="number" step="0.1"></div>
-              <div class="field"><label>Nieve observada, cm</label><input id="obsSnow" type="number" step="0.1"></div>
-              <div class="field">
-                <label>Fase observada</label>
-                <select id="obsPhase">
-                  <option value="">Sin dato</option>
-                  <option value="sin_precipitacion">Sin precipitación</option>
-                  <option value="lluvia">Lluvia</option>
-                  <option value="aguanieve">Aguanieve</option>
-                  <option value="nieve_humeda">Nieve húmeda</option>
-                  <option value="nieve">Nieve</option>
-                </select>
-              </div>
-              <div class="field full">
-                <label>Comentario</label>
-                <textarea id="obsComment" placeholder="Ej: llovió todo el evento, sin copos visibles en el barrio."></textarea>
-              </div>
-              <div class="field full">
-                <button id="saveObsBtn" type="button">✅ Guardar observación</button>
-              </div>
-            </div>
-            <div id="adminStatus" class="statusbar" style="box-shadow:none;margin:12px 0 0">Esperando acceso.</div>
-          </section>
-
-          <section class="science-card">
-            <h2>📁 Historial local</h2>
-            <div class="tablebox">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Guardado</th><th>Zona</th><th>Fuentes</th><th>Días</th><th>Nieve</th><th>Lluvia</th>
-                    <th>Fase</th><th>Acuerdo</th><th>Lluvia obs.</th><th>Nieve obs.</th><th>Fase obs.</th>
-                  </tr>
-                </thead>
-                <tbody id="archiveRows"></tbody>
-              </table>
-            </div>
-          </section>
-        </div>
+          <div class="tablebox">
+            <table>
+              <thead>
+                <tr>
+                  <th>Guardado</th><th>Zona</th><th>Nieve</th><th>Lluvia</th><th>Fase</th><th>Acuerdo</th>
+                  <th>Obs. T</th><th>Sesgo T</th><th>Fenómeno obs.</th>
+                </tr>
+              </thead>
+              <tbody id="archiveRows"></tbody>
+            </table>
+          </div>
+        </section>
       </details>
     </main>
 
@@ -1079,18 +1324,26 @@ O:
     (function(){
       "use strict";
 
-      var WINDGURU_URL = "https://www.windguru.cz/366613";
       var API_TIMEOUT_MS = 16000;
-      var ARCHIVE_KEY = "barisnow_archive_v4";
-      var ADMIN_PASS = "barisnow";
+      var ARCHIVE_KEY = "barisnow_archive_autoobs_v3";
       var latestModel = [];
       var latestSummary = null;
+      var latestObservation = null;
       var latestSourceLabel = "—";
       var currentRunId = 0;
       var currentMapRunId = 0;
       var resizeTimer = null;
-      var adminUnlocked = false;
       var neighborhoodResults = {};
+
+      var OBS_STATION = {
+        icao:"SAZS",
+        name:"Aeropuerto Bariloche / SAZS-BRC",
+        lat:-41.1512,
+        lon:-71.1575
+      };
+
+      var OBS_METAR_DIRECT_URL = "https://aviationweather.gov/api/data/metar?ids=SAZS&format=json&hours=3";
+      var OBS_CORS_PROXY_URL = "https://api.allorigins.win/raw?url=";
 
       var SOURCES = [
         {id:"best_match",label:"Best Match",endpoint:"https://api.open-meteo.com/v1/forecast",weight:0.38},
@@ -1140,6 +1393,38 @@ O:
         debug("Fallo JavaScript.<br>Mensaje: "+msg+"<br>Línea: "+line+"<br>Archivo: "+src);
       };
 
+      function escapeHtml(s){
+        return String(s||"")
+          .replace(/&/g,"&amp;")
+          .replace(/</g,"&lt;")
+          .replace(/>/g,"&gt;")
+          .replace(/"/g,"&quot;")
+          .replace(/'/g,"&#039;");
+      }
+
+      function fetchJSON(url,timeoutMs){
+        timeoutMs=timeoutMs||API_TIMEOUT_MS;
+        return new Promise(function(resolve,reject){
+          var controller = new AbortController();
+          var timer = setTimeout(function(){controller.abort();},timeoutMs);
+
+          fetch(url,{signal:controller.signal,cache:"no-store"})
+            .then(function(r){
+              clearTimeout(timer);
+              if(!r.ok)throw new Error("HTTP "+r.status);
+              return r.text();
+            })
+            .then(function(t){
+              try{resolve(JSON.parse(t));}
+              catch(e){reject(new Error("JSON inválido: "+e.message));}
+            })
+            .catch(function(e){
+              clearTimeout(timer);
+              reject(e);
+            });
+        });
+      }
+
       function selectedPlaceKey(){
         var sel=$("locationPreset");
         return sel?sel.value:"lago_moreno";
@@ -1167,7 +1452,6 @@ O:
         var p=selectedPlace();
         text("currentPlace","📍 "+p.name+" · "+Math.round(p.elev)+" m");
         text("placeNote","Coordenadas activas: "+fmt(p.lat,4)+", "+fmt(p.lon,4)+".");
-        text("windguruBtn","🟣 Abrir Windguru");
       }
 
       function applyLocationPreset(runAfterChange){
@@ -1192,6 +1476,13 @@ O:
         updatePlaceBadge();
       }
 
+      function parseModelDate(t){
+        var s=String(t||"").replace("T"," ");
+        var m=s.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2})(?::(\d{2}))?/);
+        if(!m)return null;
+        return new Date(Number(m[1]),Number(m[2])-1,Number(m[3]),Number(m[4]),Number(m[5]||0),0,0);
+      }
+
       function isoHour(t){
         var s=String(t||"").replace("T"," ");
         if(s.length>=13)return s.slice(0,13)+":00";
@@ -1200,13 +1491,54 @@ O:
 
       function localTime(t){
         var s=String(t||"").replace("T"," ");
-        if(s.length>=13)return s.slice(5,10).replace("-","/")+" "+s.slice(11,13)+"h";
+        var m=s.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2})(?::(\d{2}))?/);
+        if(m)return m[3]+"/"+m[2]+" "+m[4]+"h";
         return s||"—";
       }
 
       function issueHourKey(d){
         var x=d||new Date();
         return x.getFullYear()+"-"+pad2(x.getMonth()+1)+"-"+pad2(x.getDate())+" "+pad2(x.getHours())+":00";
+      }
+
+      function filterFromNow(rows){
+        var now=new Date();
+        var cutoff=new Date(now.getTime()-75*60000);
+        var filtered=[],i,d;
+
+        for(i=0;i<rows.length;i++){
+          d=parseModelDate(rows[i].time);
+          if(!d || d>=cutoff)filtered.push(rows[i]);
+        }
+
+        return filtered.length?filtered:rows;
+      }
+
+      function getHorizonRow(model,hours){
+        var target=new Date(Date.now()+hours*3600000);
+        var best=null;
+        var bestDiff=Infinity;
+        var i,d,diff;
+
+        if(!model || !model.length)return null;
+
+        for(i=0;i<model.length;i++){
+          d=parseModelDate(model[i].time);
+          if(!d)continue;
+
+          diff=Math.abs(d.getTime()-target.getTime());
+
+          if(diff<bestDiff){
+            bestDiff=diff;
+            best=model[i];
+          }
+        }
+
+        return best || model[Math.min(hours,model.length-1)] || model[0];
+      }
+
+      function shortLevelLabel(label){
+        return String(label||"—").replace(/^\d+\s*·\s*/,"");
       }
 
       function feelsLikeTemp(T,windKmh){
@@ -1223,10 +1555,216 @@ O:
         return T*Math.atan(0.151977*Math.sqrt(RH+8.313659))+Math.atan(T+RH)-Math.atan(RH-1.676331)+0.00391838*Math.pow(RH,1.5)*Math.atan(0.023101*RH)-4.686035;
       }
 
+      function rhFromDewpoint(T,Td){
+        if(!finite(T)||!finite(Td))return null;
+        var es=6.112*Math.exp((17.67*T)/(T+243.5));
+        var e=6.112*Math.exp((17.67*Td)/(Td+243.5));
+        return clamp(100*(e/es),0,100);
+      }
+
+      function pickNum(obj,names){
+        var i,v;
+        if(!obj)return null;
+        for(i=0;i<names.length;i++){
+          v=obj[names[i]];
+          if(finite(v))return Number(v);
+        }
+        return null;
+      }
+
+      function pickStr(obj,names){
+        var i,v;
+        if(!obj)return "";
+        for(i=0;i<names.length;i++){
+          v=obj[names[i]];
+          if(v!==null && typeof v!=="undefined" && String(v)!=="")return String(v);
+        }
+        return "";
+      }
+
+      function metarPhenomena(raw){
+        raw=String(raw||"").toUpperCase();
+        if(/(\+|\-|\s)?SN\b|SHSN|BLSN|DRSN/.test(raw))return "Nieve";
+        if(/RASN|SNRA|PL|SG|GS|GR/.test(raw))return "Mezcla";
+        if(/(\+|\-|\s)?RA\b|SHRA|TSRA/.test(raw))return "Lluvia";
+        if(/(\+|\-|\s)?DZ\b/.test(raw))return "Llovizna";
+        if(/\bFG\b|BR/.test(raw))return "Niebla/neblina";
+        if(/\bHZ\b/.test(raw))return "Calima";
+        if(/\bTS\b/.test(raw))return "Tormenta";
+        return "Sin fenómeno";
+      }
+
+      function obsHasPrecip(obs){
+        if(!obs || !obs.phenomena)return false;
+        return /Lluvia|Llovizna|Nieve|Mezcla|Tormenta/i.test(obs.phenomena);
+      }
+
+      function obsHasRain(obs){
+        if(!obs || !obs.phenomena)return false;
+        return /Lluvia|Llovizna|Tormenta/i.test(obs.phenomena);
+      }
+
+      function obsHasSnow(obs){
+        if(!obs || !obs.phenomena)return false;
+        return /Nieve|Mezcla/i.test(obs.phenomena);
+      }
+
+      function normalizeMetarArray(data){
+        if(Array.isArray(data))return data;
+        if(data && Array.isArray(data.data))return data.data;
+        if(data && data.response && Array.isArray(data.response.data))return data.response.data;
+        if(data && data.response && data.response.data && Array.isArray(data.response.data.METAR))return data.response.data.METAR;
+        return [];
+      }
+
+      function parseMetarObservation(data,sourceLabel){
+        var arr=normalizeMetarArray(data);
+        var m=arr && arr.length ? arr[0] : null;
+        var raw,obsTime,tempC,dewC,rh,windKt,windKmh,wdir,gustKt,gustKmh;
+
+        if(!m)return null;
+
+        raw=pickStr(m,["rawOb","raw_text","rawText","metar","raw"]);
+        obsTime=pickStr(m,["obsTime","reportTime","report_time","time","validTime"]);
+        tempC=pickNum(m,["temp","tempC","temp_c","temperature"]);
+        dewC=pickNum(m,["dewp","dewpoint","dewpointC","dewpoint_c"]);
+        rh=pickNum(m,["rh","relativeHumidity","relative_humidity"]);
+
+        if(!finite(rh) && finite(tempC) && finite(dewC)){
+          rh=rhFromDewpoint(tempC,dewC);
+        }
+
+        windKt=pickNum(m,["wspd","windSpeed","windSpeedKt","wind_speed_kt"]);
+        windKmh=finite(windKt) ? windKt*1.852 : pickNum(m,["windKmh","wind_speed_kmh","windSpeedKmh"]);
+        gustKt=pickNum(m,["wgst","windGust","windGustKt","wind_gust_kt"]);
+        gustKmh=finite(gustKt) ? gustKt*1.852 : pickNum(m,["gustKmh","wind_gust_kmh","windGustKmh"]);
+        wdir=pickNum(m,["wdir","windDir","windDirection","wind_direction"]);
+
+        return {
+          station:OBS_STATION.icao,
+          stationName:OBS_STATION.name,
+          source:sourceLabel,
+          raw:raw,
+          time:obsTime,
+          tempC:tempC,
+          dewC:dewC,
+          rh:rh,
+          windKmh:windKmh,
+          windDir:wdir,
+          gustKmh:gustKmh,
+          phenomena:metarPhenomena(raw)
+        };
+      }
+
+      function obsAgeLabel(obs){
+        var d,mins;
+        if(!obs || !obs.time)return "Hora no disponible.";
+        d=new Date(obs.time);
+        if(isNaN(d.getTime()))return "Hora METAR: "+obs.time;
+        mins=Math.round((new Date().getTime()-d.getTime())/60000);
+        if(mins<0)mins=0;
+        if(mins<90)return "Observación de hace "+mins+" min.";
+        return "Observación de hace "+Math.round(mins/60)+" h.";
+      }
+
+      function renderObservation(obs){
+        latestObservation=obs;
+
+        if(!obs){
+          text("obsTemp","—");
+          text("obsRH","—");
+          text("obsWind","—");
+          text("obsPhenomena","—");
+          text("obsAge","Sin observación automática.");
+          text("obsBias","—");
+          text("obsBiasText","No se pudo comparar contra observación real.");
+          html("obsRaw","METAR crudo: —");
+          return;
+        }
+
+        text("obsTemp",fmt(obs.tempC,1)+" °C");
+        text("obsRH",fmt(obs.rh,0)+"%");
+        text("obsWind",fmt(obs.windKmh,0)+" km/h");
+        text("obsPhenomena",obs.phenomena || "—");
+        text("obsAge",obsAgeLabel(obs));
+
+        html(
+          "obsRaw",
+          "<b>METAR crudo:</b> "+escapeHtml(obs.raw || "No disponible")+
+          "<br><b>Fuente:</b> "+escapeHtml(obs.source)+
+          "<br><b>Estación:</b> "+escapeHtml(obs.stationName)
+        );
+
+        compareObservationWithForecast();
+
+        if(latestModel.length && latestSummary){
+          render(latestModel,latestSummary,false);
+          renderMapCards();
+        }
+      }
+
+      function compareObservationWithForecast(){
+        var obs=latestObservation;
+        var row=latestModel && latestModel.length ? latestModel[0] : null;
+        var dT,dRH,dWind,txt;
+
+        if(!obs || !row){
+          text("obsBias","—");
+          text("obsBiasText","Esperando pronóstico y observación real.");
+          return;
+        }
+
+        dT=finite(obs.tempC)&&finite(row.T) ? obs.tempC-row.T : null;
+        dRH=finite(obs.rh)&&finite(row.RH) ? obs.rh-row.RH : null;
+        dWind=finite(obs.windKmh)&&finite(row.wind) ? obs.windKmh-row.wind : null;
+
+        text("obsBias",(finite(dT) && dT>=0 ? "+" : "")+fmt(dT,1)+" °C");
+
+        txt="Comparación SAZS/BRC contra la hora actual del barrio seleccionado. ";
+        txt+="ΔT: <b>"+(finite(dT)&&dT>=0?"+":"")+fmt(dT,1)+" °C</b>. ";
+        txt+="ΔHR: <b>"+(finite(dRH)&&dRH>=0?"+":"")+fmt(dRH,0)+"%</b>. ";
+        txt+="ΔViento: <b>"+(finite(dWind)&&dWind>=0?"+":"")+fmt(dWind,0)+" km/h</b>. ";
+
+        if(finite(dT)){
+          if(dT<=-1.5)txt+="La observación real está bastante más fría que el pronóstico inmediato.";
+          else if(dT>=1.5)txt+="La observación real está bastante más cálida que el pronóstico inmediato.";
+          else txt+="La temperatura observada y el pronóstico inmediato están razonablemente alineados.";
+        }
+
+        html("obsBiasText",txt);
+      }
+
+      function fetchRealObservation(){
+        var direct=OBS_METAR_DIRECT_URL;
+        var proxied=OBS_CORS_PROXY_URL+encodeURIComponent(OBS_METAR_DIRECT_URL);
+
+        text("realObsStatus","📡 Buscando observación real METAR SAZS/BRC…");
+
+        fetchJSON(direct,9000).then(function(data){
+          var obs=parseMetarObservation(data,"AviationWeather directo");
+          if(obs){
+            text("realObsStatus","🟢 Observación real cargada desde METAR SAZS/BRC.");
+            renderObservation(obs);
+          }else{
+            throw new Error("Sin METAR interpretable");
+          }
+        }).catch(function(){
+          text("realObsStatus","🟡 Acceso directo bloqueado o sin datos. Probando vía proxy CORS…");
+          fetchJSON(proxied,12000).then(function(data2){
+            var obs2=parseMetarObservation(data2,"AviationWeather vía proxy CORS");
+            if(!obs2)throw new Error("METAR no interpretable");
+            text("realObsStatus","🟢 Observación real cargada desde METAR SAZS/BRC vía proxy CORS.");
+            renderObservation(obs2);
+          }).catch(function(){
+            text("realObsStatus","🔴 No se pudo cargar observación real automática. Posible bloqueo CORS/proxy. Probá actualizar más tarde.");
+            renderObservation(null);
+          });
+        });
+      }
+
       function selectedSources(){
         var mode=$("sourceMode")?$("sourceMode").value:"ensemble";
-        var out=[];
-        var i;
+        var out=[],i;
         if(mode==="ensemble"){
           for(i=0;i<SOURCES.length;i++)out.push(SOURCES[i]);
           return out;
@@ -1239,7 +1777,10 @@ O:
 
       function buildUrl(source,place,daysOverride){
         var p=place||selectedPlace();
-        var days=finite(daysOverride)?daysOverride:($("days")?clamp(num($("days").value,9),1,9):9);
+        var days=9;
+
+        if($("days"))$("days").value=9;
+
         var hourly="temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,wind_direction_10m";
         return source.endpoint+
           "?latitude="+encodeURIComponent(p.lat)+
@@ -1251,58 +1792,12 @@ O:
           "&temperature_unit=celsius&wind_speed_unit=kmh&precipitation_unit=mm";
       }
 
-      function xhrJSON(url,callback){
-        var xhr=new XMLHttpRequest();
-        var finished=false;
-        var timer;
-
-        function done(err,data,status){
-          if(finished)return;
-          finished=true;
-          clearTimeout(timer);
-          callback(err,data,status||0);
-        }
-
-        try{
-          xhr.open("GET",url,true);
-          xhr.timeout=API_TIMEOUT_MS;
-          timer=setTimeout(function(){
-            try{xhr.abort();}catch(e){}
-            done(new Error("Timeout API"),null,0);
-          },API_TIMEOUT_MS+1200);
-
-          xhr.onreadystatechange=function(){
-            if(xhr.readyState!==4)return;
-            if(xhr.status>=200&&xhr.status<300){
-              try{done(null,JSON.parse(xhr.responseText),xhr.status);}
-              catch(e){done(new Error("JSON inválido: "+e.message),null,xhr.status);}
-            }else{
-              done(new Error("HTTP "+xhr.status+": "+String(xhr.responseText||"").slice(0,220)),null,xhr.status);
-            }
-          };
-
-          xhr.onerror=function(){done(new Error("Error de conexión API o CORS"),null,0);};
-          xhr.ontimeout=function(){done(new Error("Timeout API"),null,0);};
-          xhr.send(null);
-        }catch(e){
-          done(e,null,0);
-        }
-      }
-
-      function fetchSource(source,place,callback,daysOverride){
+      function fetchSource(source,place,daysOverride){
         var url=buildUrl(source,place,daysOverride);
-        xhrJSON(url,function(err,data,status){
-          if(err){
-            callback({source:source,error:err.message,url:url,status:status,place:place});
-            return;
-          }
-          try{
-            var model=computeModel(data,source,place);
-            if(!model.length)throw new Error("API respondió, pero no hay horas modeladas.");
-            callback(null,{source:source,model:model,url:url,status:status,place:place});
-          }catch(e){
-            callback({source:source,error:e.message,url:url,status:status,place:place});
-          }
+        return fetchJSON(url).then(function(data){
+          var model=computeModel(data,source,place);
+          if(!model.length)throw new Error(source.label+": API respondió, pero no hay horas modeladas.");
+          return {source:source,model:model,url:url,place:place};
         });
       }
 
@@ -1351,8 +1846,7 @@ O:
         var elev=num(place.elev,778);
         var oroFactor=num(place.oro,0.42);
         var tempAdjust=num(place.coldBias,0);
-        var out=[];
-        var i;
+        var out=[],i;
 
         for(i=0;i<times.length;i++){
           var Traw=getValue(h,"temperature_2m",i,null);
@@ -1398,11 +1892,28 @@ O:
           else if(prob>=0.42&&cmh>=0.22&&TwEff<=1.15&&phase.idx>=2)risk="Medio";
 
           out.push({
-            time:times[i],key:isoHour(times[i]),T:T,RH:RH,TwEff:TwEff,Pbase:Pbase,P:P,
-            snowLine:snowLine,prob:prob,cmh:cmh,melt:melt,refreeze:refreeze,survival:survival,
-            dgzScore:dgzScore,oroIndex:oro.oroIndex,oroMultiplier:oro.multiplier,wind:wind,dir:dir,
-            slr:slr,ptypeIdx:phase.idx,ptypeLabel:phase.label,risk:risk,
-            sourceId:source.id,sourceName:source.label,sourceWeight:source.weight,wg:null,diff:null
+            time:times[i],
+            key:isoHour(times[i]),
+            T:T,
+            RH:RH,
+            TwEff:TwEff,
+            Pbase:Pbase,
+            P:P,
+            snowLine:snowLine,
+            prob:prob,
+            cmh:cmh,
+            melt:melt,
+            survival:survival,
+            dgzScore:dgzScore,
+            wind:wind,
+            dir:dir,
+            slr:slr,
+            ptypeIdx:phase.idx,
+            ptypeLabel:phase.label,
+            risk:risk,
+            sourceId:source.id,
+            sourceName:source.label,
+            sourceWeight:source.weight
           });
         }
 
@@ -1514,36 +2025,42 @@ O:
           phase=phaseDist(rows);
 
           avg={
-            time:first.time,key:key,members:rows.length,
-            phaseDist:phase,phaseLabel:phaseLabelFromBucket(phase.dominant),
-            ptypeIdx:qRows(rows,"ptypeIdx",0.50),risk:weightedRisk(rows),wg:null,diff:null
+            time:first.time,
+            key:key,
+            members:rows.length,
+            phaseDist:phase,
+            phaseLabel:phaseLabelFromBucket(phase.dominant),
+            ptypeIdx:qRows(rows,"ptypeIdx",0.50),
+            risk:weightedRisk(rows)
           };
 
-          fields=["T","RH","TwEff","Pbase","P","snowLine","prob","cmh","melt","refreeze","survival","dgzScore","oroIndex","oroMultiplier","wind","dir","slr"];
+          fields=["T","RH","TwEff","Pbase","P","snowLine","prob","cmh","melt","survival","dgzScore","wind","dir","slr"];
           for(i=0;i<fields.length;i++)avg[fields[i]]=weightedMean(rows,fields[i]);
 
           avg.feels=feelsLikeTemp(avg.T,avg.wind);
           avg.cmhP25=qRows(rows,"cmh",0.25);
           avg.cmhP50=qRows(rows,"cmh",0.50);
           avg.cmhP75=qRows(rows,"cmh",0.75);
-          avg.cmhP90=qRows(rows,"cmh",0.90);
           avg.PP25=qRows(rows,"P",0.25);
           avg.PP50=qRows(rows,"P",0.50);
           avg.PP75=qRows(rows,"P",0.75);
-          avg.PP90=qRows(rows,"P",0.90);
           avg.consensus=rowConsensus(rows,avg);
           out.push(avg);
         }
 
         out.sort(function(a,b){return String(a.time).localeCompare(String(b.time));});
-        return out;
+        return filterFromNow(out);
       }
 
       function memberTotals(packs,key){
         var out=[],p,i,total;
         for(p=0;p<packs.length;p++){
           total=0;
-          for(i=0;i<packs[p].model.length;i++)total+=finite(packs[p].model[i][key])?Number(packs[p].model[i][key]):0;
+          for(i=0;i<packs[p].model.length;i++){
+            var d=parseModelDate(packs[p].model[i].time);
+            if(d && d < new Date(Date.now()-75*60000))continue;
+            total+=finite(packs[p].model[i][key])?Number(packs[p].model[i][key]):0;
+          }
           out.push({v:total,w:packs[p].source.weight||1,label:packs[p].source.label});
         }
         return out;
@@ -1567,6 +2084,126 @@ O:
         return 0;
       }
 
+      function summarize(model,packs){
+        var snowTotals=memberTotals(packs,"cmh");
+        var rainTotals=memberTotals(packs,"P");
+        var peak=model[0],next=null,meanConsensus=0,consensusCount=0,i;
+        if(!model.length)throw new Error("No hay datos modelados.");
+
+        for(i=0;i<model.length;i++){
+          if((model[i].cmh||0)+(model[i].P||0)*0.04>(peak.cmh||0)+(peak.P||0)*0.04)peak=model[i];
+          if(!next&&model[i].prob>=0.38&&model[i].P>=0.12&&phaseRankFromRow(model[i])>=1)next=model[i];
+          if(finite(model[i].consensus)){meanConsensus+=model[i].consensus;consensusCount++;}
+        }
+
+        return {
+          snowQ25:weightedQuantile(snowTotals,0.25),
+          snowQ50:weightedQuantile(snowTotals,0.50),
+          snowQ75:weightedQuantile(snowTotals,0.75),
+          snowQ90:weightedQuantile(snowTotals,0.90),
+          rainQ25:weightedQuantile(rainTotals,0.25),
+          rainQ50:weightedQuantile(rainTotals,0.50),
+          rainQ75:weightedQuantile(rainTotals,0.75),
+          rainQ90:weightedQuantile(rainTotals,0.90),
+          probSnowGt05:thresholdProb(snowTotals,0.5),
+          probSnowGt1:thresholdProb(snowTotals,1),
+          probSnowGt3:thresholdProb(snowTotals,3),
+          probSnowGt5:thresholdProb(snowTotals,5),
+          probRainGt10:thresholdProb(rainTotals,10),
+          probRainGt20:thresholdProb(rainTotals,20),
+          peak:peak,
+          next:next,
+          current:model[0],
+          plus3:getHorizonRow(model,3)||model[0],
+          consensus:consensusCount?meanConsensus/consensusCount:0.5,
+          trend:calcTrend(model),
+          sources:packs.length,
+          rainWindow:null,
+          snowWindow:null
+        };
+      }
+
+      function totalSnowScale(summary){
+        var q50=summary.snowQ50||0,q75=summary.snowQ75||0,q90=summary.snowQ90||0,p1=summary.probSnowGt1||0,p5=summary.probSnowGt5||0,peak=summary.peak||{},phase=phaseRankFromRow(peak);
+
+        if(q50>=8||q75>=12||q90>=18||p5>=0.55||peak.risk==="Alto")
+          return {label:"5 · Nieva mucho",cls:"red",text:"Señal fuerte de nevada acumuladora."};
+
+        if(q50>=3||q75>=5||p1>=0.60||phase>=3||peak.cmh>=0.8)
+          return {label:"4 · Nieva poco",cls:"orange",text:"Señal de nieve acumulable ligera o moderada."};
+
+        if(q50>=0.8||q75>=1.5||p1>=0.30||phase>=2||summary.next)
+          return {label:"3 · Aguanieve",cls:"yellow",text:"Escenario de mezcla: lluvia, aguanieve o nieve húmeda."};
+
+        if(q75>=0.4||summary.probSnowGt05>=0.20||phase>=1)
+          return {label:"2 · Copitos diminutos",cls:"green",text:"Señal muy débil, sin acumulación robusta."};
+
+        return {label:"1 · No nieva",cls:"green",text:"No se espera nieve observable o acumuladora."};
+      }
+
+      function totalRainScale(summary){
+        var q50=summary.rainQ50||0,q75=summary.rainQ75||0,q90=summary.rainQ90||0,peakP=summary.peak?summary.peak.P||0:0;
+        if(q50>=30||q75>=45||q90>=60||peakP>=5)return {label:"5 · Precipitación intensa",cls:"red",text:"Acumulado alto o períodos fuertes."};
+        if(q50>=15||q75>=25||summary.probRainGt20>=0.35||peakP>=2.5)return {label:"4 · Precipitación persistente",cls:"orange",text:"Precipitación sostenida o acumulado relevante."};
+        if(q50>=5||q75>=10||peakP>=0.8)return {label:"3 · Intermitente",cls:"yellow",text:"Precipitación por momentos, con intensidad variable."};
+        if(q50>=1||q75>=2||peakP>=0.2)return {label:"2 · Débil",cls:"green",text:"Precipitación débil o aislada."};
+        return {label:"1 · Casi seco",cls:"green",text:"La señal de precipitación relevante es baja."};
+      }
+
+      function instantRainScale(row,obs){
+        var P=row&&finite(row.P)?row.P:0;
+
+        if(obsHasRain(obs)){
+          if(P>=3)return {label:"4 · Llueve ahora",cls:"orange",text:"METAR reporta precipitación y el modelo acompaña con intensidad."};
+          return {label:"3 · Llueve ahora",cls:"yellow",text:"METAR reporta lluvia o llovizna en SAZS/BRC."};
+        }
+
+        if(obs && !obsHasPrecip(obs)){
+          if(P<1.0)return {label:"0 · No llueve ahora",cls:"green",text:"La observación real no reporta lluvia; el modelo inmediato no muestra intensidad relevante."};
+          return {label:"2 · Lluvia modelada, no observada",cls:"yellow",text:"El modelo ve precipitación cerca, pero el METAR no reporta lluvia en este momento."};
+        }
+
+        if(P>=5)return {label:"5 · Lluvia fuerte",cls:"red",text:"Precipitación modelada muy alta."};
+        if(P>=2)return {label:"4 · Lluvia moderada",cls:"orange",text:"Precipitación modelada moderada a fuerte."};
+        if(P>=0.5)return {label:"3 · Lluvia débil",cls:"yellow",text:"Precipitación modelada débil."};
+        if(P>=0.2)return {label:"2 · Gotas aisladas",cls:"green",text:"Señal muy débil de precipitación."};
+        return {label:"0 · No llueve",cls:"green",text:"No hay lluvia relevante."};
+      }
+
+      function instantSnowScale(row,obs){
+        var cmh=row&&finite(row.cmh)?row.cmh:0;
+        var prob=row&&finite(row.prob)?row.prob:0;
+        var phase=row?phaseRankFromRow(row):0;
+
+        if(obsHasSnow(obs)){
+          if(phase>=3 || cmh>=0.8)return {label:"4 · Nieva ahora",cls:"orange",text:"METAR reporta nieve o mezcla y el modelo acompaña."};
+          return {label:"3 · Mezcla/nieve observada",cls:"yellow",text:"METAR reporta nieve o mezcla en SAZS/BRC."};
+        }
+
+        if(obs && !obsHasPrecip(obs)){
+          if(cmh<0.15 && prob<0.50)return {label:"0 · No nieva ahora",cls:"green",text:"La observación real no reporta precipitación; el modelo inmediato no muestra nieve relevante."};
+          return {label:"2 · Señal nival modelada",cls:"yellow",text:"Hay señal nival modelada, pero no está observada en SAZS/BRC ahora."};
+        }
+
+        if(cmh>=1.0 && prob>=0.65)return {label:"5 · Nieve fuerte",cls:"red",text:"Tasa de nieve relevante."};
+        if(cmh>=0.35 && prob>=0.50)return {label:"4 · Nieve probable",cls:"orange",text:"Señal de nieve acumulable."};
+        if(cmh>=0.08 || phase>=2)return {label:"3 · Mezcla",cls:"yellow",text:"Señal de aguanieve o nieve húmeda."};
+        if(prob>=0.25)return {label:"2 · Copos posibles",cls:"green",text:"Señal nival débil."};
+        return {label:"0 · No nieva",cls:"green",text:"No hay nieve relevante."};
+      }
+
+      function badge(r){
+        if(r==="Alto")return '<span class="badge high">Alto</span>';
+        if(r==="Medio")return '<span class="badge mid">Medio</span>';
+        return '<span class="badge low">Bajo</span>';
+      }
+
+      function consensusLabel(v){
+        if(v>=0.78)return {txt:"alto",cls:"green"};
+        if(v>=0.55)return {txt:"medio",cls:"yellow"};
+        return {txt:"bajo",cls:"red"};
+      }
+
       function averageFirstLast(rows,key,n){
         var first=0,last=0,c1=0,c2=0,i;
         n=Math.min(n,rows.length);
@@ -1580,13 +2217,12 @@ O:
         var snow=averageFirstLast(rows,"cmh",3);
         var rain=averageFirstLast(rows,"P",3);
         var tw=averageFirstLast(rows,"TwEff",3);
-        var cota=averageFirstLast(rows,"snowLine",3);
         var label="Estable",cls="green";
         if(finite(snow.delta)&&snow.delta>0.12){label="Nieve subiendo";cls="orange";}
         else if(finite(rain.delta)&&rain.delta>0.35){label="Lluvia subiendo";cls="yellow";}
         else if(finite(tw.delta)&&tw.delta<-0.7){label="Enfriando";cls="yellow";}
         else if(finite(snow.delta)&&snow.delta<-0.10){label="Nieve bajando";cls="green";}
-        return {label:label,cls:cls,text:"Δ nieve "+fmt(snow.delta,2)+" cm/h; Δ precip. "+fmt(rain.delta,1)+" mm/h; Δ Tw "+fmt(tw.delta,1)+" °C; Δ cota "+fmt(cota.delta,0)+" m."};
+        return {label:label,cls:cls,text:"Δ nieve "+fmt(snow.delta,2)+" cm/h; Δ precip. "+fmt(rain.delta,1)+" mm/h; Δ Tw "+fmt(tw.delta,1)+" °C."};
       }
 
       function detectWindow(model,type){
@@ -1658,6 +2294,61 @@ O:
         summary.snowWindow=detectWindow(model,"snow");
       }
 
+      function renderTemperatureIndicators(model,summary,writeCards){
+        if(!model||!model.length)return;
+
+        var now=model[0];
+        var plus3=getHorizonRow(model,3) || now;
+        var cold=model[0];
+        var warm=model[0];
+        var coldFeelsRow=model[0];
+        var flNow=feelsLikeTemp(now.T,now.wind);
+        var fl3=feelsLikeTemp(plus3.T,plus3.wind);
+        var fl;
+        var minFeels=finite(flNow)?flNow:null;
+        var i;
+
+        for(i=0;i<model.length;i++){
+          if(finite(model[i].T) && model[i].T<cold.T)cold=model[i];
+          if(finite(model[i].T) && model[i].T>warm.T)warm=model[i];
+
+          fl=feelsLikeTemp(model[i].T,model[i].wind);
+          model[i].feels=fl;
+
+          if(finite(fl) && (!finite(minFeels)||fl<minFeels)){
+            minFeels=fl;
+            coldFeelsRow=model[i];
+          }
+        }
+
+        summary.current=now;
+        summary.plus3=plus3;
+        summary.tempNow=now.T;
+        summary.tempPlus3=plus3.T;
+        summary.feelsNow=flNow;
+        summary.feelsPlus3=fl3;
+        summary.tempMin=cold.T;
+        summary.tempMinTime=cold.time;
+        summary.tempMax=warm.T;
+        summary.tempMaxTime=warm.time;
+        summary.feelsMin=minFeels;
+        summary.feelsMinTime=coldFeelsRow.time;
+
+        if(writeCards){
+          text("tempNow",fmt(now.T,1)+" / "+fmt(plus3.T,1)+" °C");
+          text("tempNowText","Ahora: "+localTime(now.time)+" · +3 h: "+localTime(plus3.time)+".");
+
+          text("feelsNow",fmt(flNow,1)+" / "+fmt(fl3,1)+" °C");
+          text("feelsNowText","Ahora viento "+fmt(now.wind,0)+" km/h · +3 h viento "+fmt(plus3.wind,0)+" km/h.");
+
+          text("coldestMoment",localTime(cold.time));
+          text("coldestMomentText","Mínima prevista: "+fmt(cold.T,1)+" °C.");
+
+          text("warmestMoment",localTime(warm.time));
+          text("warmestMomentText","Máxima prevista: "+fmt(warm.T,1)+" °C.");
+        }
+      }
+
       function renderEventWindowCards(summary){
         var rainW=summary.rainWindow||{has:false};
         var snowW=summary.snowWindow||{has:false};
@@ -1695,139 +2386,321 @@ O:
         }
       }
 
-      function summarize(model,packs){
-        var snowTotals=memberTotals(packs,"cmh");
-        var rainTotals=memberTotals(packs,"P");
-        var peak=model[0],next=null,meanConsensus=0,consensusCount=0,i;
-        if(!model.length)throw new Error("No hay datos modelados.");
+      function horizonPhrase(){
+        return "Días 1-3: más operativos. Días 4-6: tendencia probable. Días 7-9: tendencia extendida.";
+      }
 
-        for(i=0;i<model.length;i++){
-          if((model[i].cmh||0)+(model[i].P||0)*0.04>(peak.cmh||0)+(peak.P||0)*0.04)peak=model[i];
-          if(!next&&model[i].prob>=0.38&&model[i].P>=0.12&&phaseRankFromRow(model[i])>=1)next=model[i];
-          if(finite(model[i].consensus)){meanConsensus+=model[i].consensus;consensusCount++;}
-        }
+      function dailyDayName(d){
+        var names=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+        return names[d.getDay()]||"—";
+      }
+
+      function dailyKeyInfo(t){
+        var d=parseModelDate(t);
+        if(!d)return null;
 
         return {
-          snowQ25:weightedQuantile(snowTotals,0.25),snowQ50:weightedQuantile(snowTotals,0.50),snowQ75:weightedQuantile(snowTotals,0.75),snowQ90:weightedQuantile(snowTotals,0.90),
-          rainQ25:weightedQuantile(rainTotals,0.25),rainQ50:weightedQuantile(rainTotals,0.50),rainQ75:weightedQuantile(rainTotals,0.75),rainQ90:weightedQuantile(rainTotals,0.90),
-          probSnowGt05:thresholdProb(snowTotals,0.5),probSnowGt1:thresholdProb(snowTotals,1),probSnowGt3:thresholdProb(snowTotals,3),probSnowGt5:thresholdProb(snowTotals,5),
-          probRainGt10:thresholdProb(rainTotals,10),probRainGt20:thresholdProb(rainTotals,20),probRainGt40:thresholdProb(rainTotals,40),
-          peak:peak,next:next,consensus:consensusCount?meanConsensus/consensusCount:0.5,trend:calcTrend(model),sources:packs.length,
-          rainWindow:null,snowWindow:null
+          key:d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate()),
+          label:pad2(d.getDate())+"/"+pad2(d.getMonth()+1),
+          dayName:dailyDayName(d),
+          date:d
         };
       }
 
-      function snowScale(summary){
-        var q50=summary.snowQ50||0,q75=summary.snowQ75||0,q90=summary.snowQ90||0,p1=summary.probSnowGt1||0,p5=summary.probSnowGt5||0,peak=summary.peak||{},phase=phaseRankFromRow(peak);
-
-        if(q50>=8||q75>=12||q90>=18||p5>=0.55||peak.risk==="Alto")
-          return {label:"5 · Nieva mucho",cls:"red",text:"Señal fuerte de nevada acumuladora."};
-
-        if(q50>=3||q75>=5||p1>=0.60||phase>=3||peak.cmh>=0.8)
-          return {label:"4 · Nieva poco",cls:"orange",text:"Señal de nieve acumulable ligera o moderada."};
-
-        if(q50>=0.8||q75>=1.5||p1>=0.30||phase>=2||summary.next)
-          return {label:"3 · Aguanieve",cls:"yellow",text:"Escenario de mezcla: lluvia, aguanieve o nieve húmeda."};
-
-        if(q75>=0.4||summary.probSnowGt05>=0.20||phase>=1)
-          return {label:"2 · Copitos diminutos",cls:"green",text:"Señal muy débil, sin acumulación robusta."};
-
-        return {label:"1 · No nieva",cls:"green",text:"No se espera nieve observable o acumuladora."};
+      function dailyRainLevel(b){
+        if(b.rain>=30 || b.maxP>=5)return {label:"Lluvia intensa",cls:"red"};
+        if(b.rain>=15 || b.maxP>=2.5)return {label:"Lluvia persistente",cls:"orange"};
+        if(b.rain>=5 || b.maxP>=0.8)return {label:"Lluvia intermitente",cls:"yellow"};
+        if(b.rain>=0.5 || b.maxP>=0.2)return {label:"Lluvia débil",cls:"green"};
+        return {label:"Sin lluvia relevante",cls:"green"};
       }
 
-      function rainScale(summary){
-        var q50=summary.rainQ50||0,q75=summary.rainQ75||0,q90=summary.rainQ90||0,peakP=summary.peak?summary.peak.P||0:0;
-        if(q50>=30||q75>=45||q90>=60||summary.probRainGt40>=0.45||peakP>=5)return {label:"5 · Precipitación intensa",cls:"red",text:"Acumulado alto o períodos fuertes."};
-        if(q50>=15||q75>=25||summary.probRainGt20>=0.35||peakP>=2.5)return {label:"4 · Precipitación persistente",cls:"orange",text:"Precipitación sostenida o acumulado relevante."};
-        if(q50>=5||q75>=10||peakP>=0.8)return {label:"3 · Intermitente",cls:"yellow",text:"Precipitación por momentos, con intensidad variable."};
-        if(q50>=1||q75>=2||peakP>=0.2)return {label:"2 · Débil",cls:"green",text:"Precipitación débil o aislada."};
-        return {label:"1 · Casi seco",cls:"green",text:"La señal de precipitación relevante es baja."};
+      function dailySnowLevel(b){
+        if(b.snow>=8 || b.maxCmh>=1.0)return {label:"Nieve importante",cls:"red"};
+        if(b.snow>=3 || b.maxCmh>=0.35)return {label:"Nieve posible",cls:"orange"};
+        if(b.snow>=0.8 || b.maxProb>=0.45)return {label:"Mezcla / aguanieve",cls:"yellow"};
+        if(b.snow>=0.1 || b.maxProb>=0.25)return {label:"Copos posibles",cls:"green"};
+        return {label:"Sin nieve relevante",cls:"green"};
       }
 
-      function badge(r){
-        if(r==="Alto")return '<span class="badge high">Alto</span>';
-        if(r==="Medio")return '<span class="badge mid">Medio</span>';
-        return '<span class="badge low">Bajo</span>';
-      }
+      function dailyDominantPhase(b){
+        var best="Sin precip.";
+        var bestVal=-1;
+        var k;
 
-      function consensusLabel(v){
-        if(v>=0.78)return {txt:"alto",cls:"green"};
-        if(v>=0.55)return {txt:"medio",cls:"yellow"};
-        return {txt:"bajo",cls:"red"};
-      }
-
-      function renderTemperatureIndicators(model,summary,writeCards){
-        if(!model||!model.length)return;
-
-        var now=model[0];
-        var cold=model[0];
-        var warm=model[0];
-        var coldFeelsRow=model[0];
-        var flNow=feelsLikeTemp(now.T,now.wind);
-        var fl;
-        var minFeels=finite(flNow)?flNow:null;
-        var i;
-
-        for(i=0;i<model.length;i++){
-          if(finite(model[i].T) && model[i].T<cold.T)cold=model[i];
-          if(finite(model[i].T) && model[i].T>warm.T)warm=model[i];
-
-          fl=feelsLikeTemp(model[i].T,model[i].wind);
-          model[i].feels=fl;
-          if(finite(fl) && (!finite(minFeels)||fl<minFeels)){
-            minFeels=fl;
-            coldFeelsRow=model[i];
+        for(k in b.phaseCount){
+          if(Object.prototype.hasOwnProperty.call(b.phaseCount,k)){
+            if(b.phaseCount[k]>bestVal){
+              bestVal=b.phaseCount[k];
+              best=k;
+            }
           }
         }
 
-        summary.tempNow=now.T;
-        summary.feelsNow=flNow;
-        summary.tempMin=cold.T;
-        summary.tempMinTime=cold.time;
-        summary.tempMax=warm.T;
-        summary.tempMaxTime=warm.time;
-        summary.feelsMin=minFeels;
-        summary.feelsMinTime=coldFeelsRow.time;
-
-        if(writeCards){
-          text("tempNow",fmt(now.T,1)+" °C");
-          text("tempNowText","Próxima hora: "+localTime(now.time)+".");
-          text("feelsNow",fmt(flNow,1)+" °C");
-          text("feelsNowText","Viento: "+fmt(now.wind,0)+" km/h.");
-          text("coldestMoment",localTime(cold.time));
-          text("coldestMomentText","Mínima prevista: "+fmt(cold.T,1)+" °C.");
-          text("warmestMoment",localTime(warm.time));
-          text("warmestMomentText","Máxima prevista: "+fmt(warm.T,1)+" °C.");
-        }
+        return best;
       }
 
-      function render(model,summary){
-        var snow=snowScale(summary),rain=rainScale(summary),peak=summary.peak,con=consensusLabel(summary.consensus);
+      function dailyMainLabel(b){
+        var snow=dailySnowLevel(b);
+        var rain=dailyRainLevel(b);
+
+        if(snow.cls==="red" || snow.cls==="orange")return snow;
+        if(rain.cls==="red" || rain.cls==="orange")return rain;
+        if(snow.cls==="yellow")return snow;
+        if(rain.cls==="yellow")return rain;
+
+        if(b.rain>=0.5)return rain;
+        if(b.snow>=0.1)return snow;
+
+        return {label:"Tiempo estable",cls:"green"};
+      }
+
+      function buildDailyBuckets(model){
+        var buckets={};
+        var order=[];
+        var i,row,info,b,phase;
+
+        for(i=0;i<model.length;i++){
+          row=model[i];
+          info=dailyKeyInfo(row.time);
+          if(!info)continue;
+
+          if(!buckets[info.key]){
+            buckets[info.key]={
+              key:info.key,
+              label:info.label,
+              dayName:info.dayName,
+              rows:0,
+              tempMin:null,
+              tempMax:null,
+              feelsMin:null,
+              rain:0,
+              snow:0,
+              maxP:0,
+              maxCmh:0,
+              maxProb:0,
+              peakRain:null,
+              peakSnow:null,
+              phaseCount:{},
+              consensusSum:0,
+              consensusN:0
+            };
+            order.push(info.key);
+          }
+
+          b=buckets[info.key];
+          b.rows++;
+
+          if(finite(row.T)){
+            b.tempMin=finite(b.tempMin)?Math.min(b.tempMin,row.T):row.T;
+            b.tempMax=finite(b.tempMax)?Math.max(b.tempMax,row.T):row.T;
+          }
+
+          if(finite(row.feels)){
+            b.feelsMin=finite(b.feelsMin)?Math.min(b.feelsMin,row.feels):row.feels;
+          }
+
+          b.rain += finite(row.P)?row.P:0;
+          b.snow += finite(row.cmh)?row.cmh:0;
+
+          if(finite(row.P) && row.P>b.maxP){
+            b.maxP=row.P;
+            b.peakRain=row;
+          }
+
+          if(finite(row.cmh) && row.cmh>b.maxCmh){
+            b.maxCmh=row.cmh;
+            b.peakSnow=row;
+          }
+
+          if(finite(row.prob))b.maxProb=Math.max(b.maxProb,row.prob);
+
+          phase=row.phaseLabel||"—";
+          if(!b.phaseCount[phase])b.phaseCount[phase]=0;
+          b.phaseCount[phase]++;
+
+          if(finite(row.consensus)){
+            b.consensusSum+=row.consensus;
+            b.consensusN++;
+          }
+        }
+
+        return {buckets:buckets,order:order.slice(0,9)};
+      }
+
+      function renderNineDayForecast(model){
+        var pack=buildDailyBuckets(model||[]);
+        var out="";
+        var i,key,b,main,rain,snow,phase,consensus,peakRain,peakSnow;
+
+        if(!pack.order.length){
+          text("daily9Status","No hay datos diarios disponibles.");
+          html("daily9Grid",'<div class="daily9-card">Sin datos.</div>');
+          return;
+        }
+
+        for(i=0;i<pack.order.length;i++){
+          key=pack.order[i];
+          b=pack.buckets[key];
+
+          main=dailyMainLabel(b);
+          rain=dailyRainLevel(b);
+          snow=dailySnowLevel(b);
+          phase=dailyDominantPhase(b);
+          consensus=b.consensusN?Math.round((b.consensusSum/b.consensusN)*100):"—";
+          peakRain=b.peakRain?localTime(b.peakRain.time):"—";
+          peakSnow=b.peakSnow?localTime(b.peakSnow.time):"—";
+
+          out += ''
+            + '<article class="daily9-card">'
+            + '  <div class="daily9-top">'
+            + '    <div>'
+            + '      <div class="daily9-date">'+b.label+'</div>'
+            + '      <span class="daily9-day">'+b.dayName+'</span>'
+            + '    </div>'
+            + '    <div class="daily9-badge '+main.cls+'">'+main.label+'</div>'
+            + '  </div>'
+            + '  <div class="daily9-main">'
+            + '    Fase dominante: <b>'+escapeHtml(phase)+'</b>.<br>'
+            + '    '+rain.label+' · '+snow.label+'.'
+            + '  </div>'
+            + '  <div class="daily9-metrics">'
+            + '    <div class="daily9-metric"><span>Temp.</span><strong>'+fmt(b.tempMin,1)+' / '+fmt(b.tempMax,1)+' °C</strong></div>'
+            + '    <div class="daily9-metric"><span>Sens. mín.</span><strong>'+fmt(b.feelsMin,1)+' °C</strong></div>'
+            + '    <div class="daily9-metric"><span>Lluvia</span><strong>'+fmt(b.rain,1)+' mm</strong></div>'
+            + '    <div class="daily9-metric"><span>Nieve</span><strong>'+fmt(b.snow,1)+' cm</strong></div>'
+            + '    <div class="daily9-metric"><span>Pico lluvia</span><strong>'+peakRain+'</strong></div>'
+            + '    <div class="daily9-metric"><span>Pico nieve</span><strong>'+peakSnow+'</strong></div>'
+            + '    <div class="daily9-metric"><span>Prob. nieve máx.</span><strong>'+Math.round((b.maxProb||0)*100)+'%</strong></div>'
+            + '    <div class="daily9-metric"><span>Acuerdo</span><strong>'+consensus+'%</strong></div>'
+            + '  </div>'
+            + '</article>';
+        }
+
+        text("daily9Status","Pronóstico diario generado para "+pack.order.length+" días desde la hora actual.");
+        html("daily9Grid",out);
+      }
+
+      function renderQuickRead(summary,nowSnow,nowRain,plus3Snow,plus3Rain,totalSnow,totalRain){
+        var peak = summary.peak || {};
+        var current = summary.current || latestModel[0];
+        var plus3 = summary.plus3 || getHorizonRow(latestModel,3) || current;
+        var rainW = summary.rainWindow || {has:false};
+        var snowW = summary.snowWindow || {has:false};
+        var timing = "";
+        var obsTxt = "";
+
+        if(rainW.has && snowW.has){
+          timing = "Lluvia prevista entre <b>"+localTime(rainW.start.time)+"</b> y <b>"+localTime(rainW.end.time)+"</b>. Nieve o mezcla prevista entre <b>"+localTime(snowW.start.time)+"</b> y <b>"+localTime(snowW.end.time)+"</b>.";
+        }else if(rainW.has && !snowW.has){
+          timing = "Lluvia prevista entre <b>"+localTime(rainW.start.time)+"</b> y <b>"+localTime(rainW.end.time)+"</b>. No aparece una ventana nival clara.";
+        }else if(!rainW.has && snowW.has){
+          timing = "No aparece una ventana de lluvia relevante. Nieve o mezcla prevista entre <b>"+localTime(snowW.start.time)+"</b> y <b>"+localTime(snowW.end.time)+"</b>.";
+        }else{
+          timing = "No se detecta una ventana clara de lluvia ni de nieve/mezcla con los umbrales actuales.";
+        }
+
+        if(latestObservation && latestModel.length){
+          var dT=latestObservation.tempC-current.T;
+          obsTxt="<br><br><b>Observación real SAZS/BRC ahora:</b> "+fmt(latestObservation.tempC,1)+" °C, "+
+            fmt(latestObservation.rh,0)+"% HR, viento "+fmt(latestObservation.windKmh,0)+" km/h, fenómeno: "+
+            escapeHtml(latestObservation.phenomena)+". Sesgo térmico contra la hora actual: <b>"+
+            (dT>=0?"+":"")+fmt(dT,1)+" °C</b>.";
+        }
+
+        html(
+          "quickRead",
+          "<b>Ahora:</b> lluvia "+shortLevelLabel(nowRain.label)+" · nieve "+shortLevelLabel(nowSnow.label)+
+          "<br><b>+3 horas:</b> lluvia "+shortLevelLabel(plus3Rain.label)+" · nieve "+shortLevelLabel(plus3Snow.label)+
+          "<br><br>"+
+          "Los indicadores principales de lluvia y nieve muestran la situación prevista a <b>+3 horas</b>, no el acumulado total ni la condición instantánea."+
+          "<br><br>"+
+          "<b>Acumulado previsto desde ahora:</b> lluvia <b>"+fmt(summary.rainQ50,1)+" mm</b> y nieve <b>"+fmt(summary.snowQ50,1)+" cm</b>. "+
+          "Lectura de evento: "+totalRain.label+" · "+totalSnow.label+"."+
+          "<br><br>"+
+          timing+
+          "<br><br>"+
+          "Temperatura ahora / +3 h: <b>"+fmt(summary.tempNow,1)+" / "+fmt(summary.tempPlus3,1)+" °C</b>. "+
+          "Sensación ahora / +3 h: <b>"+fmt(summary.feelsNow,1)+" / "+fmt(summary.feelsPlus3,1)+" °C</b>. "+
+          "Fase ahora / +3 h: <b>"+(current.phaseLabel||"—")+" / "+(plus3.phaseLabel||"—")+"</b>."+
+          "<br><br>"+
+          "Mínima prevista: <b>"+fmt(summary.tempMin,1)+" °C</b> cerca de <b>"+localTime(summary.tempMinTime)+"</b>. "+
+          "Máxima: <b>"+fmt(summary.tempMax,1)+" °C</b> cerca de <b>"+localTime(summary.tempMaxTime)+"</b>."+
+          "<br><br>"+
+          "Fase principal del evento: <b>"+(peak.phaseLabel||"—")+"</b>. "+
+          "Acuerdo medio entre modelos: <b>"+Math.round(summary.consensus*100)+"%</b>."+
+          obsTxt+
+          "<br><br><b>Plazo:</b> "+horizonPhrase()
+        );
+      }
+
+      function renderDiagnosis(summary){
+        var p=summary.peak;
+        html("diagnosis","<b>Hora más activa:</b> "+localTime(p.time)+". Fase dominante: <b>"+p.phaseLabel+"</b>. T: <b>"+fmt(p.T)+" °C</b>. Sensación: <b>"+fmt(p.feels)+" °C</b>. Tw efectivo: <b>"+fmt(p.TwEff)+" °C</b>. Cota de nieve: <b>"+Math.round(p.snowLine)+" m</b>. Fusión proxy: <b>"+fmt(p.melt,0)+" °C·m</b>. DGZ proxy: <b>"+fmt(p.dgzScore,2)+"</b>. Supervivencia estimada: <b>"+Math.round((p.survival||0)*100)+"%</b>. SLR: <b>"+fmt(p.slr,1)+":1</b>. Pico nieve P50: <b>"+fmt(p.cmh,2)+" cm/h</b>.");
+      }
+
+      function renderRows(model){
+        var out="",i,x;
+        for(i=0;i<model.length;i++){
+          x=model[i];
+          out+="<tr><td>"+localTime(x.time)+"</td><td>"+fmt(x.T)+" °C</td><td>"+fmt(x.feels)+" °C</td><td>"+fmt(x.TwEff)+" °C</td><td>"+fmt(x.P)+" mm/h</td><td>"+Math.round(x.snowLine)+" m</td><td>"+Math.round(x.prob*100)+"%</td><td>"+x.phaseLabel+"</td><td>"+fmt(x.cmh,2)+" cm/h</td><td>"+Math.round((x.consensus||0)*100)+"%</td><td>"+x.members+"</td><td>"+badge(x.risk)+"</td></tr>";
+        }
+        html("rows",out);
+      }
+
+      function updateChartMeta(summary){
+        var p=selectedPlace();
+        html("chartMeta","📍 "+p.name+" · "+Math.round(p.elev)+" m<br>Fuente: "+latestSourceLabel+"<br>Acuerdo medio: "+Math.round((summary.consensus||0)*100)+"%<br>"+horizonPhrase());
+      }
+
+      function render(model,summary,doArchive){
+        if(typeof doArchive==="undefined")doArchive=true;
+
+        var current=summary.current||model[0];
+        var plus3=summary.plus3||getHorizonRow(model,3)||current;
+
+        var nowRain=instantRainScale(current,latestObservation);
+        var nowSnow=instantSnowScale(current,latestObservation);
+
+        var plus3Rain=instantRainScale(plus3,null);
+        var plus3Snow=instantSnowScale(plus3,null);
+
+        var totalSnow=totalSnowScale(summary);
+        var totalRain=totalRainScale(summary);
+        var peak=summary.peak;
+        var con=consensusLabel(summary.consensus);
 
         attachEventWindows(model,summary);
         renderTemperatureIndicators(model,summary,true);
+        current=summary.current||current;
+        plus3=summary.plus3||plus3;
         renderEventWindowCards(summary);
 
-        $("snowVerdict").className=snow.cls;text("snowVerdict",snow.label);text("snowVerdictText",snow.text);
-        $("rainVerdict").className=rain.cls;text("rainVerdict",rain.label);text("rainVerdictText",rain.text);
+        $("snowVerdict").className=plus3Snow.cls;
+        text("snowVerdict",plus3Snow.label);
+        text("snowVerdictText",plus3Snow.text+" Pronóstico +3 h: "+localTime(plus3.time)+".");
 
-        $("phaseVerdict").className=phaseRankFromRow(peak)>=3?"orange":phaseRankFromRow(peak)>=2?"yellow":"green";
-        text("phaseVerdict",peak.phaseLabel||"—");
-        text("phaseVerdictText","Fase más probable en el momento activo.");
+        $("rainVerdict").className=plus3Rain.cls;
+        text("rainVerdict",plus3Rain.label);
+        text("rainVerdictText",plus3Rain.text+" Pronóstico +3 h: "+localTime(plus3.time)+".");
+
+        $("phaseVerdict").className=phaseRankFromRow(plus3)>=3?"orange":phaseRankFromRow(plus3)>=2?"yellow":"green";
+        text("phaseVerdict",(current.phaseLabel||"—")+" / "+(plus3.phaseLabel||"—"));
+        text("phaseVerdictText","Ahora: "+localTime(current.time)+" · +3 h: "+localTime(plus3.time)+".");
 
         $("ensembleConsensus").className=con.cls;
-        text("ensembleConsensus",Math.round(summary.consensus*100)+"%");
-        text("consensusText","Acuerdo "+con.txt+" entre fuentes. No es verificación histórica.");
+        text("ensembleConsensus",Math.round((current.consensus||0)*100)+" / "+Math.round((plus3.consensus||0)*100)+"%");
+        text("consensusText","Acuerdo ahora / +3 h. Promedio del período: "+Math.round(summary.consensus*100)+"%.");
 
         $("trendVerdict").className=summary.trend.cls;
         text("trendVerdict",summary.trend.label);
         text("trendText",summary.trend.text);
 
         text("snowScenario",fmt(summary.snowQ50,1)+" cm");
-        text("snowScenarioText","Rango esperable: "+fmt(summary.snowQ25,1)+" a "+fmt(summary.snowQ75,1)+" cm.");
+        text("snowScenarioText","Acumulado previsto desde ahora: "+fmt(summary.snowQ25,1)+" a "+fmt(summary.snowQ75,1)+" cm.");
 
         text("rainScenario",fmt(summary.rainQ50,1)+" mm");
-        text("rainScenarioText","Rango esperable: "+fmt(summary.rainQ25,1)+" a "+fmt(summary.rainQ75,1)+" mm.");
+        text("rainScenarioText","Acumulado previsto desde ahora: "+fmt(summary.rainQ25,1)+" a "+fmt(summary.rainQ75,1)+" mm.");
 
         if(summary.next){
           text("criticalWindow",localTime(summary.next.time));
@@ -1840,227 +2713,22 @@ O:
           text("criticalWindowText","Mayor precipitación modelada.");
         }
 
-        renderQuickRead(summary,snow,rain);
-        renderScenarioTables(summary);
+        renderQuickRead(summary,nowSnow,nowRain,plus3Snow,plus3Rain,totalSnow,totalRain);
+        renderNineDayForecast(model);
         renderDiagnosis(summary);
-        renderSnowNeeds(summary);
         renderRows(model);
         updateChartMeta(summary);
         drawChart(model);
-      }
+        compareObservationWithForecast();
 
-      function horizonPhrase(){
-        var days=$("days")?clamp(num($("days").value,9),1,9):9;
-        if(days<=3)return "Plazo corto: lectura horaria más útil.";
-        if(days<=6)return "Plazo medio: usar como ventana probable.";
-        return "Días 1-3: más operativos. Días 4-6: tendencia probable. Días 7-9: tendencia extendida.";
-      }
-
-      function renderQuickRead(summary,snow,rain){
-        var peak = summary.peak || {};
-        var rainW = summary.rainWindow || {has:false};
-        var snowW = summary.snowWindow || {has:false};
-        var snowName = String(snow.label || "").replace(/^\d+\s*·\s*/,"");
-        var rainName = String(rain.label || "").replace(/^\d+\s*·\s*/,"");
-        var snowLevel = Number(String(snow.label || "").charAt(0));
-        var rainLevel = Number(String(rain.label || "").charAt(0));
-
-        var snowPhrase = "";
-        var rainPhrase = "";
-        var dominance = "";
-        var timing = "";
-
-        if(snowLevel === 1){
-          snowPhrase = "No se espera nieve. La señal de acumulación es prácticamente nula";
-        }else if(snowLevel === 2){
-          snowPhrase = "Podrían aparecer copitos diminutos o mezcla muy aislada, sin acumulación robusta";
-        }else if(snowLevel === 3){
-          snowPhrase = "El escenario nival es marginal: puede haber aguanieve, nieve húmeda o mezcla con lluvia";
-        }else if(snowLevel === 4){
-          snowPhrase = "Puede nevar poco, con acumulación ligera o moderada especialmente en superficies frías";
-        }else if(snowLevel === 5){
-          snowPhrase = "La señal de nieve es fuerte: puede nevar mucho y acumular";
-        }else{
-          snowPhrase = "La señal de nieve es incierta";
-        }
-
-        if(rainLevel === 1){
-          rainPhrase = "La lluvia no aparece como un factor relevante";
-        }else if(rainLevel === 2){
-          rainPhrase = "Puede haber lluvia débil o aislada";
-        }else if(rainLevel === 3){
-          rainPhrase = "La lluvia puede ser intermitente, con pausas o intensidad variable";
-        }else if(rainLevel === 4){
-          rainPhrase = "La lluvia puede ser persistente y dejar acumulados relevantes";
-        }else if(rainLevel === 5){
-          rainPhrase = "La señal de lluvia es intensa, con acumulados altos o períodos fuertes";
-        }else{
-          rainPhrase = "La señal de lluvia es incierta";
-        }
-
-        if(snowLevel <= 1 && rainLevel >= 4){
-          dominance = "El evento está dominado por lluvia, no por nieve.";
-        }else if(snowLevel <= 2 && rainLevel >= 3){
-          dominance = "La precipitación principal sería lluvia; la nieve, si aparece, sería secundaria.";
-        }else if(snowLevel >= 4 && rainLevel <= 2){
-          dominance = "La señal principal es nival.";
-        }else if(snowLevel >= 3 && rainLevel >= 3){
-          dominance = "El escenario es mixto y sensible a pequeños cambios de temperatura, intensidad y cota.";
-        }else{
-          dominance = "El escenario no muestra una señal dominante extrema.";
-        }
-
-        if(rainW.has && snowW.has){
-          timing = "La lluvia tendría su bloque principal entre <b>"+localTime(rainW.start.time)+"</b> y <b>"+localTime(rainW.end.time)+"</b>. La nieve o mezcla aparecería entre <b>"+localTime(snowW.start.time)+"</b> y <b>"+localTime(snowW.end.time)+"</b>.";
-        }else if(rainW.has && !snowW.has){
-          timing = "La lluvia tendría su bloque principal entre <b>"+localTime(rainW.start.time)+"</b> y <b>"+localTime(rainW.end.time)+"</b>. No aparece una ventana nival clara.";
-        }else if(!rainW.has && snowW.has){
-          timing = "No aparece una ventana de lluvia relevante. La nieve o mezcla tendría su bloque principal entre <b>"+localTime(snowW.start.time)+"</b> y <b>"+localTime(snowW.end.time)+"</b>.";
-        }else{
-          timing = "No se detecta una ventana clara de lluvia ni de nieve/mezcla con los umbrales actuales.";
-        }
-
-        html(
-          "quickRead",
-          "<b>"+snowName+"</b>. "+snowPhrase+". "+
-          "<br><br>"+
-          "<b>Lluvia: "+rainName+"</b>. "+rainPhrase+". "+
-          "<br><br>"+
-          dominance+
-          "<br><br>"+
-          timing+
-          "<br><br>"+
-          "Temperatura mínima: <b>"+fmt(summary.tempMin,1)+" °C</b> cerca de <b>"+localTime(summary.tempMinTime)+"</b>. "+
-          "Máxima: <b>"+fmt(summary.tempMax,1)+" °C</b> cerca de <b>"+localTime(summary.tempMaxTime)+"</b>. "+
-          "Sensación térmica mínima: <b>"+fmt(summary.feelsMin,1)+" °C</b>."+
-          "<br><br>"+
-          "Nieve probable: <b>"+fmt(summary.snowQ50,1)+" cm</b>. "+
-          "Precipitación probable: <b>"+fmt(summary.rainQ50,1)+" mm</b>. "+
-          "Fase principal: <b>"+(peak.phaseLabel||"—")+"</b>. "+
-          "Acuerdo entre modelos: <b>"+Math.round(summary.consensus*100)+"%</b>. "+
-          "<br><br><b>Plazo:</b> "+horizonPhrase()
-        );
-      }
-
-      function renderScenarioTables(summary){
-        html("scenarioRows","<tr><td>Nieve acumulada</td><td>"+fmt(summary.snowQ25,1)+" cm</td><td><b>"+fmt(summary.snowQ50,1)+" cm</b></td><td>"+fmt(summary.snowQ75,1)+" cm</td><td>"+fmt(summary.snowQ90,1)+" cm</td></tr><tr><td>Precipitación equivalente</td><td>"+fmt(summary.rainQ25,1)+" mm</td><td><b>"+fmt(summary.rainQ50,1)+" mm</b></td><td>"+fmt(summary.rainQ75,1)+" mm</td><td>"+fmt(summary.rainQ90,1)+" mm</td></tr>");
-        html("thresholdRows","<tr><td>Nieve &gt; 0.5 cm</td><td>"+Math.round(summary.probSnowGt05*100)+"%</td><td>Copos visibles o blanqueo muy menor</td></tr><tr><td>Nieve &gt; 1 cm</td><td>"+Math.round(summary.probSnowGt1*100)+"%</td><td>Acumulación ligera detectable</td></tr><tr><td>Nieve &gt; 3 cm</td><td>"+Math.round(summary.probSnowGt3*100)+"%</td><td>Acumulación operativa en superficies frías</td></tr><tr><td>Nieve &gt; 5 cm</td><td>"+Math.round(summary.probSnowGt5*100)+"%</td><td>Evento acumulador relevante</td></tr><tr><td>Lluvia &gt; 10 mm</td><td>"+Math.round(summary.probRainGt10*100)+"%</td><td>Precipitación relevante</td></tr><tr><td>Lluvia &gt; 20 mm</td><td>"+Math.round(summary.probRainGt20*100)+"%</td><td>Evento húmedo importante</td></tr>");
-      }
-
-      function updateChartMeta(summary){
-        var p=selectedPlace();
-        html("chartMeta","📍 "+p.name+" · "+Math.round(p.elev)+" m<br>Fuente: "+latestSourceLabel+"<br>Acuerdo: "+Math.round((summary.consensus||0)*100)+"%<br>"+horizonPhrase());
-      }
-
-      function renderDiagnosis(summary){
-        var p=summary.peak;
-        html("diagnosis","<b>Hora más activa:</b> "+localTime(p.time)+". Fase dominante: <b>"+p.phaseLabel+"</b>. T: <b>"+fmt(p.T)+" °C</b>. Sensación: <b>"+fmt(p.feels)+" °C</b>. Tw efectivo: <b>"+fmt(p.TwEff)+" °C</b>. Cota de nieve: <b>"+Math.round(p.snowLine)+" m</b>. Fusión proxy: <b>"+fmt(p.melt,0)+" °C·m</b>. DGZ proxy: <b>"+fmt(p.dgzScore,2)+"</b>. Supervivencia estimada: <b>"+Math.round((p.survival||0)*100)+"%</b>. SLR: <b>"+fmt(p.slr,1)+":1</b>. Pico nieve P50: <b>"+fmt(p.cmh,2)+" cm/h</b>.");
-      }
-
-      function needClass(ok,mid){return ok?"need-ok":mid?"need-mid":"need-bad";}
-      function needLabel(ok,mid){return ok?"favorable":mid?"marginal":"desfavorable";}
-
-      function renderSnowNeeds(summary){
-        var p=summary.peak;
-        var elev=num($("elev").value,selectedPlace().elev);
-        var cotaDiff=p.snowLine-elev;
-
-        var tempOk=p.TwEff<=0.3;
-        var tempMid=p.TwEff<=1.1;
-        var cotaOk=cotaDiff<=100;
-        var cotaMid=cotaDiff<=350;
-        var precipOk=p.P>=0.6;
-        var precipMid=p.P>=0.15;
-        var phaseOk=phaseRankFromRow(p)>=3;
-        var phaseMid=phaseRankFromRow(p)>=2;
-        var accumOk=(p.cmh||0)>=0.45;
-        var accumMid=(p.cmh||0)>=0.05;
-
-        html("snowNeeds",
-          '<div class="need"><span>Fase</span><b class="'+needClass(phaseOk,phaseMid)+'">'+needLabel(phaseOk,phaseMid)+" · "+p.phaseLabel+'</b></div>'+
-          '<div class="need"><span>Temperatura para nieve</span><b class="'+needClass(tempOk,tempMid)+'">'+needLabel(tempOk,tempMid)+'</b></div>'+
-          '<div class="need"><span>Cota respecto del barrio</span><b class="'+needClass(cotaOk,cotaMid)+'">'+needLabel(cotaOk,cotaMid)+'</b></div>'+
-          '<div class="need"><span>Precipitación</span><b class="'+needClass(precipOk,precipMid)+'">'+needLabel(precipOk,precipMid)+'</b></div>'+
-          '<div class="need"><span>Acumulación posible</span><b class="'+needClass(accumOk,accumMid)+'">'+needLabel(accumOk,accumMid)+'</b></div>'
-        );
-
-        var score=Math.round(100*clamp(
-          0.28*(phaseOk?1:phaseMid?0.55:0.10)+
-          0.24*(tempOk?1:tempMid?0.55:0.15)+
-          0.20*(cotaOk?1:cotaMid?0.55:0.10)+
-          0.14*(precipOk?1:precipMid?0.55:0.10)+
-          0.14*(accumOk?1:accumMid?0.55:0.10),0,1));
-
-        var lectura;
-        if(score>=75){
-          lectura="El entorno acompaña una posible señal de nieve o mezcla. La clave será la intensidad y persistencia de la precipitación.";
-        }else if(score>=45){
-          lectura="El entorno es marginal. Pequeños cambios de temperatura, cota o intensidad pueden mover el resultado entre lluvia, aguanieve y nieve húmeda.";
-        }else{
-          lectura="El entorno no favorece nieve acumuladora. Aunque haya precipitación, la fase dominante tiende a lluvia o mezcla muy débil.";
-        }
-
-        html(
-          "snowNeedsText",
-          "Índice de entorno nivoso: <b>"+score+"/100</b>. "+lectura+
-          "<div class=\"meter\"><div class=\"meter-fill\" style=\"width:"+score+"%\"></div></div>"
-        );
-      }
-
-      function renderRows(model){
-        var out="",i,x,wg,diff;
-        for(i=0;i<model.length;i++){
-          x=model[i];
-          wg=finite(x.wg)?fmt(x.wg,2):"—";
-          diff=finite(x.diff)?fmt(x.diff,2):"—";
-          out+="<tr><td>"+localTime(x.time)+"</td><td>"+fmt(x.T)+" °C</td><td>"+fmt(x.feels)+" °C</td><td>"+fmt(x.TwEff)+" °C</td><td>"+fmt(x.P)+" mm/h</td><td>"+Math.round(x.snowLine)+" m</td><td>"+Math.round(x.prob*100)+"%</td><td>"+x.phaseLabel+"</td><td>"+fmt(x.cmh,2)+" cm/h</td><td>"+fmt(x.cmhP25,2)+"-"+fmt(x.cmhP75,2)+"</td><td>"+Math.round((x.consensus||0)*100)+"%</td><td>"+x.members+"</td><td>"+fmt(x.dgzScore,2)+"</td><td>"+fmt(x.melt,0)+"</td><td class=\"purple\">"+wg+"</td><td>"+diff+"</td><td>"+badge(x.risk)+"</td></tr>";
-        }
-        html("rows",out);
-      }
-
-      function renderSourceStatus(ok,fail){
-        var out="",labels=[],i;
-        for(i=0;i<ok.length;i++){labels.push(ok[i].source.label);out+='<span class="source-pill source-ok">✓ '+ok[i].source.label+"</span>";}
-        for(i=0;i<fail.length;i++){out+='<span class="source-pill source-fail">× '+fail[i].source.label+"</span>";}
-        latestSourceLabel=labels.length?labels.join(", "):"—";
-        html("sourceStatus",out||"Sin fuentes cargadas.");
-      }
-
-      function renderAfterOk(okPacks,failPacks,ms,partial){
-        try{
-          var model=aggregateHourly(okPacks);
-          var summary=summarize(model,okPacks);
-          var urls="",errors="",i;
-
-          latestModel=model;
-          latestSummary=summary;
-
-          render(model,summary);
-          renderSourceStatus(okPacks,failPacks);
-
-          text("status",(partial?"🟡 Resultado parcial calculado":"🟢 Corrida completa")+" · "+okPacks.length+" fuente(s) OK · "+failPacks.length+" fallida(s)");
-
-          for(i=0;i<okPacks.length;i++)urls+=okPacks[i].source.label+": "+okPacks[i].url+"<br><br>";
-          for(i=0;i<failPacks.length;i++)errors+=failPacks[i].source.label+": "+failPacks[i].error+"<br>";
-
-          debug("JS: OK<br>API: OK<br>Fuentes OK: "+okPacks.length+"<br>Fuentes fallidas: "+failPacks.length+"<br>Horas modeladas: "+model.length+"<br>Tiempo: "+ms+" ms<br><br>URLs OK:<br>"+(urls||"—")+"<br>Fallos:<br>"+(errors||"—"));
-
-          if(!partial){
-            autoArchiveForecast(model,summary,okPacks,failPacks);
-            runNeighborhoodMap(false);
-          }
-        }catch(e){
-          text("status","Error procesando datos: "+e.message);
-          text("snowVerdict","Error");
-          $("snowVerdict").className="red";
-          text("snowVerdictText",e.message);
-          debug("API respondió, pero falló el procesamiento.<br>Detalle: "+e.message);
+        if(doArchive){
+          renderArchive();
         }
       }
 
       function setLoading(){
-        text("snowVerdict","Calculando…");$("snowVerdict").className="yellow";text("snowVerdictText","Ejecutando postprocesamiento.");
-        text("rainVerdict","Calculando…");$("rainVerdict").className="yellow";text("rainVerdictText","Descargando datos meteorológicos.");
+        text("snowVerdict","Calculando…");$("snowVerdict").className="yellow";text("snowVerdictText","Calculando pronóstico a +3 horas.");
+        text("rainVerdict","Calculando…");$("rainVerdict").className="yellow";text("rainVerdictText","Calculando pronóstico a +3 horas.");
         text("phaseVerdict","—");text("phaseVerdictText","Esperando datos.");
         text("ensembleConsensus","—");text("consensusText","Calculando acuerdo.");
         text("tempNow","—");text("tempNowText","Esperando datos.");
@@ -2079,70 +2747,72 @@ O:
         text("snowEnd","—");text("snowEndText","Esperando datos.");
         text("quickRead","Corriendo método BariSnow.");
         text("chartMeta","Descargando datos…");
-        text("snowNeedsText","Esperando datos.");
+        text("daily9Status","Calculando pronóstico a 9 días…");
+        html("daily9Grid",'<div class="daily9-card">Calculando días…</div>');
       }
 
       function run(){
         var runId=++currentRunId;
         var sources=selectedSources();
         var place=selectedPlace();
-        var ok=[],fail=[],pending=sources.length,firstRendered=false,t0=new Date().getTime(),i;
+        var started=Date.now();
 
         updatePlaceBadge();
         setLoading();
 
         text("status","Descargando datos meteorológicos…");
-        html("sourceStatus","Solicitando fuentes…");
-        debug("JS: OK<br>Corrida: "+runId+"<br>Fuentes seleccionadas: "+sources.length+"<br>Primera fuente: "+sources[0].label);
+        debug("JS: OK<br>Corrida: "+runId+"<br>Fuentes seleccionadas: "+sources.length);
 
-        function oneFinished(){
-          var ms=new Date().getTime()-t0;
-          if(runId!==currentRunId)return;
+        Promise.allSettled(sources.map(function(s){return fetchSource(s,place);}))
+          .then(function(results){
+            var ok=[],fail=[],i,res,model,summary,ms,labels=[];
+            if(runId!==currentRunId)return;
 
-          if(ok.length&&!firstRendered){
-            firstRendered=true;
-            renderAfterOk(ok,fail,ms,true);
-          }
+            for(i=0;i<results.length;i++){
+              res=results[i];
+              if(res.status==="fulfilled"){
+                ok.push(res.value);
+                labels.push(res.value.source.label);
+              }else{
+                fail.push(res.reason);
+              }
+            }
 
-          if(pending===0){
-            renderSourceStatus(ok,fail);
-            if(ok.length){
-              renderAfterOk(ok,fail,ms,false);
+            if(!ok.length){
+              text("status","Error: no respondió ninguna fuente.");
+              text("snowVerdict","Error");
+              $("snowVerdict").className="red";
+              text("snowVerdictText","No se pudo obtener datos.");
+              debug("Fallos:<br>"+fail.map(function(e){return escapeHtml(e.message||String(e));}).join("<br>"));
               return;
             }
 
-            text("status","Error: no respondió ninguna fuente.");
-            text("snowVerdict","Error");
-            $("snowVerdict").className="red";
-            text("snowVerdictText","No se pudo obtener datos.");
-            debug("JS: OK<br>API: ERROR<br>Fuentes intentadas: "+sources.length+"<br><br>"+fail.map(function(f){return f.source.label+": "+f.error+"<br>URL: "+f.url;}).join("<br><br>"));
-          }
-        }
+            model=aggregateHourly(ok);
+            summary=summarize(model,ok);
+            latestModel=model;
+            latestSummary=summary;
+            latestSourceLabel=labels.join(", ");
+            ms=Date.now()-started;
 
-        for(i=0;i<sources.length;i++){
-          (function(source){
-            fetchSource(source,place,function(err,pack){
-              if(runId!==currentRunId)return;
-              if(err)fail.push(err);
-              else ok.push(pack);
-              pending--;
-              text("status","Descarga multimodelo: "+ok.length+" OK, "+fail.length+" fallidas, "+pending+" pendientes…");
-              oneFinished();
-            });
-          })(sources[i]);
-        }
+            render(model,summary,true);
+            text("status","🟢 Corrida completa · "+ok.length+" fuente(s) OK · "+fail.length+" fallida(s) · "+ms+" ms");
+            debug("JS: OK<br>API: OK<br>Fuentes OK: "+ok.length+"<br>Fuentes fallidas: "+fail.length+"<br>Horas modeladas desde ahora: "+model.length);
+
+            autoArchiveForecast(model,summary,ok,fail);
+            renderArchive();
+            runNeighborhoodMap(false);
+          });
       }
 
       function mapColorClass(summary){
-        if(!summary)return "blue";
-        var s=snowScale(summary);
-        var r=rainScale(summary);
-        var sl=Number(String(s.label||"1").charAt(0));
-        var rl=Number(String(r.label||"1").charAt(0));
-        if(sl>=5||rl>=5)return "red";
-        if(sl>=4)return "orange";
-        if(sl>=3)return "yellow";
-        if(rl>=2)return "blue";
+        var plus3=summary&&summary.plus3?summary.plus3:(summary&&summary.current?summary.current:null);
+        if(!plus3)return "blue";
+        var ir=instantRainScale(plus3,null);
+        var is=instantSnowScale(plus3,null);
+        if(ir.cls==="red"||is.cls==="red")return "red";
+        if(ir.cls==="orange"||is.cls==="orange")return "orange";
+        if(ir.cls==="yellow"||is.cls==="yellow")return "yellow";
+        if((plus3.P||0)>=0.2)return "blue";
         return "green";
       }
 
@@ -2159,12 +2829,6 @@ O:
 
         out += ''
           + '<svg class="map-svg" viewBox="0 0 1000 700" aria-hidden="true">'
-          + '  <defs>'
-          + '    <linearGradient id="lakeGrad" x1="0" y1="0" x2="1" y2="1">'
-          + '      <stop offset="0%" stop-color="rgba(97,220,255,.35)"/>'
-          + '      <stop offset="100%" stop-color="rgba(97,220,255,.08)"/>'
-          + '    </linearGradient>'
-          + '  </defs>'
           + '  <path class="map-lake" d="M40,220 C120,165 200,150 300,168 C410,188 520,230 635,214 C730,200 840,148 955,128 L955,24 L40,24 Z"/>'
           + '  <path class="map-lake" d="M0,245 C130,182 260,175 410,208 C530,236 655,272 770,258 C865,246 932,226 1000,188 L1000,0 L0,0 Z" opacity=".55"/>'
           + '  <path class="map-road" d="M120,545 C210,490 280,455 355,430 C430,405 520,396 620,404 C700,411 790,434 890,470"/>'
@@ -2233,18 +2897,23 @@ O:
         }
 
         var s = res.summary;
-        var snow = snowScale(s);
-        var rain = rainScale(s);
+        var current=s.current||res.model[0];
+        var plus3=s.plus3||getHorizonRow(res.model,3)||current;
+        var nowSnow = instantSnowScale(current,latestObservation);
+        var nowRain = instantRainScale(current,latestObservation);
+        var snow = instantSnowScale(plus3,null);
+        var rain = instantRainScale(plus3,null);
 
         return ""
           + "<b>"+p.name+"</b>"
-          + '<div class="tt-row"><span>🌡️ Temperatura</span><span>'+fmt(s.tempNow,1)+' °C</span></div>'
-          + '<div class="tt-row"><span>🥶 Sensación</span><span>'+fmt(s.feelsNow,1)+' °C</span></div>'
-          + '<div class="tt-row"><span>🌧️ Lluvia</span><span>'+fmt(s.rainQ50,1)+' mm</span></div>'
-          + '<div class="tt-row"><span>❄️ Nieve</span><span>'+fmt(s.snowQ50,1)+' cm</span></div>'
-          + '<div class="tt-row"><span>🧪 Fase</span><span>'+(s.peak ? s.peak.phaseLabel : "—")+'</span></div>'
-          + '<div class="tt-row"><span>❄️ Nivel nieve</span><span>'+snow.label+'</span></div>'
-          + '<div class="tt-row"><span>🌧️ Nivel lluvia</span><span>'+rain.label+'</span></div>'
+          + '<div class="tt-row"><span>🌧️ Ahora</span><span>'+nowRain.label+'</span></div>'
+          + '<div class="tt-row"><span>❄️ Ahora</span><span>'+nowSnow.label+'</span></div>'
+          + '<div class="tt-row"><span>🌧️ +3 h</span><span>'+rain.label+'</span></div>'
+          + '<div class="tt-row"><span>❄️ +3 h</span><span>'+snow.label+'</span></div>'
+          + '<div class="tt-row"><span>🌡️ Temp.</span><span>'+fmt(s.tempNow,1)+' / '+fmt(s.tempPlus3,1)+' °C</span></div>'
+          + '<div class="tt-row"><span>🥶 Sensación</span><span>'+fmt(s.feelsNow,1)+' / '+fmt(s.feelsPlus3,1)+' °C</span></div>'
+          + '<div class="tt-row"><span>🌧️ Acum. lluvia</span><span>'+fmt(s.rainQ50,1)+' mm</span></div>'
+          + '<div class="tt-row"><span>❄️ Acum. nieve</span><span>'+fmt(s.snowQ50,1)+' cm</span></div>'
           + '<div class="tt-row"><span>🎯 Acuerdo</span><span>'+Math.round((s.consensus||0)*100)+'%</span></div>'
           + '<div class="tt-foot">📍 '+fmt(p.lat,4)+", "+fmt(p.lon,4)+' · '+Math.round(p.elev)+' m</div>';
       }
@@ -2290,7 +2959,7 @@ O:
       }
 
       function renderMapCards(){
-        var out="",i,k,p,res,snow,rain,cls,summary,phase,temp,feels;
+        var out="",i,k,p,res,snow,rain,cls,summary,phase,temp,feels,current,plus3;
         for(i=0;i<MAP_KEYS.length;i++){
           k=MAP_KEYS[i];
           p=PLACES[k];
@@ -2300,22 +2969,24 @@ O:
             continue;
           }
           summary=res.summary;
-          snow=snowScale(summary);
-          rain=rainScale(summary);
+          current=summary.current||res.model[0];
+          plus3=summary.plus3||getHorizonRow(res.model,3)||current;
+          snow=instantSnowScale(plus3,null);
+          rain=instantRainScale(plus3,null);
           cls=mapColorClass(summary);
-          phase=summary.peak?summary.peak.phaseLabel:"—";
-          temp=summary.tempNow;
-          feels=summary.feelsNow;
+          phase=plus3?plus3.phaseLabel:"—";
+          temp=summary.tempPlus3;
+          feels=summary.feelsPlus3;
 
           if($("point_"+k)){
             $("point_"+k).className="map-point "+cls;
           }
 
           out+='<div class="map-card" data-key="'+k+'">'+
-            '<div class="map-card-top"><div><b>'+p.name+'</b><small>'+snow.label+' · '+rain.label+' · '+phase+'</small></div><span class="badge '+(cls==="red"?"high":cls==="yellow"||cls==="orange"?"mid":"low")+'">'+cls+'</span></div>'+
+            '<div class="map-card-top"><div><b>'+p.name+'</b><small>+3 h: '+rain.label+' · '+snow.label+' · '+phase+'</small></div><span class="badge '+(cls==="red"?"high":cls==="yellow"||cls==="orange"?"mid":"low")+'">'+cls+'</span></div>'+
             '<div class="map-mini">'+
-              '<div><span>Temp</span><strong>'+fmt(temp,1)+' °C</strong></div>'+
-              '<div><span>Sens.</span><strong>'+fmt(feels,1)+' °C</strong></div>'+
+              '<div><span>Temp +3</span><strong>'+fmt(temp,1)+' °C</strong></div>'+
+              '<div><span>Sens +3</span><strong>'+fmt(feels,1)+' °C</strong></div>'+
               '<div><span>Lluvia</span><strong>'+fmt(summary.rainQ50,1)+' mm</strong></div>'+
               '<div><span>Nieve</span><strong>'+fmt(summary.snowQ50,1)+' cm</strong></div>'+
             '</div>'+
@@ -2339,7 +3010,7 @@ O:
       function runNeighborhoodMap(manual){
         var mapRunId=++currentMapRunId;
         var source=SOURCES[0];
-        var days=$("days")?clamp(num($("days").value,9),1,9):9;
+        var days=9;
         var pending=MAP_KEYS.length;
         var ok=0,fail=0;
         var i,k,p;
@@ -2363,21 +3034,22 @@ O:
           p=PLACES[k];
 
           (function(key,place){
-            fetchSource(source,place,function(err,pack){
+            fetchSource(source,place,days).then(function(pack){
               if(mapRunId!==currentMapRunId)return;
               pending--;
-              if(err){
+              try{
+                neighborhoodResults[key]=summarizeSinglePack(pack);
+                ok++;
+              }catch(e){
                 fail++;
-              }else{
-                try{
-                  neighborhoodResults[key]=summarizeSinglePack(pack);
-                  ok++;
-                }catch(e){
-                  fail++;
-                }
               }
               doneOne();
-            },days);
+            }).catch(function(){
+              if(mapRunId!==currentMapRunId)return;
+              pending--;
+              fail++;
+              doneOne();
+            });
           })(k,p);
         }
       }
@@ -2393,7 +3065,7 @@ O:
         return {ctx:ctx,width:width/dpr,height:height/dpr};
       }
 
-      function drawLine(ctx,model,xAt,yFn,color,width,skipMissing,dashed){
+      function drawLine(ctx,model,xAt,yFn,color,width){
         var i,started=false,x,y;
         ctx.save();
         ctx.beginPath();
@@ -2401,10 +3073,8 @@ O:
         ctx.lineWidth=width;
         ctx.lineJoin="round";
         ctx.lineCap="round";
-        if(dashed)ctx.setLineDash([7,6]);
 
         for(i=0;i<model.length;i++){
-          if(skipMissing&&!finite(model[i].wg))continue;
           x=xAt(i);
           y=yFn(model[i]);
           if(!started){ctx.moveTo(x,y);started=true;}
@@ -2413,12 +3083,6 @@ O:
 
         if(started)ctx.stroke();
         ctx.restore();
-      }
-
-      function modelHasWindguru(model){
-        var i;
-        for(i=0;i<model.length;i++){if(finite(model[i].wg))return true;}
-        return false;
       }
 
       function drawChart(model){
@@ -2431,9 +3095,8 @@ O:
         var maxC=0.25,maxP=0.25,i;
 
         for(i=0;i<model.length;i++){
-          maxC=Math.max(maxC,model[i].cmh||0,model[i].cmhP75||0,model[i].cmhP90||0);
+          maxC=Math.max(maxC,model[i].cmh||0,model[i].cmhP75||0);
           maxP=Math.max(maxP,model[i].P||0,model[i].PP75||0);
-          if(finite(model[i].wg))maxC=Math.max(maxC,model[i].wg);
         }
 
         maxC=Math.max(0.2,Math.ceil(maxC*10)/10);
@@ -2442,43 +3105,6 @@ O:
         function xAt(idx){return padL+plotW*idx/Math.max(1,model.length-1);}
         function yProb(v){return padT+(1-clamp(v,0,1))*plotH;}
         function yCmh(v){return padT+(1-clamp(v/maxC,0,1))*plotH;}
-        function indexByKey(key){
-          var j;
-          for(j=0;j<model.length;j++)if(model[j].key===key)return j;
-          return -1;
-        }
-        function shadeWindow(win,color){
-          if(!win||!win.has)return;
-          var si=indexByKey(win.start.key);
-          var ei=indexByKey(win.end.key);
-          if(si<0||ei<0)return;
-          var pad=Math.max(2,plotW/Math.max(1,model.length)*0.35);
-          var x1=xAt(si)-pad;
-          var x2=xAt(ei)+pad;
-          ctx.save();
-          ctx.fillStyle=color;
-          ctx.fillRect(Math.max(padL,x1),padT,Math.min(W-padR,x2)-Math.max(padL,x1),plotH);
-          ctx.restore();
-        }
-        function markPeak(win,color,label){
-          if(!win||!win.has||!win.peak)return;
-          var pi=indexByKey(win.peak.key);
-          if(pi<0)return;
-          var x=xAt(pi);
-          ctx.save();
-          ctx.strokeStyle=color;
-          ctx.lineWidth=1.5;
-          ctx.setLineDash([5,5]);
-          ctx.beginPath();
-          ctx.moveTo(x,padT);
-          ctx.lineTo(x,H-padB);
-          ctx.stroke();
-          ctx.fillStyle=color;
-          ctx.textAlign="center";
-          ctx.font=(isMobile?9:11)+"px system-ui";
-          ctx.fillText(label,x,padT+14);
-          ctx.restore();
-        }
 
         ctx.clearRect(0,0,W,H);
 
@@ -2491,9 +3117,6 @@ O:
 
         ctx.fillStyle="rgba(255,255,255,.028)";
         ctx.fillRect(padL,padT,plotW,plotH);
-
-        shadeWindow(latestSummary?latestSummary.rainWindow:null,"rgba(97,220,255,.08)");
-        shadeWindow(latestSummary?latestSummary.snowWindow:null,"rgba(121,255,178,.10)");
 
         ctx.strokeStyle="rgba(255,255,255,.12)";
         ctx.lineWidth=1;
@@ -2510,12 +3133,6 @@ O:
           ctx.fillStyle="rgba(121,255,178,.95)";
           ctx.textAlign="left";
           ctx.fillText(fmt(maxC*p,1),W-padR+9,y+4);
-
-          if(!isMobile&&i>0){
-            ctx.fillStyle="rgba(101,221,255,.55)";
-            ctx.textAlign="center";
-            ctx.fillText(fmt(maxP*p,1),padL+plotW*0.50,y-4);
-          }
         }
 
         ctx.strokeStyle="rgba(238,248,255,.78)";
@@ -2534,15 +3151,8 @@ O:
           ctx.fillRect(x-bw/2,barTop,bw,bh);
         }
 
-        drawLine(ctx,model,xAt,function(row){return yProb(row.prob||0);},"#ffd166",2.5,false,false);
-        drawLine(ctx,model,xAt,function(row){return yCmh(row.cmh||0);},"#79ffb2",3.15,false,false);
-
-        if(modelHasWindguru(model)){
-          drawLine(ctx,model,xAt,function(row){return yCmh(row.wg);},"#c5a6ff",2.3,true,true);
-        }
-
-        markPeak(latestSummary?latestSummary.rainWindow:null,"rgba(97,220,255,.95)","pico lluvia");
-        markPeak(latestSummary?latestSummary.snowWindow:null,"rgba(121,255,178,.95)","pico nieve");
+        drawLine(ctx,model,xAt,function(row){return yProb(row.prob||0);},"#ffd166",2.5);
+        drawLine(ctx,model,xAt,function(row){return yCmh(row.cmh||0);},"#79ffb2",3.15);
 
         ctx.save();
         ctx.translate(17,padT+plotH/2);
@@ -2581,94 +3191,6 @@ O:
         ctx.fillText("Hora local ART",padL+plotW/2,H-16);
       }
 
-      function normalizeKey(s){
-        var m=String(s||"").match(/(\d{4}-\d{2}-\d{2})\s+(\d{1,2})(?::(\d{2}))?/);
-        if(!m)return s;
-        return m[1]+" "+pad2(Number(m[2]))+":00";
-      }
-
-      function parseWindguru(){
-        var raw=$("windguruInput").value;
-        var lines,parsed=[],i,line,parts,value;
-        if(!raw)return [];
-        raw=raw.replace(/^\s+|\s+$/g,"");
-        if(!raw)return [];
-        lines=raw.split(/\n+/);
-
-        for(i=0;i<lines.length;i++){
-          line=lines[i].replace(/^\s+|\s+$/g,"");
-          if(!line)continue;
-          parts=line.split(/[;,]/);
-
-          if(parts.length>=2&&/\d{4}-\d{2}-\d{2}/.test(parts[0])){
-            value=Number(String(parts[1]).replace(",","."));
-            if(finite(value))parsed.push({key:normalizeKey(parts[0].replace("T"," ")),value:value});
-          }else{
-            value=Number(String(line).replace(",","."));
-            if(finite(value))parsed.push({key:null,value:value});
-          }
-        }
-
-        return parsed;
-      }
-
-      function compareWindguru(){
-        var parsed,map={},hasDates=false,i,pairs=[],mae=0,bias=0,wgTotal=0,modelTotal=0;
-        if(!latestModel.length||!latestSummary)return;
-
-        parsed=parseWindguru();
-        for(i=0;i<latestModel.length;i++){latestModel[i].wg=null;latestModel[i].diff=null;}
-
-        if(!parsed.length){
-          text("wgSummary","No hay valores de Windguru cargados.");
-          render(latestModel,latestSummary);
-          return;
-        }
-
-        for(i=0;i<parsed.length;i++)if(parsed[i].key)hasDates=true;
-
-        if(hasDates){
-          for(i=0;i<parsed.length;i++)if(parsed[i].key)map[parsed[i].key]=parsed[i].value;
-          for(i=0;i<latestModel.length;i++){
-            if(Object.prototype.hasOwnProperty.call(map,latestModel[i].key)){
-              latestModel[i].wg=map[latestModel[i].key];
-              latestModel[i].diff=latestModel[i].cmh-latestModel[i].wg;
-            }
-          }
-        }else{
-          for(i=0;i<Math.min(parsed.length,latestModel.length);i++){
-            latestModel[i].wg=parsed[i].value;
-            latestModel[i].diff=latestModel[i].cmh-latestModel[i].wg;
-          }
-        }
-
-        renderRows(latestModel);
-        drawChart(latestModel);
-
-        for(i=0;i<latestModel.length;i++)if(finite(latestModel[i].wg))pairs.push(latestModel[i]);
-        if(!pairs.length){text("wgSummary","No pude emparejar horarios.");return;}
-
-        for(i=0;i<pairs.length;i++){
-          mae+=Math.abs(pairs[i].diff);
-          bias+=pairs[i].diff;
-          wgTotal+=pairs[i].wg;
-          modelTotal+=pairs[i].cmh;
-        }
-
-        mae/=pairs.length;
-        bias/=pairs.length;
-
-        html("wgSummary","Comparados "+pairs.length+" puntos. BariSnow P50: <b>"+fmt(modelTotal,1)+" cm</b>, Windguru: <b>"+fmt(wgTotal,1)+" cm</b>. MAE: <b>"+fmt(mae,2)+" cm/h</b>. Sesgo BariSnow-Windguru: <b>"+fmt(bias,2)+" cm/h</b>.");
-      }
-
-      function clearWindguru(){
-        var i;
-        $("windguruInput").value="";
-        text("wgSummary","");
-        for(i=0;i<latestModel.length;i++){latestModel[i].wg=null;latestModel[i].diff=null;}
-        if(latestModel.length&&latestSummary){renderRows(latestModel);drawChart(latestModel);}
-      }
-
       function loadArchive(){
         try{
           var raw=localStorage.getItem(ARCHIVE_KEY);
@@ -2682,109 +3204,61 @@ O:
 
       function saveArchive(arr){
         try{
-          localStorage.setItem(ARCHIVE_KEY,JSON.stringify(arr.slice(-200)));
+          localStorage.setItem(ARCHIVE_KEY,JSON.stringify(arr.slice(-250)));
           return true;
         }catch(e){
-          text("adminStatus","No se pudo guardar archivo local: "+e.message);
           return false;
         }
       }
 
-      function compactWindow(win){
-        if(!win||!win.has)return {has:false,start:"",peak:"",end:"",hours:0,total:0};
-        return {
-          has:true,
-          start:win.start?win.start.time:"",
-          peak:win.peak?win.peak.time:"",
-          end:win.end?win.end.time:"",
-          hours:win.hours||0,
-          total:win.total||0
-        };
-      }
-
       function makeSnapshot(model,summary,okPacks,failPacks){
         var p=selectedPlace();
-        var snow=snowScale(summary);
-        var rain=rainScale(summary);
+        var totalSnow=totalSnowScale(summary);
+        var totalRain=totalRainScale(summary);
         var now=new Date();
-        var days=$("days")?clamp(num($("days").value,9),1,9):9;
+        var days=9;
         var mode=$("sourceMode")?$("sourceMode").value:"ensemble";
-        var key=[
-          issueHourKey(now),
-          selectedPlaceKey(),
-          mode,
-          days,
-          model.length?model[0].key:"start",
-          model.length?model[model.length-1].key:"end"
-        ].join("|");
+        var row=model && model.length ? model[0] : null;
+        var obs=latestObservation;
+        var dT=obs && row && finite(obs.tempC) && finite(row.T) ? obs.tempC-row.T : null;
 
         return {
-          version:4,
-          key:key,
+          version:3,
+          key:[issueHourKey(now),selectedPlaceKey(),mode,days,model.length?model[0].key:"start"].join("|"),
           savedAt:now.toISOString(),
-          issueHour:issueHourKey(now),
           placeKey:selectedPlaceKey(),
           placeName:p.name,
           lat:p.lat,
           lon:p.lon,
           elev:p.elev,
-          oro:p.oro,
-          coldBias:p.coldBias,
           sourceMode:mode,
           sourceLabel:latestSourceLabel,
           okSources:okPacks.length,
           failSources:failPacks.length,
           days:days,
-          horizon:horizonPhrase(),
-          snowVerdict:snow.label,
-          rainVerdict:rain.label,
+          snowVerdict:totalSnow.label,
+          rainVerdict:totalRain.label,
           phase:summary.peak?summary.peak.phaseLabel:"",
           consensus:summary.consensus,
-          trend:summary.trend?summary.trend.label:"",
+          snowQ50:summary.snowQ50,
+          rainQ50:summary.rainQ50,
           tempNow:summary.tempNow,
           feelsNow:summary.feelsNow,
-          tempMin:summary.tempMin,
-          tempMinTime:summary.tempMinTime,
-          tempMax:summary.tempMax,
-          tempMaxTime:summary.tempMaxTime,
-          feelsMin:summary.feelsMin,
-          feelsMinTime:summary.feelsMinTime,
-          rainQ25:summary.rainQ25,
-          rainQ50:summary.rainQ50,
-          rainQ75:summary.rainQ75,
-          rainQ90:summary.rainQ90,
-          snowQ25:summary.snowQ25,
-          snowQ50:summary.snowQ50,
-          snowQ75:summary.snowQ75,
-          snowQ90:summary.snowQ90,
-          probSnowGt05:summary.probSnowGt05,
-          probSnowGt1:summary.probSnowGt1,
-          probSnowGt3:summary.probSnowGt3,
-          probSnowGt5:summary.probSnowGt5,
-          probRainGt10:summary.probRainGt10,
-          probRainGt20:summary.probRainGt20,
-          probRainGt40:summary.probRainGt40,
-          rainWindow:compactWindow(summary.rainWindow),
-          snowWindow:compactWindow(summary.snowWindow),
-          peak:{
-            time:summary.peak?summary.peak.time:"",
-            T:summary.peak?summary.peak.T:null,
-            feels:summary.peak?summary.peak.feels:null,
-            TwEff:summary.peak?summary.peak.TwEff:null,
-            P:summary.peak?summary.peak.P:null,
-            cmh:summary.peak?summary.peak.cmh:null,
-            prob:summary.peak?summary.peak.prob:null,
-            snowLine:summary.peak?summary.peak.snowLine:null,
-            phase:summary.peak?summary.peak.phaseLabel:"",
-            risk:summary.peak?summary.peak.risk:""
-          },
-          rows:model.filter(function(r,idx){return idx%3===0;}).map(function(r){
-            return {
-              time:r.time,T:r.T,feels:r.feels,TwEff:r.TwEff,P:r.P,cmh:r.cmh,prob:r.prob,
-              snowLine:r.snowLine,phase:r.phaseLabel,consensus:r.consensus,risk:r.risk
-            };
-          }),
-          observation:null
+          autoObservation: obs ? {
+            station:obs.station,
+            stationName:obs.stationName,
+            source:obs.source,
+            time:obs.time,
+            tempC:obs.tempC,
+            dewC:obs.dewC,
+            rh:obs.rh,
+            windKmh:obs.windKmh,
+            windDir:obs.windDir,
+            gustKmh:obs.gustKmh,
+            phenomena:obs.phenomena,
+            raw:obs.raw,
+            tempBias:dT
+          } : null
         };
       }
 
@@ -2795,7 +3269,6 @@ O:
 
         for(i=0;i<arr.length;i++){
           if(arr[i].key===snap.key){
-            if(arr[i].observation)snap.observation=arr[i].observation;
             arr[i]=snap;
             found=true;
             break;
@@ -2804,7 +3277,20 @@ O:
 
         if(!found)arr.push(snap);
         saveArchive(arr);
-        if(adminUnlocked)renderArchiveAdmin();
+      }
+
+      function renderArchive(){
+        var arr=loadArchive();
+        var recent=arr.slice(-80).reverse();
+        var out="",i,r,o;
+
+        for(i=0;i<recent.length;i++){
+          r=recent[i];
+          o=r.autoObservation||{};
+          out+="<tr><td>"+localTime(r.savedAt)+"</td><td>"+escapeHtml(r.placeName)+"</td><td>"+fmt(r.snowQ50,1)+" cm</td><td>"+fmt(r.rainQ50,1)+" mm</td><td>"+escapeHtml(r.phase||"—")+"</td><td>"+(finite(r.consensus)?Math.round(r.consensus*100)+"%":"—")+"</td><td>"+(finite(o.tempC)?fmt(o.tempC,1)+" °C":"—")+"</td><td>"+(finite(o.tempBias)?(o.tempBias>=0?"+":"")+fmt(o.tempBias,1)+" °C":"—")+"</td><td>"+escapeHtml(o.phenomena||"—")+"</td></tr>";
+        }
+
+        html("archiveRows",out||'<tr><td colspan="9">Sin corridas guardadas todavía.</td></tr>');
       }
 
       function csvEscape(v){
@@ -2829,119 +3315,46 @@ O:
       }
 
       function exportArchiveJSON(){
-        var arr=loadArchive();
-        downloadText("barisnow_historial.json",JSON.stringify(arr,null,2),"application/json;charset=utf-8");
+        downloadText("barisnow_historial_autoobs.json",JSON.stringify(loadArchive(),null,2),"application/json;charset=utf-8");
       }
 
       function exportArchiveCSV(){
         var arr=loadArchive();
-        var cols=[
-          "savedAt","issueHour","placeName","lat","lon","elev","sourceMode","sourceLabel","days",
-          "snowVerdict","rainVerdict","phase","consensus","tempNow","feelsNow","tempMin","tempMax",
-          "snowQ50","rainQ50","rainStart","rainPeak","rainEnd","snowStart","snowPeak","snowEnd",
-          "obsRain","obsSnow","obsPhase","obsComment"
-        ];
+        var cols=["savedAt","placeName","lat","lon","elev","sourceLabel","snowQ50","rainQ50","phase","consensus","obsStation","obsTime","obsTempC","obsRH","obsWindKmh","obsPhenomena","tempBias"];
         var lines=[cols.join(",")];
         var i,r,o;
+
         for(i=0;i<arr.length;i++){
           r=arr[i];
-          o=r.observation||{};
+          o=r.autoObservation||{};
           lines.push([
-            r.savedAt,r.issueHour,r.placeName,r.lat,r.lon,r.elev,r.sourceMode,r.sourceLabel,r.days,
-            r.snowVerdict,r.rainVerdict,r.phase,finite(r.consensus)?Math.round(r.consensus*100):"",
-            r.tempNow,r.feelsNow,r.tempMin,r.tempMax,
-            r.snowQ50,r.rainQ50,
-            r.rainWindow&&r.rainWindow.start?r.rainWindow.start:"",
-            r.rainWindow&&r.rainWindow.peak?r.rainWindow.peak:"",
-            r.rainWindow&&r.rainWindow.end?r.rainWindow.end:"",
-            r.snowWindow&&r.snowWindow.start?r.snowWindow.start:"",
-            r.snowWindow&&r.snowWindow.peak?r.snowWindow.peak:"",
-            r.snowWindow&&r.snowWindow.end?r.snowWindow.end:"",
-            o.rainMm,o.snowCm,o.phase,o.comment
+            r.savedAt,r.placeName,r.lat,r.lon,r.elev,r.sourceLabel,r.snowQ50,r.rainQ50,r.phase,
+            finite(r.consensus)?Math.round(r.consensus*100):"",
+            o.station,o.time,o.tempC,o.rh,o.windKmh,o.phenomena,o.tempBias
           ].map(csvEscape).join(","));
         }
-        downloadText("barisnow_historial.csv",lines.join("\n"),"text/csv;charset=utf-8");
-      }
 
-      function renderArchiveAdmin(){
-        var arr=loadArchive();
-        var i,r,o,out="",obs=0,opt="";
-        var last=arr.length?arr[arr.length-1]:null;
-
-        for(i=0;i<arr.length;i++)if(arr[i].observation)obs++;
-
-        text("archiveCount",String(arr.length));
-        text("archiveLast",last?localTime(last.savedAt):"—");
-        text("obsCount",String(obs));
-
-        var recent=arr.slice(-60).reverse();
-        for(i=0;i<recent.length;i++){
-          r=recent[i];
-          o=r.observation||{};
-          out+="<tr><td>"+localTime(r.savedAt)+"</td><td>"+r.placeName+"</td><td>"+r.sourceLabel+"</td><td>"+r.days+"</td><td>"+fmt(r.snowQ50,1)+" cm</td><td>"+fmt(r.rainQ50,1)+" mm</td><td>"+(r.phase||"—")+"</td><td>"+(finite(r.consensus)?Math.round(r.consensus*100)+"%":"—")+"</td><td>"+(finite(o.rainMm)?fmt(o.rainMm,1)+" mm":"—")+"</td><td>"+(finite(o.snowCm)?fmt(o.snowCm,1)+" cm":"—")+"</td><td>"+(o.phase||"—")+"</td></tr>";
-        }
-        html("archiveRows",out||'<tr><td colspan="11">Sin corridas guardadas todavía.</td></tr>');
-
-        for(i=arr.length-1;i>=0;i--){
-          r=arr[i];
-          opt+='<option value="'+String(r.key).replace(/"/g,"&quot;")+'">'+localTime(r.savedAt)+" · "+r.placeName+" · nieve "+fmt(r.snowQ50,1)+" cm · lluvia "+fmt(r.rainQ50,1)+" mm</option>";
-        }
-        html("obsForecastKey",opt||'<option value="">Sin corridas</option>');
-        text("adminStatus","Historial local actualizado.");
-      }
-
-      function unlockAdmin(){
-        if(($("adminKey").value||"")===ADMIN_PASS){
-          adminUnlocked=true;
-          $("adminPanel").className="admin-panel active";
-          $("adminLock").style.display="none";
-          text("adminLockMsg","");
-          renderArchiveAdmin();
-        }else{
-          text("adminLockMsg","Clave incorrecta.");
-        }
+        downloadText("barisnow_historial_autoobs.csv",lines.join("\n"),"text/csv;charset=utf-8");
       }
 
       function clearArchive(){
-        if(!adminUnlocked)return;
-        if(!confirm("¿Borrar todo el historial local de BariSnow en este navegador?"))return;
+        if(!confirm("¿Borrar todo el historial automático local de BariSnow en este navegador?"))return;
         localStorage.removeItem(ARCHIVE_KEY);
-        renderArchiveAdmin();
-        text("adminStatus","Historial local borrado.");
-      }
-
-      function saveObservation(){
-        var arr=loadArchive();
-        var key=$("obsForecastKey").value;
-        var i,found=false;
-        for(i=0;i<arr.length;i++){
-          if(arr[i].key===key){
-            arr[i].observation={
-              observedAt:new Date().toISOString(),
-              rainMm:finite($("obsRain").value)?Number($("obsRain").value):null,
-              snowCm:finite($("obsSnow").value)?Number($("obsSnow").value):null,
-              phase:$("obsPhase").value||"",
-              comment:$("obsComment").value||""
-            };
-            found=true;
-            break;
-          }
-        }
-        if(!found){
-          text("adminStatus","No encontré la corrida seleccionada.");
-          return;
-        }
-        saveArchive(arr);
-        $("obsRain").value="";
-        $("obsSnow").value="";
-        $("obsPhase").value="";
-        $("obsComment").value="";
-        renderArchiveAdmin();
-        text("adminStatus","Observación guardada.");
+        renderArchive();
       }
 
       function auditDom(){
-        var ids=["status","sourceStatus","debugBox","currentPlace","placeNote","locationPreset","lat","lon","elev","days","oro","coldBias","sourceMode","runBtn","windguruBtn","quickRead","snowVerdict","snowVerdictText","rainVerdict","rainVerdictText","phaseVerdict","phaseVerdictText","ensembleConsensus","consensusText","tempNow","tempNowText","feelsNow","feelsNowText","coldestMoment","coldestMomentText","warmestMoment","warmestMomentText","trendVerdict","trendText","snowScenario","snowScenarioText","rainScenario","rainScenarioText","criticalWindow","criticalWindowText","rainStart","rainStartText","rainPeak","rainPeakText","rainEnd","rainEndText","snowStart","snowStartText","snowPeak","snowPeakText","snowEnd","snowEndText","chart","chartMeta","scenarioRows","thresholdRows","diagnosis","snowNeeds","snowNeedsText","rows","windguruInput","compareBtn","clearWgBtn","wgSummary","refreshMapBtn","bariMap","mapCards","mapStatus","adminKey","unlockAdminBtn","adminPanel","adminLockMsg","archiveCount","archiveLast","obsCount","archiveRows","exportCsvBtn","exportJsonBtn","refreshArchiveBtn","clearArchiveBtn","obsForecastKey","obsRain","obsSnow","obsPhase","obsComment","saveObsBtn","adminStatus"];
+        var ids=[
+          "status","sourceStatus","debugBox","currentPlace","placeNote","locationPreset",
+          "lat","lon","elev","days","oro","coldBias","sourceMode","runBtn",
+          "refreshObsBtn","realObsStatus","obsTemp","obsRH","obsWind","obsPhenomena","obsAge","obsBias","obsBiasText","obsRaw",
+          "quickRead","daily9Status","daily9Grid","snowVerdict","snowVerdictText","rainVerdict","rainVerdictText","phaseVerdict","phaseVerdictText",
+          "ensembleConsensus","consensusText","tempNow","tempNowText","feelsNow","feelsNowText","coldestMoment","coldestMomentText",
+          "warmestMoment","warmestMomentText","trendVerdict","trendText","snowScenario","snowScenarioText","rainScenario","rainScenarioText",
+          "criticalWindow","criticalWindowText","rainStart","rainStartText","rainPeak","rainPeakText","rainEnd","rainEndText",
+          "snowStart","snowStartText","snowPeak","snowPeakText","snowEnd","snowEndText","chart","chartMeta","diagnosis","rows",
+          "refreshMapBtn","bariMap","mapCards","mapStatus","exportCsvBtn","exportJsonBtn","clearArchiveBtn","archiveRows"
+        ];
         var missing=[],i;
         for(i=0;i<ids.length;i++)if(!$(ids[i]))missing.push(ids[i]);
         if(missing.length){
@@ -2958,10 +3371,8 @@ O:
           if(!auditDom())return;
 
           $("runBtn").onclick=run;
-          $("compareBtn").onclick=compareWindguru;
-          $("clearWgBtn").onclick=clearWindguru;
+          $("refreshObsBtn").onclick=fetchRealObservation;
           $("refreshMapBtn").onclick=function(){runNeighborhoodMap(true);};
-          $("windguruBtn").onclick=function(){window.open(WINDGURU_URL,"_blank","noopener,noreferrer");};
           $("locationPreset").onchange=function(){applyLocationPreset(true);};
 
           var manualIds=["lat","lon","elev","oro","coldBias"];
@@ -2972,15 +3383,13 @@ O:
           }
 
           $("sourceMode").onchange=run;
-          $("days").onchange=run;
-
-          $("unlockAdminBtn").onclick=unlockAdmin;
+          $("days").onchange=function(){
+            $("days").value=9;
+            run();
+          };
           $("exportCsvBtn").onclick=exportArchiveCSV;
           $("exportJsonBtn").onclick=exportArchiveJSON;
-          $("refreshArchiveBtn").onclick=renderArchiveAdmin;
           $("clearArchiveBtn").onclick=clearArchive;
-          $("saveObsBtn").onclick=saveObservation;
-          $("adminKey").onkeydown=function(e){if(e.key==="Enter")unlockAdmin();};
 
           window.onresize=function(){
             clearTimeout(resizeTimer);
@@ -2989,8 +3398,10 @@ O:
 
           drawMapShell();
           renderMapCards();
+          renderArchive();
           applyLocationPreset(false);
           debug("JS: OK<br>DOM: OK<br>Inicializando corrida automática.");
+          fetchRealObservation();
           run();
         }catch(e){
           text("status","Error inicializando: "+e.message);
