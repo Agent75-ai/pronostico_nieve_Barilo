@@ -57,7 +57,12 @@
     .card{overflow:hidden;border-radius:34px;padding:28px}
 
     .brand{
-      min-height:210px;display:flex;flex-direction:column;justify-content:flex-end;
+      min-height:230px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
       background:
         radial-gradient(circle at 4% 0%,rgba(103,220,255,.24),transparent 32%),
         radial-gradient(circle at 84% 0%,rgba(199,166,255,.18),transparent 34%),
@@ -70,7 +75,7 @@
     }
 
     .eyebrow{
-      display:inline-flex;align-items:center;gap:9px;align-self:flex-start;margin-bottom:14px;
+      display:inline-flex;align-items:center;gap:9px;align-self:center;margin-bottom:14px;
       padding:9px 13px;border-radius:999px;border:1px solid rgba(103,220,255,.34);
       background:rgba(103,220,255,.105);color:#dbf8ff;font-size:12px;font-weight:950;
       letter-spacing:.02em;box-shadow:0 0 28px rgba(103,220,255,.09);
@@ -79,7 +84,12 @@
     .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 18px var(--green)}
 
     h1{
-      margin:0;font-size:clamp(62px,8vw,116px);line-height:.84;letter-spacing:-.088em;
+      margin:0 auto;
+      width:100%;
+      text-align:center;
+      font-size:clamp(62px,8vw,116px);
+      line-height:.84;
+      letter-spacing:-.088em;
       text-shadow:0 16px 48px rgba(0,0,0,.34);
     }
 
@@ -87,8 +97,8 @@
     h3{margin:0 0 10px;font-size:15px;letter-spacing:-.01em}
 
     .lead,.note{color:var(--mut);line-height:1.5;font-size:14px}
-    .lead{margin-top:16px;max-width:980px;font-size:15.5px}
-    .credit{margin-top:10px;color:#d7f7ff;font-size:13px}
+    .lead{margin:16px auto 0;max-width:980px;font-size:15.5px;text-align:center}
+    .credit{margin-top:10px;color:#d7f7ff;font-size:13px;text-align:center}
     .credit a, footer a{color:#a9f1ff;text-decoration:none;font-weight:900}
 
     .control{
@@ -252,13 +262,13 @@
     .bari-map::before{
       content:"Nahuel Huapi / Bariloche";
       position:absolute;left:18px;top:16px;color:rgba(230,250,255,.68);
-      font-size:12px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;
+      font-size:12px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;z-index:2;
     }
 
     .bari-map::after{
       content:"Cordillera";
       position:absolute;left:18px;bottom:16px;color:rgba(230,250,255,.42);
-      font-size:12px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;
+      font-size:12px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;z-index:2;
     }
 
     .ridge{
@@ -267,14 +277,66 @@
         linear-gradient(140deg,transparent 0 10%,rgba(255,255,255,.08) 10% 15%,transparent 15% 27%,rgba(255,255,255,.07) 27% 33%,transparent 33% 50%,rgba(255,255,255,.09) 50% 56%,transparent 56%),
         linear-gradient(180deg,transparent,rgba(255,255,255,.06));
       clip-path:polygon(0 100%,0 64%,12% 42%,24% 66%,36% 28%,49% 60%,61% 34%,75% 66%,89% 40%,100% 64%,100% 100%);
+      pointer-events:none;z-index:2;
+    }
+
+    .map-svg{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:1;
+      opacity:.58;
       pointer-events:none;
+    }
+
+    .map-svg text{font-family:Inter,system-ui,sans-serif}
+
+    .map-overlay-label{
+      fill:rgba(232,248,255,.78);
+      font-size:14px;
+      font-weight:800;
+      letter-spacing:.04em;
+    }
+
+    .map-road{
+      stroke:rgba(255,255,255,.22);
+      stroke-width:3.5;
+      fill:none;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
+
+    .map-road.secondary{
+      stroke:rgba(255,255,255,.13);
+      stroke-width:2.2;
+    }
+
+    .map-lake{
+      fill:rgba(97,220,255,.18);
+      stroke:rgba(97,220,255,.34);
+      stroke-width:2;
+    }
+
+    .map-zone{
+      fill:rgba(255,255,255,.03);
+      stroke:rgba(255,255,255,.06);
+      stroke-width:1.2;
     }
 
     .map-point{
       position:absolute;width:46px;height:46px;border-radius:999px;border:1px solid rgba(255,255,255,.28);
-      transform:translate(-50%,-50%);display:grid;place-items:center;z-index:3;
+      transform:translate(-50%,-50%);display:grid;place-items:center;z-index:4;
       background:rgba(255,255,255,.12);color:#02111d;font-weight:950;box-shadow:0 12px 30px rgba(0,0,0,.35);
       padding:0;
+      transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease;
+    }
+
+    .map-point:hover,
+    .map-point.active{
+      transform:translate(-50%,-50%) scale(1.08);
+      border-color:rgba(255,255,255,.42);
+      box-shadow:0 16px 34px rgba(0,0,0,.42);
     }
 
     .map-point::before{
@@ -294,6 +356,51 @@
       margin-top:6px;padding:4px 7px;border-radius:999px;white-space:nowrap;
       background:rgba(0,0,0,.38);color:#eaf8ff;font-size:11px;font-weight:850;
       border:1px solid rgba(255,255,255,.12);
+    }
+
+    .map-tooltip{
+      position:absolute;
+      min-width:220px;
+      max-width:280px;
+      padding:12px 12px 11px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.14);
+      background:linear-gradient(180deg,rgba(8,18,32,.96),rgba(5,13,24,.95));
+      box-shadow:0 18px 42px rgba(0,0,0,.40);
+      color:#eef9ff;
+      font-size:12.5px;
+      line-height:1.42;
+      z-index:8;
+      pointer-events:none;
+      opacity:0;
+      transform:translate(-50%,-115%);
+      transition:opacity .12s ease;
+      backdrop-filter:blur(10px);
+    }
+
+    .map-tooltip.show{opacity:1}
+
+    .map-tooltip b{
+      display:block;
+      margin-bottom:6px;
+      font-size:13px;
+      color:#fff;
+    }
+
+    .map-tooltip .tt-row{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      padding:2px 0;
+    }
+
+    .map-tooltip .tt-row span:first-child{color:#a7bed0}
+
+    .map-tooltip .tt-foot{
+      margin-top:7px;
+      padding-top:7px;
+      border-top:1px solid rgba(255,255,255,.08);
+      color:#dff7ff;
     }
 
     .map-cards{
@@ -511,6 +618,7 @@
       .kpi strong{font-size:24px}
       .bari-map{min-height:360px}
       .map-mini{grid-template-columns:1fr 1fr}
+      .map-tooltip{min-width:190px;max-width:230px;font-size:11.5px}
       canvas{height:320px}
       .need{flex-direction:column}
       .need b{text-align:left}
@@ -523,13 +631,16 @@
   <div class="wrap">
     <header>
       <section class="card brand">
-        <div class="eyebrow"><span class="dot"></span> Método BariSnow · Postprocesamiento local</div>
+        <div class="eyebrow"><span class="dot"></span> Método BariSnow</div>
         <h1>BariSnow</h1>
         <div class="lead">
-          BariSnow ajusta modelos meteorológicos a condiciones locales de Bariloche para estimar lluvia, nieve, mezcla, temperatura, sensación térmica y ventanas de evento a 9 días.
+          Pronóstico local basado en postprocesamiento multimodelo, acuerdo entre fuentes y ajuste por barrio.
         </div>
         <div class="credit">
-          Diseño e implementación: <a href="Praxys - Integral Risk Consulting">gregorio.acuna1@gmail.com</a>
+          Diseño e implementación:
+          <a href="https://www.praxys-consulting.com/" target="_blank" rel="noopener noreferrer">
+            Praxys - Integral Risk Consulting - www.praxys-consulting.com/
+          </a>
         </div>
       </section>
     </header>
@@ -628,7 +739,7 @@
           <div>
             <h2>🗺️ Mapa BariSnow por barrios</h2>
             <div class="note">
-              Resumen rápido por barrio. El barrio seleccionado usa el cálculo completo; el mapa usa un cálculo liviano por zona.
+              Pasá el cursor sobre cada punto para ver temperatura, sensación térmica, lluvia, nieve, fase, acuerdo y coordenadas del barrio.
             </div>
           </div>
           <button id="refreshMapBtn" class="secondary" type="button">🔄 Actualizar mapa</button>
@@ -957,7 +1068,10 @@ O:
     </main>
 
     <footer>
-      Diseño e implementación: <a href="mailto:gregorio.acuna1@gmail.com">gregorio.acuna1@gmail.com</a>
+      Diseño e implementación:
+      <a href="https://www.praxys-consulting.com/" target="_blank" rel="noopener noreferrer">
+        Praxys - Integral Risk Consulting - www.praxys-consulting.com/
+      </a>
     </footer>
   </div>
 
@@ -967,7 +1081,7 @@ O:
 
       var WINDGURU_URL = "https://www.windguru.cz/366613";
       var API_TIMEOUT_MS = 16000;
-      var ARCHIVE_KEY = "barisnow_archive_v3";
+      var ARCHIVE_KEY = "barisnow_archive_v4";
       var ADMIN_PASS = "barisnow";
       var latestModel = [];
       var latestSummary = null;
@@ -993,7 +1107,18 @@ O:
         dina_huapi:{name:"Dina Huapi",short:"DH",lat:-41.0705,lon:-71.1635,elev:780,oro:0.12,coldBias:0.1,x:90,y:35,note:""},
         cerro_catedral:{name:"Cerro Catedral",short:"CC",lat:-41.1677,lon:-71.4381,elev:1030,oro:0.58,coldBias:-1.4,x:36,y:83,note:""},
         llao_llao:{name:"Llao Llao",short:"LL",lat:-41.0525,lon:-71.5310,elev:785,oro:0.48,coldBias:-0.1,x:16,y:43,note:""},
-        el_alto:{name:"El Alto / Frutillar / 2 de Abril",short:"EA",lat:-41.1650,lon:-71.3356,elev:860,oro:0.32,coldBias:-0.4,x:62,y:76,note:"Sector alto sur-suroeste, referencia Frutillar y 2 de Abril."}
+        el_alto:{
+          name:"El Alto / Frutillar / 2 de Abril",
+          short:"EA",
+          lat:-41.1678,
+          lon:-71.3389,
+          elev:860,
+          oro:0.32,
+          coldBias:-0.4,
+          x:58,
+          y:88,
+          note:"Sector alto sur de Bariloche, referencia Frutillar y 2 de Abril."
+        }
       };
 
       var MAP_KEYS = ["lago_moreno","melipal","centro","las_victorias","dina_huapi","cerro_catedral","llao_llao","el_alto"];
@@ -2030,14 +2155,53 @@ O:
       }
 
       function drawMapShell(){
-        var out='<div class="ridge"></div>';
-        var i,k,p;
+        var out='',i,k,p;
+
+        out += ''
+          + '<svg class="map-svg" viewBox="0 0 1000 700" aria-hidden="true">'
+          + '  <defs>'
+          + '    <linearGradient id="lakeGrad" x1="0" y1="0" x2="1" y2="1">'
+          + '      <stop offset="0%" stop-color="rgba(97,220,255,.35)"/>'
+          + '      <stop offset="100%" stop-color="rgba(97,220,255,.08)"/>'
+          + '    </linearGradient>'
+          + '  </defs>'
+          + '  <path class="map-lake" d="M40,220 C120,165 200,150 300,168 C410,188 520,230 635,214 C730,200 840,148 955,128 L955,24 L40,24 Z"/>'
+          + '  <path class="map-lake" d="M0,245 C130,182 260,175 410,208 C530,236 655,272 770,258 C865,246 932,226 1000,188 L1000,0 L0,0 Z" opacity=".55"/>'
+          + '  <path class="map-road" d="M120,545 C210,490 280,455 355,430 C430,405 520,396 620,404 C700,411 790,434 890,470"/>'
+          + '  <path class="map-road secondary" d="M405,115 C462,180 512,248 560,332 C590,383 620,438 660,510"/>'
+          + '  <path class="map-road secondary" d="M215,205 C305,238 386,284 450,338"/>'
+          + '  <path class="map-road secondary" d="M720,270 C785,315 840,360 915,415"/>'
+          + '  <ellipse class="map-zone" cx="685" cy="455" rx="120" ry="78"/>'
+          + '  <ellipse class="map-zone" cx="352" cy="365" rx="150" ry="96"/>'
+          + '  <ellipse class="map-zone" cx="545" cy="535" rx="175" ry="110"/>'
+          + '  <text x="98" y="82" class="map-overlay-label">Llao Llao</text>'
+          + '  <text x="300" y="120" class="map-overlay-label">Lago Moreno</text>'
+          + '  <text x="622" y="178" class="map-overlay-label">Bariloche</text>'
+          + '  <text x="804" y="110" class="map-overlay-label">Dina Huapi</text>'
+          + '  <text x="240" y="625" class="map-overlay-label">Cerro Catedral</text>'
+          + '  <text x="485" y="640" class="map-overlay-label">El Alto</text>'
+          + '  <text x="115" y="305" class="map-overlay-label" style="font-size:22px;fill:rgba(214,247,255,.42)">Nahuel Huapi</text>'
+          + '</svg>';
+
+        out += '<div id="mapTooltip" class="map-tooltip"></div>';
+        out += '<div class="ridge"></div>';
+
         for(i=0;i<MAP_KEYS.length;i++){
           k=MAP_KEYS[i];
           p=PLACES[k];
-          out+='<button class="map-point blue" id="point_'+k+'" style="left:'+p.x+'%;top:'+p.y+'%" type="button" title="'+p.name+'"><span>'+p.short+'</span><div class="map-label">'+p.name.replace("Barrio ","")+'</div></button>';
+          out += ''
+            + '<button class="map-point blue"'
+            + ' id="point_'+k+'"'
+            + ' style="left:'+p.x+'%;top:'+p.y+'%"'
+            + ' type="button"'
+            + ' title="'+p.name+'">'
+            + '<span>'+p.short+'</span>'
+            + '<div class="map-label">'+p.name.replace("Barrio ","")+'</div>'
+            + '</button>';
         }
+
         html("bariMap",out);
+
         for(i=0;i<MAP_KEYS.length;i++){
           k=MAP_KEYS[i];
           $("point_"+k).onclick=(function(key){
@@ -2047,6 +2211,81 @@ O:
               window.scrollTo({top:0,behavior:"smooth"});
             };
           })(k);
+        }
+
+        attachMapPointInteractions();
+      }
+
+      function mapTooltipContent(key){
+        var p = PLACES[key];
+        var res = neighborhoodResults[key];
+
+        if(!p){
+          return "<b>Sin datos</b>";
+        }
+
+        if(!res || !res.summary){
+          return ""
+            + "<b>"+p.name+"</b>"
+            + '<div class="tt-row"><span>Estado</span><span>Cargando…</span></div>'
+            + '<div class="tt-row"><span>Altitud</span><span>'+Math.round(p.elev)+' m</span></div>'
+            + '<div class="tt-row"><span>Coordenadas</span><span>'+fmt(p.lat,4)+", "+fmt(p.lon,4)+'</span></div>';
+        }
+
+        var s = res.summary;
+        var snow = snowScale(s);
+        var rain = rainScale(s);
+
+        return ""
+          + "<b>"+p.name+"</b>"
+          + '<div class="tt-row"><span>🌡️ Temperatura</span><span>'+fmt(s.tempNow,1)+' °C</span></div>'
+          + '<div class="tt-row"><span>🥶 Sensación</span><span>'+fmt(s.feelsNow,1)+' °C</span></div>'
+          + '<div class="tt-row"><span>🌧️ Lluvia</span><span>'+fmt(s.rainQ50,1)+' mm</span></div>'
+          + '<div class="tt-row"><span>❄️ Nieve</span><span>'+fmt(s.snowQ50,1)+' cm</span></div>'
+          + '<div class="tt-row"><span>🧪 Fase</span><span>'+(s.peak ? s.peak.phaseLabel : "—")+'</span></div>'
+          + '<div class="tt-row"><span>❄️ Nivel nieve</span><span>'+snow.label+'</span></div>'
+          + '<div class="tt-row"><span>🌧️ Nivel lluvia</span><span>'+rain.label+'</span></div>'
+          + '<div class="tt-row"><span>🎯 Acuerdo</span><span>'+Math.round((s.consensus||0)*100)+'%</span></div>'
+          + '<div class="tt-foot">📍 '+fmt(p.lat,4)+", "+fmt(p.lon,4)+' · '+Math.round(p.elev)+' m</div>';
+      }
+
+      function attachMapPointInteractions(){
+        var tooltip = $("mapTooltip");
+        var map = $("bariMap");
+        var i,k,point;
+
+        if(!tooltip || !map)return;
+
+        for(i=0;i<MAP_KEYS.length;i++){
+          k = MAP_KEYS[i];
+          point = $("point_"+k);
+          if(!point)continue;
+
+          point.onmouseenter = (function(key,btn){
+            return function(){
+              tooltip.innerHTML = mapTooltipContent(key);
+              tooltip.classList.add("show");
+              btn.classList.add("active");
+            };
+          })(k,point);
+
+          point.onmousemove = (function(btn){
+            return function(ev){
+              var rect = map.getBoundingClientRect();
+              var x = ev.clientX - rect.left;
+              var y = ev.clientY - rect.top;
+
+              tooltip.style.left = Math.max(120, Math.min(rect.width - 120, x)) + "px";
+              tooltip.style.top = Math.max(70, y - 10) + "px";
+            };
+          })(point);
+
+          point.onmouseleave = (function(btn){
+            return function(){
+              tooltip.classList.remove("show");
+              btn.classList.remove("active");
+            };
+          })(point);
         }
       }
 
@@ -2093,6 +2332,8 @@ O:
             window.scrollTo({top:0,behavior:"smooth"});
           };
         }
+
+        attachMapPointInteractions();
       }
 
       function runNeighborhoodMap(manual){
@@ -2478,7 +2719,7 @@ O:
         ].join("|");
 
         return {
-          version:3,
+          version:4,
           key:key,
           savedAt:now.toISOString(),
           issueHour:issueHourKey(now),
