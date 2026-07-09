@@ -7,45 +7,17 @@
 
   <style>
     :root{
-      --bg0:#020814;
-      --bg1:#061326;
-      --bg2:#0b213c;
-      --bg3:#123454;
-
-      --glass:rgba(255,255,255,.075);
-      --glass2:rgba(255,255,255,.045);
-      --glass3:rgba(255,255,255,.115);
-      --line:rgba(255,255,255,.145);
-      --line2:rgba(120,220,255,.24);
-
-      --txt:#f5fbff;
-      --mut:#b8c9d8;
-      --mut2:#8fa4b6;
-
-      --blue:#67dcff;
-      --blue2:#a9f1ff;
-      --green:#79ffb2;
-      --yellow:#ffd166;
-      --orange:#ff9f1c;
-      --red:#ff6b7a;
-      --purple:#c7a6ff;
-
-      --shadow:0 24px 80px rgba(0,0,0,.38);
-      --soft:0 12px 34px rgba(0,0,0,.22);
+      --bg0:#020814;--bg1:#061326;--bg2:#0b213c;--bg3:#123454;
+      --line:rgba(255,255,255,.145);--txt:#f5fbff;--mut:#b8c9d8;--mut2:#8fa4b6;
+      --blue:#67dcff;--green:#79ffb2;--yellow:#ffd166;--orange:#ff9f1c;--red:#ff6b7a;--purple:#c7a6ff;
+      --shadow:0 24px 80px rgba(0,0,0,.38);--soft:0 12px 34px rgba(0,0,0,.22);
     }
 
-    *{
-      box-sizing:border-box;
-    }
-
-    html{
-      scroll-behavior:smooth;
-    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
 
     body{
-      margin:0;
-      min-height:100vh;
-      color:var(--txt);
+      margin:0;min-height:100vh;color:var(--txt);
       font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
       background:
         radial-gradient(circle at 8% -12%,rgba(103,220,255,.36),transparent 33%),
@@ -56,10 +28,7 @@
     }
 
     body::before{
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
+      content:"";position:fixed;inset:0;pointer-events:none;
       background:
         linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
         linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);
@@ -69,76 +38,26 @@
     }
 
     body::after{
-      content:"";
-      position:fixed;
-      width:620px;
-      height:620px;
-      right:-260px;
-      top:18vh;
-      border-radius:999px;
-      background:radial-gradient(circle,rgba(103,220,255,.13),transparent 68%);
-      filter:blur(8px);
-      pointer-events:none;
-      z-index:-1;
+      content:"";position:fixed;width:620px;height:620px;right:-260px;top:18vh;
+      border-radius:999px;background:radial-gradient(circle,rgba(103,220,255,.13),transparent 68%);
+      filter:blur(8px);pointer-events:none;z-index:-1;
     }
 
-    #debugBox,
-    #sourceStatus{
-      display:none!important;
+    #debugBox,#sourceStatus{display:none!important}
+
+    .wrap{width:min(1240px,calc(100% - 28px));margin:auto;padding:22px 0 48px}
+    header{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:16px}
+
+    .card,.panel,.kpi,.control,.statusbar,.quick,.weather-group,.map-card{
+      position:relative;border:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(255,255,255,.095),rgba(255,255,255,.045));
+      box-shadow:var(--shadow);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
     }
 
-    .wrap{
-      width:min(1240px,calc(100% - 28px));
-      margin:auto;
-      padding:22px 0 48px;
-    }
-
-    header{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:16px;
-      margin-bottom:16px;
-    }
-
-    .card,.panel,.kpi,.control,.statusbar{
-      position:relative;
-      border:1px solid var(--line);
-      background:
-        linear-gradient(180deg,rgba(255,255,255,.095),rgba(255,255,255,.045));
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
-    }
-
-    .card::before,
-    .panel::before,
-    .control::before,
-    .statusbar::before,
-    .kpi::before,
-    .quick::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      border-radius:inherit;
-      pointer-events:none;
-      background:linear-gradient(135deg,rgba(255,255,255,.18),transparent 32%,rgba(103,220,255,.08));
-      opacity:.55;
-      mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);
-      mask-composite:exclude;
-      padding:1px;
-    }
-
-    .card{
-      overflow:hidden;
-      border-radius:34px;
-      padding:28px;
-    }
+    .card{overflow:hidden;border-radius:34px;padding:28px}
 
     .brand{
-      min-height:235px;
-      display:flex;
-      flex-direction:column;
-      justify-content:flex-end;
+      min-height:210px;display:flex;flex-direction:column;justify-content:flex-end;
       background:
         radial-gradient(circle at 4% 0%,rgba(103,220,255,.24),transparent 32%),
         radial-gradient(circle at 84% 0%,rgba(199,166,255,.18),transparent 34%),
@@ -146,300 +65,109 @@
     }
 
     .brand::after{
-      content:"❄";
-      position:absolute;
-      right:28px;
-      top:22px;
-      color:rgba(255,255,255,.13);
-      font-size:96px;
-      line-height:1;
-      transform:rotate(12deg);
-      pointer-events:none;
+      content:"❄";position:absolute;right:28px;top:22px;color:rgba(255,255,255,.13);
+      font-size:96px;line-height:1;transform:rotate(12deg);pointer-events:none;
     }
 
     .eyebrow{
-      display:inline-flex;
-      align-items:center;
-      gap:9px;
-      align-self:flex-start;
-      margin-bottom:14px;
-      padding:9px 13px;
-      border-radius:999px;
-      border:1px solid rgba(103,220,255,.34);
-      background:rgba(103,220,255,.105);
-      color:#dbf8ff;
-      font-size:12px;
-      font-weight:950;
-      letter-spacing:.02em;
-      box-shadow:0 0 28px rgba(103,220,255,.09);
+      display:inline-flex;align-items:center;gap:9px;align-self:flex-start;margin-bottom:14px;
+      padding:9px 13px;border-radius:999px;border:1px solid rgba(103,220,255,.34);
+      background:rgba(103,220,255,.105);color:#dbf8ff;font-size:12px;font-weight:950;
+      letter-spacing:.02em;box-shadow:0 0 28px rgba(103,220,255,.09);
     }
 
-    .dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:var(--green);
-      box-shadow:0 0 18px var(--green);
-    }
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 18px var(--green)}
 
     h1{
-      margin:0;
-      font-size:clamp(62px,8vw,116px);
-      line-height:.84;
-      letter-spacing:-.088em;
+      margin:0;font-size:clamp(62px,8vw,116px);line-height:.84;letter-spacing:-.088em;
       text-shadow:0 16px 48px rgba(0,0,0,.34);
     }
 
-    h2{
-      margin:0 0 12px;
-      font-size:18px;
-      letter-spacing:-.02em;
-    }
+    h2{margin:0 0 12px;font-size:18px;letter-spacing:-.02em}
+    h3{margin:0 0 10px;font-size:15px;letter-spacing:-.01em}
 
-    h3{
-      margin:0 0 10px;
-      font-size:15px;
-      letter-spacing:-.01em;
-    }
-
-    .lead,.note{
-      color:var(--mut);
-      line-height:1.5;
-      font-size:14px;
-    }
-
-    .lead{
-      margin-top:16px;
-      max-width:980px;
-      font-size:15.5px;
-    }
+    .lead,.note{color:var(--mut);line-height:1.5;font-size:14px}
+    .lead{margin-top:16px;max-width:980px;font-size:15.5px}
+    .credit{margin-top:10px;color:#d7f7ff;font-size:13px}
+    .credit a, footer a{color:#a9f1ff;text-decoration:none;font-weight:900}
 
     .control{
-      display:grid;
-      grid-template-columns:minmax(0,1fr) auto;
-      gap:16px;
-      align-items:center;
-      overflow:hidden;
-      border-radius:28px;
-      padding:16px;
-      margin-bottom:14px;
+      overflow:hidden;border-radius:28px;margin-bottom:14px;
       background:
         radial-gradient(circle at 0% 0%,rgba(103,220,255,.12),transparent 38%),
         linear-gradient(180deg,rgba(255,255,255,.088),rgba(255,255,255,.042));
     }
 
-    .location-title{
-      margin-bottom:8px;
-      color:var(--mut2);
-      font-size:12px;
-      font-weight:950;
-      text-transform:uppercase;
-      letter-spacing:.08em;
+    .control-simple{
+      display:grid;grid-template-columns:minmax(260px,420px) 172px;
+      justify-content:start;align-items:end;gap:10px;padding:14px;
     }
 
-    .location-active{
-      font-size:21px;
-      font-weight:950;
-      letter-spacing:-.025em;
+    .hidden-location-meta{
+      position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;
+      clip:rect(0 0 0 0)!important;white-space:nowrap!important;opacity:0!important;pointer-events:none!important;
     }
 
-    .location-note{
-      margin-top:7px;
-      max-width:820px;
-      color:var(--mut);
-      font-size:13px;
-      line-height:1.43;
-    }
-
-    .control-actions{
-      display:grid;
-      grid-template-columns:280px 172px;
-      gap:10px;
-      align-items:end;
-    }
-
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-
-    label{
-      color:var(--mut);
-      font-size:12px;
-      font-weight:850;
-    }
+    .field{display:flex;flex-direction:column;gap:6px}
+    label{color:var(--mut);font-size:12px;font-weight:850}
 
     input,select,textarea,button{
-      width:100%;
-      padding:12px 13px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(2,8,20,.45);
-      color:var(--txt);
-      outline:none;
-      font-size:14px;
+      width:100%;padding:12px 13px;border-radius:16px;border:1px solid rgba(255,255,255,.14);
+      background:rgba(2,8,20,.45);color:var(--txt);outline:none;font-size:14px;
       box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
     }
 
     input:focus,select:focus,textarea:focus{
-      border-color:rgba(103,220,255,.62);
-      box-shadow:0 0 0 4px rgba(103,220,255,.10);
+      border-color:rgba(103,220,255,.62);box-shadow:0 0 0 4px rgba(103,220,255,.10);
     }
 
-    select option{
-      background:#102033;
-      color:#fff;
-    }
+    select option{background:#102033;color:#fff}
 
     button{
-      cursor:pointer;
-      border:0;
-      background:
-        linear-gradient(135deg,#74e3ff,#d8fbff);
-      color:#03131f;
-      font-weight:950;
-      box-shadow:0 14px 34px rgba(103,220,255,.20);
+      cursor:pointer;border:0;background:linear-gradient(135deg,#74e3ff,#d8fbff);
+      color:#03131f;font-weight:950;box-shadow:0 14px 34px rgba(103,220,255,.20);
       transition:transform .16s ease,filter .16s ease,box-shadow .16s ease;
     }
 
-    button:hover{
-      transform:translateY(-1px);
-      filter:saturate(1.08);
-      box-shadow:0 18px 40px rgba(103,220,255,.28);
-    }
-
-    button:active{
-      transform:translateY(0);
-    }
+    button:hover{transform:translateY(-1px);filter:saturate(1.08);box-shadow:0 18px 40px rgba(103,220,255,.28)}
 
     button.secondary{
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.075);
-      color:var(--txt);
-      box-shadow:none;
+      border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.075);
+      color:var(--txt);box-shadow:none;
+    }
+
+    button.danger{
+      background:linear-gradient(135deg,#ff6b7a,#ffd1d7);
+      color:#21050a;
     }
 
     .statusbar{
-      overflow:hidden;
-      border-radius:20px;
-      padding:13px 15px;
-      margin-bottom:16px;
-      color:#d2f7ff;
-      font-size:13px;
-      line-height:1.45;
-      background:
-        linear-gradient(90deg,rgba(121,255,178,.10),rgba(103,220,255,.08),rgba(199,166,255,.07));
+      overflow:hidden;border-radius:20px;padding:13px 15px;margin-bottom:16px;color:#d2f7ff;
+      font-size:13px;line-height:1.45;
+      background:linear-gradient(90deg,rgba(121,255,178,.10),rgba(103,220,255,.08),rgba(199,166,255,.07));
       box-shadow:var(--soft);
     }
 
     .debug{
-      margin-top:8px;
-      padding:10px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.22);
-      color:#cfe3f2;
+      margin-top:8px;padding:10px;border-radius:14px;border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.22);color:#cfe3f2;
       font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
-      font-size:12px;
-      word-break:break-word;
+      font-size:12px;word-break:break-word;
     }
 
-    .sources{
-      margin-top:6px;
-      color:var(--mut);
-    }
-
+    .sources{margin-top:6px;color:var(--mut)}
     .source-pill{
-      display:inline-flex;
-      margin:4px 4px 0 0;
-      padding:5px 8px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.08);
-      font-size:12px;
+      display:inline-flex;margin:4px 4px 0 0;padding:5px 8px;border-radius:999px;
+      border:1px solid var(--line);background:rgba(255,255,255,.08);font-size:12px;
     }
 
     .source-ok{color:var(--green)}
     .source-fail{color:var(--red)}
 
-    .morning{
-      display:grid;
-      grid-template-columns:minmax(0,1fr) minmax(315px,390px);
-      grid-template-areas:"qualitative quick";
-      gap:16px;
-      margin-bottom:16px;
-      align-items:stretch;
-    }
-
-    .qualitative-left{
-      grid-area:qualitative;
-    }
-
-    .quick-right{
-      grid-area:quick;
-      justify-self:end;
-    }
-
-    .quick{
-      position:relative;
-      width:100%;
-      max-width:390px;
-      min-height:100%;
-      overflow:hidden;
-      padding:17px;
-      border-radius:26px;
-      border:1px solid rgba(103,220,255,.28);
-      background:
-        radial-gradient(circle at 0% 0%,rgba(103,220,255,.22),transparent 38%),
-        radial-gradient(circle at 100% 0%,rgba(199,166,255,.13),transparent 38%),
-        linear-gradient(180deg,rgba(255,255,255,.105),rgba(255,255,255,.047));
-      color:#e8fbff;
-      font-size:15px;
-      line-height:1.54;
-      box-shadow:var(--shadow);
-    }
-
-    .quick b{
-      color:#fff;
-    }
-
-    .quick-label{
-      display:inline-flex;
-      align-items:center;
-      gap:7px;
-      margin-bottom:10px;
-      padding:7px 10px;
-      border-radius:999px;
-      background:rgba(103,220,255,.10);
-      color:var(--blue2);
-      font-size:11.5px;
-      font-weight:950;
-      text-transform:uppercase;
-      letter-spacing:.075em;
-    }
-
-    .kpis{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:12px;
-      margin-bottom:16px;
-    }
-
-    .kpis.compact{
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      margin-bottom:0;
-    }
-
-    .event-windows{
-      grid-template-columns:repeat(4,1fr);
-    }
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
 
     .kpi{
-      overflow:hidden;
-      min-height:128px;
-      border-radius:24px;
-      padding:16px;
+      overflow:hidden;min-height:128px;border-radius:24px;padding:16px;
       background:
         radial-gradient(circle at 0% 0%,rgba(103,220,255,.075),transparent 42%),
         linear-gradient(180deg,rgba(255,255,255,.088),rgba(255,255,255,.042));
@@ -447,8 +175,7 @@
     }
 
     .kpi:hover{
-      transform:translateY(-2px);
-      border-color:rgba(103,220,255,.30);
+      transform:translateY(-2px);border-color:rgba(103,220,255,.30);
       background:
         radial-gradient(circle at 0% 0%,rgba(103,220,255,.12),transparent 42%),
         linear-gradient(180deg,rgba(255,255,255,.105),rgba(255,255,255,.052));
@@ -473,28 +200,160 @@
     }
 
     .kpi span{
-      display:block;
-      color:var(--mut);
-      font-size:11.2px;
-      font-weight:950;
-      text-transform:uppercase;
-      letter-spacing:.062em;
+      display:block;color:var(--mut);font-size:11.2px;font-weight:950;
+      text-transform:uppercase;letter-spacing:.062em;
     }
 
     .kpi strong{
-      display:block;
-      margin:10px 0 6px;
-      font-size:26px;
-      line-height:1.04;
-      letter-spacing:-.052em;
-      text-wrap:balance;
+      display:block;margin:10px 0 6px;font-size:26px;line-height:1.04;
+      letter-spacing:-.052em;text-wrap:balance;
     }
 
-    .kpi small{
-      color:var(--mut);
-      line-height:1.36;
-      font-size:12.5px;
+    .kpi small{color:var(--mut);line-height:1.36;font-size:12.5px}
+
+    .quick{
+      width:100%;overflow:hidden;padding:18px;border-radius:28px;margin-bottom:16px;
+      border:1px solid rgba(103,220,255,.28);
+      background:
+        radial-gradient(circle at 0% 0%,rgba(103,220,255,.20),transparent 38%),
+        radial-gradient(circle at 100% 0%,rgba(199,166,255,.13),transparent 38%),
+        linear-gradient(180deg,rgba(255,255,255,.105),rgba(255,255,255,.047));
+      color:#e8fbff;font-size:15px;line-height:1.56;box-shadow:var(--shadow);
     }
+
+    .quick b{color:#fff}
+
+    .quick-label{
+      display:inline-flex;align-items:center;gap:7px;margin-bottom:10px;padding:7px 10px;
+      border-radius:999px;background:rgba(103,220,255,.10);color:#a9f1ff;
+      font-size:11.5px;font-weight:950;text-transform:uppercase;letter-spacing:.075em;
+    }
+
+    .panel{overflow:hidden;border-radius:28px;padding:18px;margin-bottom:16px}
+
+    .map-head{
+      display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;margin-bottom:12px;
+    }
+
+    .map-layout{
+      display:grid;grid-template-columns:minmax(360px,1.05fr) minmax(360px,1fr);gap:14px;align-items:stretch;
+    }
+
+    .bari-map{
+      position:relative;min-height:430px;border-radius:26px;overflow:hidden;
+      border:1px solid rgba(255,255,255,.13);
+      background:
+        radial-gradient(ellipse at 17% 44%,rgba(103,220,255,.32) 0%,rgba(103,220,255,.22) 22%,transparent 38%),
+        radial-gradient(ellipse at 84% 31%,rgba(103,220,255,.18) 0%,rgba(103,220,255,.10) 20%,transparent 37%),
+        linear-gradient(135deg,rgba(3,15,28,.94),rgba(7,36,58,.92));
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+    }
+
+    .bari-map::before{
+      content:"Nahuel Huapi / Bariloche";
+      position:absolute;left:18px;top:16px;color:rgba(230,250,255,.68);
+      font-size:12px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;
+    }
+
+    .bari-map::after{
+      content:"Cordillera";
+      position:absolute;left:18px;bottom:16px;color:rgba(230,250,255,.42);
+      font-size:12px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;
+    }
+
+    .ridge{
+      position:absolute;left:-5%;right:-5%;bottom:0;height:32%;
+      background:
+        linear-gradient(140deg,transparent 0 10%,rgba(255,255,255,.08) 10% 15%,transparent 15% 27%,rgba(255,255,255,.07) 27% 33%,transparent 33% 50%,rgba(255,255,255,.09) 50% 56%,transparent 56%),
+        linear-gradient(180deg,transparent,rgba(255,255,255,.06));
+      clip-path:polygon(0 100%,0 64%,12% 42%,24% 66%,36% 28%,49% 60%,61% 34%,75% 66%,89% 40%,100% 64%,100% 100%);
+      pointer-events:none;
+    }
+
+    .map-point{
+      position:absolute;width:46px;height:46px;border-radius:999px;border:1px solid rgba(255,255,255,.28);
+      transform:translate(-50%,-50%);display:grid;place-items:center;z-index:3;
+      background:rgba(255,255,255,.12);color:#02111d;font-weight:950;box-shadow:0 12px 30px rgba(0,0,0,.35);
+      padding:0;
+    }
+
+    .map-point::before{
+      content:"";position:absolute;inset:6px;border-radius:999px;background:var(--blue);
+      box-shadow:0 0 22px currentColor;
+    }
+
+    .map-point span{position:relative;z-index:2;font-size:12px;color:#06111c}
+    .map-point.green::before{background:var(--green)}
+    .map-point.blue::before{background:var(--blue)}
+    .map-point.yellow::before{background:var(--yellow)}
+    .map-point.orange::before{background:var(--orange)}
+    .map-point.red::before{background:var(--red)}
+
+    .map-label{
+      position:absolute;left:50%;top:100%;transform:translateX(-50%);
+      margin-top:6px;padding:4px 7px;border-radius:999px;white-space:nowrap;
+      background:rgba(0,0,0,.38);color:#eaf8ff;font-size:11px;font-weight:850;
+      border:1px solid rgba(255,255,255,.12);
+    }
+
+    .map-cards{
+      display:grid;grid-template-columns:1fr;gap:10px;max-height:430px;overflow:auto;padding-right:2px;
+    }
+
+    .map-card{
+      border-radius:22px;padding:13px;box-shadow:var(--soft);cursor:pointer;
+      transition:transform .15s ease,border-color .15s ease;
+    }
+
+    .map-card:hover{transform:translateY(-2px);border-color:rgba(103,220,255,.38)}
+
+    .map-card-top{
+      display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;
+    }
+
+    .map-card b{font-size:15px}
+    .map-card small{display:block;color:var(--mut);line-height:1.35;margin-top:3px}
+
+    .map-mini{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px;
+    }
+
+    .map-mini div{
+      padding:8px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
+    }
+
+    .map-mini span{display:block;color:var(--mut2);font-size:10px;text-transform:uppercase;font-weight:950;letter-spacing:.05em}
+    .map-mini strong{display:block;margin-top:3px;font-size:14px;letter-spacing:-.03em}
+
+    .event-summary{display:grid;gap:12px;margin-bottom:16px}
+    .event-top{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .weather-groups{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+    .weather-group{overflow:hidden;border-radius:28px;padding:14px}
+    .rain-group{
+      background:
+        radial-gradient(circle at 0% 0%,rgba(90,154,255,.18),transparent 42%),
+        linear-gradient(180deg,rgba(255,255,255,.088),rgba(255,255,255,.042));
+    }
+
+    .snow-group{
+      background:
+        radial-gradient(circle at 0% 0%,rgba(103,220,255,.18),transparent 42%),
+        linear-gradient(180deg,rgba(255,255,255,.088),rgba(255,255,255,.042));
+    }
+
+    .weather-head{display:flex;align-items:center;gap:11px;margin-bottom:12px;padding:4px 2px 2px}
+    .weather-icon{
+      width:42px;height:42px;display:grid;place-items:center;border-radius:16px;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);font-size:20px;
+    }
+
+    .weather-head b{display:block;font-size:18px;letter-spacing:-.025em}
+    .weather-head small{display:block;color:var(--mut);margin-top:2px;font-size:12.5px;line-height:1.35}
+
+    .group-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .group-grid .kpi{min-height:116px;box-shadow:none}
+    .group-grid .kpi:first-child{grid-column:1/-1}
 
     .green{color:var(--green)}
     .yellow{color:var(--yellow)}
@@ -503,390 +362,159 @@
     .purple{color:var(--purple)}
     .blue{color:var(--blue)}
 
-    .panel{
-      overflow:hidden;
-      border-radius:28px;
-      padding:18px;
-      margin-bottom:16px;
-    }
-
     .chart-panel{
-      padding:0;
-      overflow:hidden;
+      padding:0;overflow:hidden;
       background:
         radial-gradient(circle at 10% 0%,rgba(103,220,255,.13),transparent 38%),
         linear-gradient(180deg,rgba(255,255,255,.087),rgba(255,255,255,.042));
     }
 
     .chart-head{
-      display:grid;
-      grid-template-columns:1fr auto;
-      gap:12px;
-      align-items:start;
+      display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;
       padding:20px 20px 12px;
     }
 
-    .chart-legend{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:9px;
-    }
-
+    .chart-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}
     .legend-pill{
-      display:inline-flex;
-      align-items:center;
-      gap:7px;
-      padding:7px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.06);
-      color:#ddecf6;
-      font-size:12px;
+      display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.06);
+      color:#ddecf6;font-size:12px;
     }
 
-    .legend-dot{
-      width:9px;
-      height:9px;
-      border-radius:999px;
-      display:inline-block;
-      box-shadow:0 0 18px currentColor;
-    }
+    .legend-dot{width:9px;height:9px;border-radius:999px;display:inline-block;box-shadow:0 0 18px currentColor}
+    .legend-bar{width:13px;height:9px;border-radius:3px;display:inline-block}
 
-    .legend-bar{
-      width:13px;
-      height:9px;
-      border-radius:3px;
-      display:inline-block;
-    }
-
-    .chart-meta{
-      min-width:250px;
-      color:var(--mut);
-      font-size:13px;
-      line-height:1.45;
-      text-align:right;
-    }
-
-    .chart-wrap{
-      padding:0 14px 14px;
-    }
+    .chart-meta{min-width:250px;color:var(--mut);font-size:13px;line-height:1.45;text-align:right}
+    .chart-wrap{padding:0 14px 14px}
 
     canvas{
-      display:block;
-      width:100%;
-      height:448px;
-      border-radius:24px;
-      border:1px solid rgba(255,255,255,.13);
-      background:rgba(0,0,0,.25);
+      display:block;width:100%;height:448px;border-radius:24px;
+      border:1px solid rgba(255,255,255,.13);background:rgba(0,0,0,.25);
       box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
     }
 
-    .grid2{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:16px;
-      margin-bottom:16px;
-    }
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+    .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+    .full{grid-column:1/-1}
 
-    .grid3{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:11px;
-    }
-
-    .full{
-      grid-column:1/-1;
-    }
-
-    .diagnosis{
-      color:#dcefff;
-      font-size:14px;
-      line-height:1.6;
-    }
-
-    .diagnosis b{
-      color:#fff;
-    }
+    .diagnosis{color:#dcefff;font-size:14px;line-height:1.6}
+    .diagnosis b{color:#fff}
 
     .tablebox{
-      max-height:520px;
-      overflow:auto;
-      margin-top:16px;
-      border-radius:22px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.14);
+      max-height:520px;overflow:auto;margin-top:16px;border-radius:22px;
+      border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.14);
     }
 
-    table{
-      width:100%;
-      border-collapse:collapse;
-      font-size:13px;
-    }
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,.09);white-space:nowrap;text-align:left}
+    th{position:sticky;top:0;z-index:1;background:rgba(10,22,39,.96);color:#c5d8e8;backdrop-filter:blur(12px)}
+    tr:hover td{background:rgba(255,255,255,.035)}
 
-    th,td{
-      padding:10px;
-      border-bottom:1px solid rgba(255,255,255,.09);
-      white-space:nowrap;
-      text-align:left;
-    }
-
-    th{
-      position:sticky;
-      top:0;
-      z-index:1;
-      background:rgba(10,22,39,.96);
-      color:#c5d8e8;
-      backdrop-filter:blur(12px);
-    }
-
-    tr:hover td{
-      background:rgba(255,255,255,.035);
-    }
-
-    .badge{
-      display:inline-block;
-      padding:4px 9px;
-      border-radius:999px;
-      font-size:11px;
-      font-weight:950;
-    }
-
+    .badge{display:inline-block;padding:4px 9px;border-radius:999px;font-size:11px;font-weight:950}
     .low{background:rgba(124,255,178,.14);color:var(--green)}
     .mid{background:rgba(255,209,102,.14);color:var(--yellow)}
     .high{background:rgba(255,107,107,.16);color:var(--red)}
 
     .science-card{
-      padding:15px;
-      border-radius:21px;
-      border:1px solid rgba(255,255,255,.12);
-      background:
-        linear-gradient(180deg,rgba(255,255,255,.070),rgba(255,255,255,.038));
+      padding:15px;border-radius:21px;border:1px solid rgba(255,255,255,.12);
+      background:linear-gradient(180deg,rgba(255,255,255,.070),rgba(255,255,255,.038));
       box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
     }
 
     .need{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      padding:10px 0;
-      border-bottom:1px solid rgba(255,255,255,.10);
-      font-size:14px;
+      display:flex;justify-content:space-between;gap:12px;padding:10px 0;
+      border-bottom:1px solid rgba(255,255,255,.10);font-size:14px;
     }
 
-    .need:last-child{
-      border-bottom:0;
-    }
-
-    .need b{
-      text-align:right;
-    }
-
+    .need:last-child{border-bottom:0}
+    .need b{text-align:right}
     .need-ok{color:var(--green)!important}
     .need-mid{color:var(--yellow)!important}
     .need-bad{color:var(--red)!important}
 
-    .meter{
-      height:10px;
-      margin-top:12px;
-      border-radius:999px;
-      background:rgba(255,255,255,.12);
-      overflow:hidden;
-    }
-
+    .meter{height:10px;margin-top:12px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
     .meter-fill{
-      height:100%;
-      border-radius:999px;
-      background:linear-gradient(90deg,var(--red),var(--yellow),var(--green));
+      height:100%;border-radius:999px;background:linear-gradient(90deg,var(--red),var(--yellow),var(--green));
       box-shadow:0 0 18px rgba(121,255,178,.25);
     }
 
     textarea{
-      min-height:126px;
-      resize:vertical;
+      min-height:126px;resize:vertical;
       font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
-      font-size:13px;
-      line-height:1.45;
+      font-size:13px;line-height:1.45;
     }
 
-    details summary{
-      cursor:pointer;
-      list-style:none;
-      font-size:18px;
-      font-weight:950;
-      letter-spacing:-.02em;
-    }
-
-    details summary::-webkit-details-marker{
-      display:none;
-    }
-
+    details summary{cursor:pointer;list-style:none;font-size:18px;font-weight:950;letter-spacing:-.02em}
+    details summary::-webkit-details-marker{display:none}
     details summary::after{
-      content:"Abrir";
-      float:right;
-      padding:6px 11px;
-      border-radius:999px;
-      background:linear-gradient(135deg,var(--blue),#cff7ff);
-      color:#03131f;
-      font-size:12px;
+      content:"Abrir";float:right;padding:6px 11px;border-radius:999px;
+      background:linear-gradient(135deg,var(--blue),#cff7ff);color:#03131f;font-size:12px;
     }
 
-    details[open] summary::after{
-      content:"Cerrar";
+    details[open] summary::after{content:"Cerrar"}
+
+    .admin-locked{
+      display:grid;grid-template-columns:minmax(240px,360px) 160px;gap:10px;align-items:end;margin-bottom:14px;
     }
 
-    @media (min-width:981px){
-      details summary::after{
-        display:none;
-      }
+    .admin-panel{display:none}
+    .admin-panel.active{display:block}
+
+    .admin-actions{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0;
+    }
+
+    .mini-stat{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0;
+    }
+
+    .mini-stat .science-card{padding:12px}
+    .mini-stat b{display:block;font-size:22px;letter-spacing:-.04em;margin-top:4px}
+    .mini-stat span{color:var(--mut);font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.05em}
+
+    footer{
+      margin-top:22px;padding:18px;border-radius:24px;border:1px solid var(--line);
+      background:rgba(255,255,255,.055);color:var(--mut);font-size:13px;text-align:center;
     }
 
     @media (max-width:1080px){
-      .morning{
-        grid-template-columns:1fr;
-        grid-template-areas:
-          "quick"
-          "qualitative";
-      }
-
-      .quick-right{
-        justify-self:stretch;
-      }
-
-      .quick{
-        max-width:none;
-        min-height:auto;
-      }
-
-      .kpis.compact{
-        grid-template-columns:repeat(2,minmax(0,1fr));
-      }
-
-      .event-windows{
-        grid-template-columns:repeat(2,1fr);
-      }
+      .weather-groups,.map-layout{grid-template-columns:1fr}
+      .map-cards{max-height:none}
     }
 
     @media (max-width:980px){
-      header,.control,.grid2{
-        grid-template-columns:1fr;
-      }
-
-      .brand{
-        min-height:auto;
-      }
-
-      .control-actions{
-        grid-template-columns:1fr 1fr;
-      }
-
-      .kpis{
-        grid-template-columns:1fr 1fr;
-      }
-
-      .grid3{
-        grid-template-columns:1fr 1fr;
-      }
-
-      .chart-head{
-        grid-template-columns:1fr;
-      }
-
-      .chart-meta{
-        min-width:0;
-        text-align:left;
-      }
-
-      canvas{
-        height:370px;
-      }
+      header,.control,.grid2{grid-template-columns:1fr}
+      .brand{min-height:auto}
+      .kpis{grid-template-columns:1fr 1fr}
+      .grid3{grid-template-columns:1fr 1fr}
+      .event-top{grid-template-columns:1fr 1fr}
+      .chart-head,.map-head{grid-template-columns:1fr}
+      .chart-meta{min-width:0;text-align:left}
+      .admin-actions{grid-template-columns:1fr 1fr}
+      .mini-stat{grid-template-columns:1fr}
+      canvas{height:370px}
     }
 
     @media (max-width:620px){
-      .wrap{
-        width:min(100% - 18px,1220px);
-        padding:14px 0 34px;
-      }
-
-      .card,.panel,.control{
-        border-radius:22px;
-        padding:14px;
-      }
-
-      .brand{
-        border-radius:26px;
-      }
-
-      .brand::after{
-        font-size:64px;
-        right:18px;
-        top:16px;
-      }
-
-      .lead{
-        font-size:14px;
-      }
-
-      .chart-panel{
-        padding:0;
-      }
-
-      .chart-head{
-        padding:14px 14px 8px;
-      }
-
-      .chart-wrap{
-        padding:0 9px 9px;
-      }
-
-      h1{
-        font-size:52px;
-      }
-
-      .control-actions,
-      .kpis,
-      .kpis.compact,
-      .event-windows,
-      .grid2,
-      .grid3{
-        grid-template-columns:1fr;
-      }
-
-      .morning{
-        gap:12px;
-      }
-
-      .quick{
-        padding:16px;
-        border-radius:22px;
-        font-size:15px;
-      }
-
-      .kpi{
-        min-height:auto;
-        border-radius:20px;
-      }
-
-      .kpi strong{
-        font-size:24px;
-      }
-
-      canvas{
-        height:320px;
-      }
-
-      .need{
-        flex-direction:column;
-      }
-
-      .need b{
-        text-align:left;
-      }
-
-      th,td{
-        padding:8px;
-        font-size:12px;
-      }
+      .wrap{width:min(100% - 18px,1220px);padding:14px 0 34px}
+      .card,.panel,.control{border-radius:22px;padding:14px}
+      .brand{border-radius:26px}
+      .brand::after{font-size:64px;right:18px;top:16px}
+      .lead{font-size:14px}
+      .control-simple,.kpis,.grid2,.grid3,.event-top,.weather-groups,.group-grid,.admin-locked,.admin-actions{grid-template-columns:1fr}
+      .chart-panel{padding:0}
+      .chart-head{padding:14px 14px 8px}
+      .chart-wrap{padding:0 9px 9px}
+      h1{font-size:52px}
+      .quick{padding:16px;border-radius:22px;font-size:15px}
+      .kpi{min-height:auto;border-radius:20px}
+      .kpi strong{font-size:24px}
+      .bari-map{min-height:360px}
+      .map-mini{grid-template-columns:1fr 1fr}
+      canvas{height:320px}
+      .need{flex-direction:column}
+      .need b{text-align:left}
+      th,td{padding:8px;font-size:12px}
     }
   </style>
 </head>
@@ -895,40 +523,41 @@
   <div class="wrap">
     <header>
       <section class="card brand">
-        <div class="eyebrow"><span class="dot"></span> Pronóstico multimodelo de nieve y lluvia</div>
+        <div class="eyebrow"><span class="dot"></span> Método BariSnow · Postprocesamiento local</div>
         <h1>BariSnow</h1>
         <div class="lead">
-          Sistema de postprocesamiento meteorológico para Bariloche. Integra modelos numéricos, consenso del ensamble,
-          percentiles, tendencia horaria y diagnóstico físico local para traducir datos técnicos en una lectura directa
-          de nieve, lluvia y fase probable por barrio.
+          BariSnow ajusta modelos meteorológicos a condiciones locales de Bariloche para estimar lluvia, nieve, mezcla, temperatura, sensación térmica y ventanas de evento a 9 días.
+        </div>
+        <div class="credit">
+          Diseño e implementación: <a href="Praxys - Integral Risk Consulting">gregorio.acuna1@gmail.com</a>
         </div>
       </section>
     </header>
 
     <main>
-      <section class="control">
-        <div>
-          <div class="location-title">Zona activa</div>
-          <div id="currentPlace" class="location-active">📍 Barrio Lago Moreno · 778 m</div>
-          <div id="placeNote" class="location-note">Zona oeste, influencia lacustre y orográfica marcada.</div>
+      <section class="control control-simple">
+        <div class="field">
+          <label for="locationPreset">Zona</label>
+          <select id="locationPreset">
+            <option value="lago_moreno" selected>Barrio Lago Moreno</option>
+            <option value="melipal">Barrio Melipal</option>
+            <option value="centro">Barrio Centro</option>
+            <option value="las_victorias">Las Victorias</option>
+            <option value="dina_huapi">Dina Huapi</option>
+            <option value="cerro_catedral">Cerro Catedral</option>
+            <option value="llao_llao">Llao Llao</option>
+            <option value="el_alto">El Alto / Frutillar / 2 de Abril</option>
+            <option value="custom">Ubicación personalizada</option>
+          </select>
         </div>
 
-        <div class="control-actions">
-          <div class="field">
-            <label for="locationPreset">Cambiar barrio</label>
-            <select id="locationPreset">
-              <option value="lago_moreno" selected>Barrio Lago Moreno</option>
-              <option value="melipal">Barrio Melipal</option>
-              <option value="centro">Barrio Centro</option>
-              <option value="custom">Ubicación personalizada</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label>&nbsp;</label>
-            <button id="runBtn" type="button">🔄 Actualizar</button>
-          </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <button id="runBtn" type="button">🔄 Actualizar</button>
         </div>
+
+        <div id="currentPlace" class="hidden-location-meta">📍 Barrio Lago Moreno · 778 m</div>
+        <div id="placeNote" class="hidden-location-meta">Coordenadas activas.</div>
       </section>
 
       <section class="statusbar">
@@ -937,101 +566,186 @@
         <div id="debugBox" class="debug">Diagnóstico técnico oculto.</div>
       </section>
 
-      <section class="morning">
-        <section class="kpis compact qualitative-left">
-          <div class="kpi snow">
-            <span>❄️ Nivel BariSnow nieve</span>
-            <strong id="snowVerdict">—</strong>
-            <small id="snowVerdictText">Sin corrida.</small>
-          </div>
-
-          <div class="kpi rain">
-            <span>🌧️ Nivel lluvia</span>
-            <strong id="rainVerdict">—</strong>
-            <small id="rainVerdictText">Sin corrida.</small>
-          </div>
-
-          <div class="kpi">
-            <span>🧪 Fase probable</span>
-            <strong id="phaseVerdict">—</strong>
-            <small id="phaseVerdictText">—</small>
-          </div>
-
-          <div class="kpi">
-            <span>🎯 Consenso ensamble</span>
-            <strong id="ensembleConsensus">—</strong>
-            <small id="consensusText">Acuerdo operativo entre modelos.</small>
-          </div>
-        </section>
-
-        <div class="quick quick-right">
-          <div class="quick-label">☕ Lectura rápida</div>
-          <div id="quickRead">Esperando corrida inicial.</div>
-        </div>
-      </section>
-
-      <section class="kpis">
-        <div class="kpi">
-          <span>📈 Tendencia 12 h</span>
-          <strong id="trendVerdict">—</strong>
-          <small id="trendText">—</small>
-        </div>
-
+      <section class="kpis main-indicators">
         <div class="kpi snow">
-          <span>📏 Escenario nieve</span>
-          <strong id="snowScenario">—</strong>
-          <small id="snowScenarioText">—</small>
+          <span>❄️ Nivel BariSnow nieve</span>
+          <strong id="snowVerdict">—</strong>
+          <small id="snowVerdictText">Sin corrida.</small>
         </div>
 
         <div class="kpi rain">
-          <span>☔ Escenario lluvia</span>
-          <strong id="rainScenario">—</strong>
-          <small id="rainScenarioText">—</small>
+          <span>🌧️ Nivel lluvia</span>
+          <strong id="rainVerdict">—</strong>
+          <small id="rainVerdictText">Sin corrida.</small>
+        </div>
+
+        <div class="kpi">
+          <span>🧪 Fase probable</span>
+          <strong id="phaseVerdict">—</strong>
+          <small id="phaseVerdictText">—</small>
+        </div>
+
+        <div class="kpi">
+          <span>🎯 Acuerdo entre modelos</span>
+          <strong id="ensembleConsensus">—</strong>
+          <small id="consensusText">Acuerdo entre fuentes.</small>
+        </div>
+      </section>
+
+      <section class="kpis temp-indicators">
+        <div class="kpi">
+          <span>🌡️ Temperatura</span>
+          <strong id="tempNow">—</strong>
+          <small id="tempNowText">Sin corrida.</small>
+        </div>
+
+        <div class="kpi">
+          <span>🥶 Sensación térmica</span>
+          <strong id="feelsNow">—</strong>
+          <small id="feelsNowText">Sin corrida.</small>
+        </div>
+
+        <div class="kpi">
+          <span>📉 Momento más frío</span>
+          <strong id="coldestMoment">—</strong>
+          <small id="coldestMomentText">Sin corrida.</small>
         </div>
 
         <div class="kpi hot">
-          <span>⏱️ Ventana crítica</span>
-          <strong id="criticalWindow">—</strong>
-          <small id="criticalWindowText">—</small>
+          <span>📈 Mayor temperatura</span>
+          <strong id="warmestMoment">—</strong>
+          <small id="warmestMomentText">Sin corrida.</small>
         </div>
       </section>
 
-      <section class="kpis event-windows">
-        <div class="kpi rain">
-          <span>🌧️ Comienza lluvia</span>
-          <strong id="rainStart">—</strong>
-          <small id="rainStartText">Sin corrida.</small>
+      <section class="quick">
+        <div class="quick-label">☕ Lectura rápida</div>
+        <div id="quickRead">Esperando corrida inicial.</div>
+      </section>
+
+      <section class="panel">
+        <div class="map-head">
+          <div>
+            <h2>🗺️ Mapa BariSnow por barrios</h2>
+            <div class="note">
+              Resumen rápido por barrio. El barrio seleccionado usa el cálculo completo; el mapa usa un cálculo liviano por zona.
+            </div>
+          </div>
+          <button id="refreshMapBtn" class="secondary" type="button">🔄 Actualizar mapa</button>
         </div>
 
-        <div class="kpi rain">
-          <span>🌧️ Termina lluvia</span>
-          <strong id="rainEnd">—</strong>
-          <small id="rainEndText">Sin corrida.</small>
+        <div id="mapStatus" class="statusbar" style="box-shadow:none;margin-bottom:12px">Esperando mapa.</div>
+
+        <div class="map-layout">
+          <div class="bari-map" id="bariMap">
+            <div class="ridge"></div>
+          </div>
+
+          <div class="map-cards" id="mapCards">
+            <div class="map-card">Esperando datos por barrio.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="event-summary">
+        <div class="event-top">
+          <div class="kpi">
+            <span>📈 Tendencia 12 h</span>
+            <strong id="trendVerdict">—</strong>
+            <small id="trendText">—</small>
+          </div>
+
+          <div class="kpi hot">
+            <span>⏱️ Momento más activo</span>
+            <strong id="criticalWindow">—</strong>
+            <small id="criticalWindowText">—</small>
+          </div>
         </div>
 
-        <div class="kpi snow">
-          <span>❄️ Comienza nieve/mezcla</span>
-          <strong id="snowStart">—</strong>
-          <small id="snowStartText">Sin corrida.</small>
-        </div>
+        <div class="weather-groups">
+          <section class="weather-group rain-group">
+            <div class="weather-head">
+              <div class="weather-icon">🌧️</div>
+              <div>
+                <b>Lluvia</b>
+                <small>Total esperado, comienzo, pico y final del bloque principal.</small>
+              </div>
+            </div>
 
-        <div class="kpi snow">
-          <span>❄️ Termina nieve/mezcla</span>
-          <strong id="snowEnd">—</strong>
-          <small id="snowEndText">Sin corrida.</small>
+            <div class="group-grid">
+              <div class="kpi rain">
+                <span>☔ Total esperado</span>
+                <strong id="rainScenario">—</strong>
+                <small id="rainScenarioText">—</small>
+              </div>
+
+              <div class="kpi rain">
+                <span>🌧️ Empieza</span>
+                <strong id="rainStart">—</strong>
+                <small id="rainStartText">Sin corrida.</small>
+              </div>
+
+              <div class="kpi rain">
+                <span>⚡ Pico</span>
+                <strong id="rainPeak">—</strong>
+                <small id="rainPeakText">Sin corrida.</small>
+              </div>
+
+              <div class="kpi rain">
+                <span>🌧️ Termina</span>
+                <strong id="rainEnd">—</strong>
+                <small id="rainEndText">Sin corrida.</small>
+              </div>
+            </div>
+          </section>
+
+          <section class="weather-group snow-group">
+            <div class="weather-head">
+              <div class="weather-icon">❄️</div>
+              <div>
+                <b>Nieve / mezcla</b>
+                <small>Acumulado, posible aguanieve y ventana térmica favorable.</small>
+              </div>
+            </div>
+
+            <div class="group-grid">
+              <div class="kpi snow">
+                <span>📏 Total esperado</span>
+                <strong id="snowScenario">—</strong>
+                <small id="snowScenarioText">—</small>
+              </div>
+
+              <div class="kpi snow">
+                <span>❄️ Empieza</span>
+                <strong id="snowStart">—</strong>
+                <small id="snowStartText">Sin corrida.</small>
+              </div>
+
+              <div class="kpi snow">
+                <span>⚡ Pico</span>
+                <strong id="snowPeak">—</strong>
+                <small id="snowPeakText">Sin corrida.</small>
+              </div>
+
+              <div class="kpi snow">
+                <span>❄️ Termina</span>
+                <strong id="snowEnd">—</strong>
+                <small id="snowEndText">Sin corrida.</small>
+              </div>
+            </div>
+          </section>
         </div>
       </section>
 
       <section class="panel chart-panel">
         <div class="chart-head">
           <div>
-            <h2>📊 Evolución horaria del pronóstico</h2>
+            <h2>📊 Evolución horaria</h2>
             <div class="chart-legend">
-              <span class="legend-pill"><span class="legend-dot" style="background:#79ffb2"></span>Nieve P50 cm/h</span>
-              <span class="legend-pill"><span class="legend-dot" style="background:#ffd166"></span>Prob. nieve %</span>
-              <span class="legend-pill"><span class="legend-bar" style="background:#61dcff"></span>Precip. mm/h</span>
-              <span class="legend-pill"><span class="legend-dot" style="background:#c5a6ff"></span>Windguru externo</span>
-              <span class="legend-pill"><span class="legend-bar" style="background:rgba(121,255,178,.25)"></span>Banda P25-P75</span>
+              <span class="legend-pill"><span class="legend-dot" style="background:#79ffb2"></span>Nieve cm/h</span>
+              <span class="legend-pill"><span class="legend-dot" style="background:#ffd166"></span>Prob. nieve</span>
+              <span class="legend-pill"><span class="legend-bar" style="background:#61dcff"></span>Lluvia / precip.</span>
+              <span class="legend-pill"><span class="legend-dot" style="background:#c5a6ff"></span>Windguru</span>
             </div>
           </div>
           <div id="chartMeta" class="chart-meta">Esperando corrida.</div>
@@ -1041,79 +755,11 @@
         </div>
       </section>
 
-      <section class="grid2">
-        <section class="panel">
-          <h2>📊 Escenarios cuantitativos</h2>
-          <div class="tablebox" style="max-height:none">
-            <table>
-              <thead>
-                <tr><th>Variable</th><th>P25</th><th>P50</th><th>P75</th><th>P90</th></tr>
-              </thead>
-              <tbody id="scenarioRows"></tbody>
-            </table>
-          </div>
-        </section>
-
-        <section class="panel">
-          <h2>🎚️ Probabilidad de umbrales</h2>
-          <div class="tablebox" style="max-height:none">
-            <table>
-              <thead>
-                <tr><th>Umbral</th><th>Probabilidad</th><th>Lectura</th></tr>
-              </thead>
-              <tbody id="thresholdRows"></tbody>
-            </table>
-          </div>
-        </section>
-      </section>
-
-      <section class="panel">
-        <h2>🕒 Detalle horario</h2>
-        <div class="tablebox">
-          <table>
-            <thead>
-              <tr>
-                <th>Hora</th><th>T</th><th>Tw eff</th><th>Precip</th><th>Cota</th><th>Prob. nieve</th>
-                <th>Fase</th><th>Nieve P50</th><th>Rango P25-P75</th><th>Consenso</th><th>Modelos</th>
-                <th>DGZ proxy</th><th>Melt</th><th>Windguru</th><th>Dif.</th><th>Riesgo</th>
-              </tr>
-            </thead>
-            <tbody id="rows"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="grid2">
-        <section class="panel">
-          <h2>🧭 Diagnóstico meteorológico</h2>
-          <div id="diagnosis" class="diagnosis">Ejecutá el modelo para generar el análisis.</div>
-        </section>
-
-        <section class="panel">
-          <h2>🟣 Comparar con Windguru</h2>
-          <div class="diagnosis">
-            Windguru funciona como contraste externo. BariSnow conserva su propio veredicto multimodelo y permite comparar diferencias horarias.
-          </div>
-          <textarea id="windguruInput" placeholder="2026-07-07 06:00, 0.4
-2026-07-07 07:00, 1.2
-
-O:
-0
-0.4
-1.2"></textarea>
-          <div class="grid2" style="margin-top:10px">
-            <button id="compareBtn" class="secondary" type="button">🟣 Comparar</button>
-            <button id="clearWgBtn" class="secondary" type="button">🧹 Limpiar</button>
-          </div>
-          <div id="wgSummary" class="statusbar" style="box-shadow:none;margin:10px 0 0"></div>
-        </section>
-      </section>
-
       <section class="panel">
         <h2>✅ Condiciones necesarias</h2>
         <div class="grid2">
           <div class="science-card">
-            <h3>Chequeo físico de nieve/mezcla</h3>
+            <h3>Semáforo de nieve/mezcla</h3>
             <div id="snowNeeds"></div>
           </div>
 
@@ -1124,33 +770,195 @@ O:
         </div>
       </section>
 
-      <details class="panel" id="settingsBox">
-        <summary>⚙️ Configuración avanzada</summary>
-        <div class="grid3" style="margin-top:14px">
-          <div class="field"><label>📍 Latitud</label><input id="lat" type="number" step="0.0001" value="-41.1000"></div>
-          <div class="field"><label>📍 Longitud</label><input id="lon" type="number" step="0.0001" value="-71.4500"></div>
-          <div class="field"><label>⛰️ Altitud, m</label><input id="elev" type="number" value="778"></div>
-          <div class="field"><label>📅 Días</label><input id="days" type="number" min="1" max="7" value="7"></div>
-          <div class="field"><label>⛰️ Factor orográfico local</label><input id="oro" type="number" step="0.05" value="0.42"></div>
-          <div class="field"><label>🌡️ Ajuste térmico local °C</label><input id="coldBias" type="number" step="0.1" value="0.0"></div>
+      <details class="panel" id="technicalBox">
+        <summary>🔬 Ver detalle técnico</summary>
 
-          <div class="field full">
-            <label>🛰️ Fuentes</label>
-            <select id="sourceMode">
-              <option value="ensemble" selected>Ensamble multimodelo recomendado</option>
-              <option value="best_match">Solo Best Match</option>
-              <option value="ecmwf">Solo ECMWF IFS</option>
-              <option value="gfs">Solo NOAA GFS</option>
-              <option value="gem">Solo CMC GEM</option>
-            </select>
+        <div class="note" style="margin:10px 0 16px">
+          Percentiles, umbrales, tabla horaria, diagnóstico físico, Windguru y configuración avanzada.
+        </div>
+
+        <section class="grid2">
+          <section class="science-card">
+            <h2>📊 Escenarios cuantitativos</h2>
+            <div class="tablebox" style="max-height:none">
+              <table>
+                <thead>
+                  <tr><th>Variable</th><th>P25</th><th>P50</th><th>P75</th><th>P90</th></tr>
+                </thead>
+                <tbody id="scenarioRows"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="science-card">
+            <h2>🎚️ Probabilidad de umbrales</h2>
+            <div class="tablebox" style="max-height:none">
+              <table>
+                <thead>
+                  <tr><th>Umbral</th><th>Probabilidad</th><th>Lectura</th></tr>
+                </thead>
+                <tbody id="thresholdRows"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section class="science-card" style="margin-bottom:16px">
+          <h2>🕒 Detalle horario</h2>
+          <div class="tablebox">
+            <table>
+              <thead>
+                <tr>
+                  <th>Hora</th><th>T</th><th>Sens.</th><th>Tw eff</th><th>Precip</th><th>Cota</th><th>Prob. nieve</th>
+                  <th>Fase</th><th>Nieve P50</th><th>Rango P25-P75</th><th>Consenso</th><th>Modelos</th>
+                  <th>DGZ proxy</th><th>Melt</th><th>Windguru</th><th>Dif.</th><th>Riesgo</th>
+                </tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="grid2">
+          <section class="science-card">
+            <h2>🧭 Diagnóstico meteorológico</h2>
+            <div id="diagnosis" class="diagnosis">Ejecutá el modelo para generar el análisis.</div>
+          </section>
+
+          <section class="science-card">
+            <h2>🟣 Comparar con Windguru</h2>
+            <div class="diagnosis">
+              Windguru funciona como contraste externo. BariSnow conserva su propio veredicto multimodelo.
+            </div>
+            <textarea id="windguruInput" placeholder="2026-07-07 06:00, 0.4
+2026-07-07 07:00, 1.2
+
+O:
+0
+0.4
+1.2"></textarea>
+            <div class="grid2" style="margin-top:10px">
+              <button id="compareBtn" class="secondary" type="button">🟣 Comparar</button>
+              <button id="clearWgBtn" class="secondary" type="button">🧹 Limpiar</button>
+            </div>
+            <div id="wgSummary" class="statusbar" style="box-shadow:none;margin:10px 0 0"></div>
+          </section>
+        </section>
+
+        <section class="science-card" id="settingsBox">
+          <h2>⚙️ Configuración avanzada</h2>
+          <div class="grid3" style="margin-top:14px">
+            <div class="field"><label>📍 Latitud</label><input id="lat" type="number" step="0.0001" value="-41.1000"></div>
+            <div class="field"><label>📍 Longitud</label><input id="lon" type="number" step="0.0001" value="-71.4500"></div>
+            <div class="field"><label>⛰️ Altitud, m</label><input id="elev" type="number" value="778"></div>
+            <div class="field"><label>📅 Días</label><input id="days" type="number" min="1" max="9" value="9"></div>
+            <div class="field"><label>⛰️ Factor orográfico local</label><input id="oro" type="number" step="0.05" value="0.42"></div>
+            <div class="field"><label>🌡️ Ajuste térmico local °C</label><input id="coldBias" type="number" step="0.1" value="0.0"></div>
+
+            <div class="field full">
+              <label>🛰️ Fuentes</label>
+              <select id="sourceMode">
+                <option value="ensemble" selected>Ensamble multimodelo recomendado</option>
+                <option value="best_match">Solo Best Match</option>
+                <option value="ecmwf">Solo ECMWF IFS</option>
+                <option value="gfs">Solo NOAA GFS</option>
+                <option value="gem">Solo CMC GEM</option>
+              </select>
+            </div>
+
+            <div class="field full">
+              <button id="windguruBtn" class="secondary" type="button">🟣 Abrir Windguru</button>
+            </div>
+          </div>
+        </section>
+      </details>
+
+      <details class="panel" id="adminBox">
+        <summary>🔐 Administrador</summary>
+
+        <div class="note" style="margin:10px 0 16px">
+          Archivo local automático para construir historial. Clave por defecto: <b>barisnow</b>. No es seguridad real de servidor.
+        </div>
+
+        <div id="adminLock" class="admin-locked">
+          <div class="field">
+            <label for="adminKey">Clave administrador</label>
+            <input id="adminKey" type="password" placeholder="Clave">
+          </div>
+          <div class="field">
+            <label>&nbsp;</label>
+            <button id="unlockAdminBtn" type="button">🔓 Entrar</button>
+          </div>
+        </div>
+
+        <div id="adminLockMsg" class="note" style="margin-bottom:12px"></div>
+
+        <div id="adminPanel" class="admin-panel">
+          <div class="mini-stat">
+            <div class="science-card"><span>Corridas guardadas</span><b id="archiveCount">0</b></div>
+            <div class="science-card"><span>Última corrida</span><b id="archiveLast">—</b></div>
+            <div class="science-card"><span>Observaciones</span><b id="obsCount">0</b></div>
           </div>
 
-          <div class="field full">
-            <button id="windguruBtn" class="secondary" type="button">🟣 Abrir Windguru</button>
+          <div class="admin-actions">
+            <button id="exportCsvBtn" class="secondary" type="button">⬇️ Exportar CSV</button>
+            <button id="exportJsonBtn" class="secondary" type="button">⬇️ Exportar JSON</button>
+            <button id="refreshArchiveBtn" class="secondary" type="button">🔄 Actualizar vista</button>
+            <button id="clearArchiveBtn" class="danger" type="button">🧹 Borrar historial</button>
           </div>
+
+          <section class="science-card" style="margin-bottom:16px">
+            <h2>📝 Cargar observación posterior</h2>
+            <div class="grid3" style="margin-top:12px">
+              <div class="field full">
+                <label for="obsForecastKey">Corrida</label>
+                <select id="obsForecastKey"></select>
+              </div>
+              <div class="field"><label>Lluvia observada, mm</label><input id="obsRain" type="number" step="0.1"></div>
+              <div class="field"><label>Nieve observada, cm</label><input id="obsSnow" type="number" step="0.1"></div>
+              <div class="field">
+                <label>Fase observada</label>
+                <select id="obsPhase">
+                  <option value="">Sin dato</option>
+                  <option value="sin_precipitacion">Sin precipitación</option>
+                  <option value="lluvia">Lluvia</option>
+                  <option value="aguanieve">Aguanieve</option>
+                  <option value="nieve_humeda">Nieve húmeda</option>
+                  <option value="nieve">Nieve</option>
+                </select>
+              </div>
+              <div class="field full">
+                <label>Comentario</label>
+                <textarea id="obsComment" placeholder="Ej: llovió todo el evento, sin copos visibles en el barrio."></textarea>
+              </div>
+              <div class="field full">
+                <button id="saveObsBtn" type="button">✅ Guardar observación</button>
+              </div>
+            </div>
+            <div id="adminStatus" class="statusbar" style="box-shadow:none;margin:12px 0 0">Esperando acceso.</div>
+          </section>
+
+          <section class="science-card">
+            <h2>📁 Historial local</h2>
+            <div class="tablebox">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Guardado</th><th>Zona</th><th>Fuentes</th><th>Días</th><th>Nieve</th><th>Lluvia</th>
+                    <th>Fase</th><th>Acuerdo</th><th>Lluvia obs.</th><th>Nieve obs.</th><th>Fase obs.</th>
+                  </tr>
+                </thead>
+                <tbody id="archiveRows"></tbody>
+              </table>
+            </div>
+          </section>
         </div>
       </details>
     </main>
+
+    <footer>
+      Diseño e implementación: <a href="mailto:gregorio.acuna1@gmail.com">gregorio.acuna1@gmail.com</a>
+    </footer>
   </div>
 
   <script>
@@ -1159,11 +967,16 @@ O:
 
       var WINDGURU_URL = "https://www.windguru.cz/366613";
       var API_TIMEOUT_MS = 16000;
+      var ARCHIVE_KEY = "barisnow_archive_v3";
+      var ADMIN_PASS = "barisnow";
       var latestModel = [];
       var latestSummary = null;
       var latestSourceLabel = "—";
       var currentRunId = 0;
+      var currentMapRunId = 0;
       var resizeTimer = null;
+      var adminUnlocked = false;
+      var neighborhoodResults = {};
 
       var SOURCES = [
         {id:"best_match",label:"Best Match",endpoint:"https://api.open-meteo.com/v1/forecast",weight:0.38},
@@ -1173,10 +986,17 @@ O:
       ];
 
       var PLACES = {
-        lago_moreno:{name:"Barrio Lago Moreno",lat:-41.1000,lon:-71.4500,elev:778,oro:0.42,coldBias:0.0,note:"Zona oeste, influencia lacustre y orográfica marcada."},
-        melipal:{name:"Barrio Melipal",lat:-41.1240,lon:-71.3660,elev:790,oro:0.34,coldBias:0.0,note:"Zona intermedia entre oeste y casco urbano."},
-        centro:{name:"Barrio Centro",lat:-41.1343,lon:-71.3085,elev:770,oro:0.24,coldBias:0.2,note:"Zona urbana cercana al Nahuel Huapi, con mayor moderación lacustre y urbana."}
+        lago_moreno:{name:"Barrio Lago Moreno",short:"LM",lat:-41.1000,lon:-71.4500,elev:778,oro:0.42,coldBias:0.0,x:34,y:54,note:""},
+        melipal:{name:"Barrio Melipal",short:"ME",lat:-41.1240,lon:-71.3660,elev:790,oro:0.34,coldBias:0.0,x:56,y:63,note:""},
+        centro:{name:"Barrio Centro",short:"CE",lat:-41.1343,lon:-71.3085,elev:770,oro:0.24,coldBias:0.2,x:69,y:66,note:""},
+        las_victorias:{name:"Las Victorias",short:"LV",lat:-41.1355,lon:-71.2540,elev:780,oro:0.18,coldBias:0.1,x:82,y:64,note:""},
+        dina_huapi:{name:"Dina Huapi",short:"DH",lat:-41.0705,lon:-71.1635,elev:780,oro:0.12,coldBias:0.1,x:90,y:35,note:""},
+        cerro_catedral:{name:"Cerro Catedral",short:"CC",lat:-41.1677,lon:-71.4381,elev:1030,oro:0.58,coldBias:-1.4,x:36,y:83,note:""},
+        llao_llao:{name:"Llao Llao",short:"LL",lat:-41.0525,lon:-71.5310,elev:785,oro:0.48,coldBias:-0.1,x:16,y:43,note:""},
+        el_alto:{name:"El Alto / Frutillar / 2 de Abril",short:"EA",lat:-41.1650,lon:-71.3356,elev:860,oro:0.32,coldBias:-0.4,x:62,y:76,note:"Sector alto sur-suroeste, referencia Frutillar y 2 de Abril."}
       };
+
+      var MAP_KEYS = ["lago_moreno","melipal","centro","las_victorias","dina_huapi","cerro_catedral","llao_llao","el_alto"];
 
       function $(id){return document.getElementById(id);}
       function finite(x){return x!==null&&x!==""&&typeof x!=="undefined"&&isFinite(Number(x));}
@@ -1195,18 +1015,24 @@ O:
         debug("Fallo JavaScript.<br>Mensaje: "+msg+"<br>Línea: "+line+"<br>Archivo: "+src);
       };
 
+      function selectedPlaceKey(){
+        var sel=$("locationPreset");
+        return sel?sel.value:"lago_moreno";
+      }
+
       function selectedPlace(){
         var sel=$("locationPreset");
         if(!sel)return PLACES.lago_moreno;
         if(sel.value==="custom"){
           return {
             name:"Ubicación personalizada",
+            short:"CU",
             lat:num($("lat").value,-41.1000),
             lon:num($("lon").value,-71.4500),
             elev:num($("elev").value,778),
             oro:num($("oro").value,0.42),
             coldBias:num($("coldBias").value,0),
-            note:"Coordenadas y parámetros editados manualmente."
+            x:50,y:50,note:""
           };
         }
         return PLACES[sel.value]||PLACES.lago_moreno;
@@ -1215,7 +1041,7 @@ O:
       function updatePlaceBadge(){
         var p=selectedPlace();
         text("currentPlace","📍 "+p.name+" · "+Math.round(p.elev)+" m");
-        text("placeNote",p.note+" Coordenadas activas: "+fmt(p.lat,4)+", "+fmt(p.lon,4)+". Orografía: "+fmt(p.oro,2)+". Ajuste térmico: "+fmt(p.coldBias,1)+" °C.");
+        text("placeNote","Coordenadas activas: "+fmt(p.lat,4)+", "+fmt(p.lon,4)+".");
         text("windguruBtn","🟣 Abrir Windguru");
       }
 
@@ -1253,6 +1079,20 @@ O:
         return s||"—";
       }
 
+      function issueHourKey(d){
+        var x=d||new Date();
+        return x.getFullYear()+"-"+pad2(x.getMonth()+1)+"-"+pad2(x.getDate())+" "+pad2(x.getHours())+":00";
+      }
+
+      function feelsLikeTemp(T,windKmh){
+        if(!finite(T))return null;
+        windKmh=finite(windKmh)?Math.max(0,windKmh):0;
+        if(T<=10 && windKmh>=4.8){
+          return 13.12 + 0.6215*T - 11.37*Math.pow(windKmh,0.16) + 0.3965*T*Math.pow(windKmh,0.16);
+        }
+        return T - Math.min(1.5,windKmh/35);
+      }
+
       function wetBulbStull(T,RH){
         RH=clamp(RH,1,100);
         return T*Math.atan(0.151977*Math.sqrt(RH+8.313659))+Math.atan(T+RH)-Math.atan(RH-1.676331)+0.00391838*Math.pow(RH,1.5)*Math.atan(0.023101*RH)-4.686035;
@@ -1272,9 +1112,9 @@ O:
         return [SOURCES[0]];
       }
 
-      function buildUrl(source){
-        var p=selectedPlace();
-        var days=$("days")?clamp(num($("days").value,7),1,7):7;
+      function buildUrl(source,place,daysOverride){
+        var p=place||selectedPlace();
+        var days=finite(daysOverride)?daysOverride:($("days")?clamp(num($("days").value,9),1,9):9);
         var hourly="temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,wind_direction_10m";
         return source.endpoint+
           "?latitude="+encodeURIComponent(p.lat)+
@@ -1324,19 +1164,19 @@ O:
         }
       }
 
-      function fetchSource(source,callback){
-        var url=buildUrl(source);
+      function fetchSource(source,place,callback,daysOverride){
+        var url=buildUrl(source,place,daysOverride);
         xhrJSON(url,function(err,data,status){
           if(err){
-            callback({source:source,error:err.message,url:url,status:status});
+            callback({source:source,error:err.message,url:url,status:status,place:place});
             return;
           }
           try{
-            var model=computeModel(data,source);
+            var model=computeModel(data,source,place);
             if(!model.length)throw new Error("API respondió, pero no hay horas modeladas.");
-            callback(null,{source:source,model:model,url:url,status:status});
+            callback(null,{source:source,model:model,url:url,status:status,place:place});
           }catch(e){
-            callback({source:source,error:e.message,url:url,status:status});
+            callback({source:source,error:e.message,url:url,status:status,place:place});
           }
         });
       }
@@ -1379,13 +1219,13 @@ O:
         return clamp(p,0,1);
       }
 
-      function computeModel(data,source){
+      function computeModel(data,source,placeOverride){
         var h=data.hourly||{};
         var times=h.time||[];
-        var place=selectedPlace();
-        var elev=num($("elev").value,place.elev);
-        var oroFactor=num($("oro").value,place.oro);
-        var tempAdjust=num($("coldBias").value,place.coldBias);
+        var place=placeOverride||selectedPlace();
+        var elev=num(place.elev,778);
+        var oroFactor=num(place.oro,0.42);
+        var tempAdjust=num(place.coldBias,0);
         var out=[];
         var i;
 
@@ -1557,6 +1397,7 @@ O:
           fields=["T","RH","TwEff","Pbase","P","snowLine","prob","cmh","melt","refreeze","survival","dgzScore","oroIndex","oroMultiplier","wind","dir","slr"];
           for(i=0;i<fields.length;i++)avg[fields[i]]=weightedMean(rows,fields[i]);
 
+          avg.feels=feelsLikeTemp(avg.T,avg.wind);
           avg.cmhP25=qRows(rows,"cmh",0.25);
           avg.cmhP50=qRows(rows,"cmh",0.50);
           avg.cmhP75=qRows(rows,"cmh",0.75);
@@ -1687,35 +1528,45 @@ O:
         };
       }
 
-      function renderEventWindows(model,summary){
-        var rainW=detectWindow(model,"rain");
-        var snowW=detectWindow(model,"snow");
+      function attachEventWindows(model,summary){
+        summary.rainWindow=detectWindow(model,"rain");
+        summary.snowWindow=detectWindow(model,"snow");
+      }
 
-        summary.rainWindow=rainW;
-        summary.snowWindow=snowW;
+      function renderEventWindowCards(summary){
+        var rainW=summary.rainWindow||{has:false};
+        var snowW=summary.snowWindow||{has:false};
 
         if(rainW.has){
           text("rainStart",localTime(rainW.start.time));
-          text("rainStartText","Ventana principal de lluvia. Pico: "+localTime(rainW.peak.time)+" con "+fmt(rainW.peak.P,1)+" mm/h.");
+          text("rainStartText","Comienzo del bloque principal.");
+          text("rainPeak",localTime(rainW.peak.time));
+          text("rainPeakText","Máxima intensidad: "+fmt(rainW.peak.P,1)+" mm/h.");
           text("rainEnd",localTime(rainW.end.time));
-          text("rainEndText","Duración estimada: "+rainW.hours+" h. Acumulado de la ventana: "+fmt(rainW.total,1)+" mm.");
+          text("rainEndText","Duración: "+rainW.hours+" h. Bloque: "+fmt(rainW.total,1)+" mm.");
         }else{
-          text("rainStart","—");
-          text("rainStartText","Sin lluvia relevante ≥ 0.2 mm/h.");
+          text("rainStart","Sin lluvia");
+          text("rainStartText","No supera 0.2 mm/h.");
+          text("rainPeak","—");
+          text("rainPeakText","Sin pico relevante.");
           text("rainEnd","—");
-          text("rainEndText","No se detecta una ventana de lluvia principal.");
+          text("rainEndText","No se detecta bloque principal.");
         }
 
         if(snowW.has){
           text("snowStart",localTime(snowW.start.time));
-          text("snowStartText","Ventana principal con señal nival o mezcla. Pico: "+localTime(snowW.peak.time)+" con "+fmt(snowW.peak.cmh,2)+" cm/h.");
+          text("snowStartText","Comienzo de nieve o mezcla.");
+          text("snowPeak",localTime(snowW.peak.time));
+          text("snowPeakText","Máxima tasa: "+fmt(snowW.peak.cmh,2)+" cm/h.");
           text("snowEnd",localTime(snowW.end.time));
-          text("snowEndText","Duración estimada: "+snowW.hours+" h. Acumulado de ventana: "+fmt(snowW.total,1)+" cm.");
+          text("snowEndText","Duración: "+snowW.hours+" h. Bloque: "+fmt(snowW.total,1)+" cm.");
         }else{
-          text("snowStart","—");
-          text("snowStartText","Sin ventana nival clara.");
+          text("snowStart","Sin ventana nival");
+          text("snowStartText","No se detecta nieve/mezcla relevante.");
+          text("snowPeak","—");
+          text("snowPeakText","Sin pico nival.");
           text("snowEnd","—");
-          text("snowEndText","No se detecta nieve/mezcla relevante.");
+          text("snowEndText","No hay cierre de ventana nival.");
         }
       }
 
@@ -1745,26 +1596,26 @@ O:
         var q50=summary.snowQ50||0,q75=summary.snowQ75||0,q90=summary.snowQ90||0,p1=summary.probSnowGt1||0,p5=summary.probSnowGt5||0,peak=summary.peak||{},phase=phaseRankFromRow(peak);
 
         if(q50>=8||q75>=12||q90>=18||p5>=0.55||peak.risk==="Alto")
-          return {label:"5 · Nieva mucho",cls:"red",text:"Señal fuerte de nevada acumuladora con potencial impacto operativo."};
+          return {label:"5 · Nieva mucho",cls:"red",text:"Señal fuerte de nevada acumuladora."};
 
         if(q50>=3||q75>=5||p1>=0.60||phase>=3||peak.cmh>=0.8)
-          return {label:"4 · Nieva poco",cls:"orange",text:"Señal de nieve acumulable ligera o moderada, especialmente en superficies frías."};
+          return {label:"4 · Nieva poco",cls:"orange",text:"Señal de nieve acumulable ligera o moderada."};
 
         if(q50>=0.8||q75>=1.5||p1>=0.30||phase>=2||summary.next)
-          return {label:"3 · Aguanieve",cls:"yellow",text:"Escenario de mezcla: lluvia, aguanieve o nieve húmeda; acumulación incierta."};
+          return {label:"3 · Aguanieve",cls:"yellow",text:"Escenario de mezcla: lluvia, aguanieve o nieve húmeda."};
 
         if(q75>=0.4||summary.probSnowGt05>=0.20||phase>=1)
-          return {label:"2 · Copitos diminutos",cls:"green",text:"Puede aparecer una señal muy débil de copos aislados o mezcla, sin acumulación robusta."};
+          return {label:"2 · Copitos diminutos",cls:"green",text:"Señal muy débil, sin acumulación robusta."};
 
-        return {label:"1 · No nieva",cls:"green",text:"La señal actual favorece ausencia de nieve observable o acumuladora."};
+        return {label:"1 · No nieva",cls:"green",text:"No se espera nieve observable o acumuladora."};
       }
 
       function rainScale(summary){
         var q50=summary.rainQ50||0,q75=summary.rainQ75||0,q90=summary.rainQ90||0,peakP=summary.peak?summary.peak.P||0:0;
-        if(q50>=30||q75>=45||q90>=60||summary.probRainGt40>=0.45||peakP>=5)return {label:"5 · Precipitación intensa",cls:"red",text:"Acumulado alto o períodos fuertes con impacto posible."};
+        if(q50>=30||q75>=45||q90>=60||summary.probRainGt40>=0.45||peakP>=5)return {label:"5 · Precipitación intensa",cls:"red",text:"Acumulado alto o períodos fuertes."};
         if(q50>=15||q75>=25||summary.probRainGt20>=0.35||peakP>=2.5)return {label:"4 · Precipitación persistente",cls:"orange",text:"Precipitación sostenida o acumulado relevante."};
         if(q50>=5||q75>=10||peakP>=0.8)return {label:"3 · Intermitente",cls:"yellow",text:"Precipitación por momentos, con intensidad variable."};
-        if(q50>=1||q75>=2||peakP>=0.2)return {label:"2 · Débil",cls:"green",text:"Precipitación débil, aislada o de bajo acumulado."};
+        if(q50>=1||q75>=2||peakP>=0.2)return {label:"2 · Débil",cls:"green",text:"Precipitación débil o aislada."};
         return {label:"1 · Casi seco",cls:"green",text:"La señal de precipitación relevante es baja."};
       }
 
@@ -1780,23 +1631,89 @@ O:
         return {txt:"bajo",cls:"red"};
       }
 
+      function renderTemperatureIndicators(model,summary,writeCards){
+        if(!model||!model.length)return;
+
+        var now=model[0];
+        var cold=model[0];
+        var warm=model[0];
+        var coldFeelsRow=model[0];
+        var flNow=feelsLikeTemp(now.T,now.wind);
+        var fl;
+        var minFeels=finite(flNow)?flNow:null;
+        var i;
+
+        for(i=0;i<model.length;i++){
+          if(finite(model[i].T) && model[i].T<cold.T)cold=model[i];
+          if(finite(model[i].T) && model[i].T>warm.T)warm=model[i];
+
+          fl=feelsLikeTemp(model[i].T,model[i].wind);
+          model[i].feels=fl;
+          if(finite(fl) && (!finite(minFeels)||fl<minFeels)){
+            minFeels=fl;
+            coldFeelsRow=model[i];
+          }
+        }
+
+        summary.tempNow=now.T;
+        summary.feelsNow=flNow;
+        summary.tempMin=cold.T;
+        summary.tempMinTime=cold.time;
+        summary.tempMax=warm.T;
+        summary.tempMaxTime=warm.time;
+        summary.feelsMin=minFeels;
+        summary.feelsMinTime=coldFeelsRow.time;
+
+        if(writeCards){
+          text("tempNow",fmt(now.T,1)+" °C");
+          text("tempNowText","Próxima hora: "+localTime(now.time)+".");
+          text("feelsNow",fmt(flNow,1)+" °C");
+          text("feelsNowText","Viento: "+fmt(now.wind,0)+" km/h.");
+          text("coldestMoment",localTime(cold.time));
+          text("coldestMomentText","Mínima prevista: "+fmt(cold.T,1)+" °C.");
+          text("warmestMoment",localTime(warm.time));
+          text("warmestMomentText","Máxima prevista: "+fmt(warm.T,1)+" °C.");
+        }
+      }
+
       function render(model,summary){
         var snow=snowScale(summary),rain=rainScale(summary),peak=summary.peak,con=consensusLabel(summary.consensus);
 
-        renderEventWindows(model,summary);
+        attachEventWindows(model,summary);
+        renderTemperatureIndicators(model,summary,true);
+        renderEventWindowCards(summary);
 
         $("snowVerdict").className=snow.cls;text("snowVerdict",snow.label);text("snowVerdictText",snow.text);
         $("rainVerdict").className=rain.cls;text("rainVerdict",rain.label);text("rainVerdictText",rain.text);
+
         $("phaseVerdict").className=phaseRankFromRow(peak)>=3?"orange":phaseRankFromRow(peak)>=2?"yellow":"green";
         text("phaseVerdict",peak.phaseLabel||"—");
-        text("phaseVerdictText","Hora crítica: "+localTime(peak.time)+". Lluvia "+Math.round((peak.phaseDist.lluvia/Math.max(0.001,peak.phaseDist.total))*100)+"%, mezcla "+Math.round((peak.phaseDist.mezcla/Math.max(0.001,peak.phaseDist.total))*100)+"%, nieve "+Math.round((peak.phaseDist.nieve/Math.max(0.001,peak.phaseDist.total))*100)+"%.");
+        text("phaseVerdictText","Fase más probable en el momento activo.");
 
-        $("ensembleConsensus").className=con.cls;text("ensembleConsensus",Math.round(summary.consensus*100)+"%");text("consensusText","Consenso "+con.txt+" entre modelos y postprocesamiento local.");
-        $("trendVerdict").className=summary.trend.cls;text("trendVerdict",summary.trend.label);text("trendText",summary.trend.text);
+        $("ensembleConsensus").className=con.cls;
+        text("ensembleConsensus",Math.round(summary.consensus*100)+"%");
+        text("consensusText","Acuerdo "+con.txt+" entre fuentes. No es verificación histórica.");
 
-        text("snowScenario",fmt(summary.snowQ50,1)+" cm");text("snowScenarioText","P25-P75: "+fmt(summary.snowQ25,1)+"-"+fmt(summary.snowQ75,1)+" cm. P90: "+fmt(summary.snowQ90,1)+" cm.");
-        text("rainScenario",fmt(summary.rainQ50,1)+" mm");text("rainScenarioText","P25-P75: "+fmt(summary.rainQ25,1)+"-"+fmt(summary.rainQ75,1)+" mm. P90: "+fmt(summary.rainQ90,1)+" mm.");
-        text("criticalWindow",summary.next?localTime(summary.next.time):localTime(peak.time));text("criticalWindowText",summary.next?"Primera ventana con fase nieve/mezcla.":"Hora de mayor tasa de nieve estimada.");
+        $("trendVerdict").className=summary.trend.cls;
+        text("trendVerdict",summary.trend.label);
+        text("trendText",summary.trend.text);
+
+        text("snowScenario",fmt(summary.snowQ50,1)+" cm");
+        text("snowScenarioText","Rango esperable: "+fmt(summary.snowQ25,1)+" a "+fmt(summary.snowQ75,1)+" cm.");
+
+        text("rainScenario",fmt(summary.rainQ50,1)+" mm");
+        text("rainScenarioText","Rango esperable: "+fmt(summary.rainQ25,1)+" a "+fmt(summary.rainQ75,1)+" mm.");
+
+        if(summary.next){
+          text("criticalWindow",localTime(summary.next.time));
+          text("criticalWindowText","Primer momento con señal de nieve o mezcla.");
+        }else if((peak.cmh||0)>=0.05){
+          text("criticalWindow",localTime(peak.time));
+          text("criticalWindowText","Mayor señal nival estimada.");
+        }else{
+          text("criticalWindow",localTime(peak.time));
+          text("criticalWindowText","Mayor precipitación modelada.");
+        }
 
         renderQuickRead(summary,snow,rain);
         renderScenarioTables(summary);
@@ -1805,6 +1722,13 @@ O:
         renderRows(model);
         updateChartMeta(summary);
         drawChart(model);
+      }
+
+      function horizonPhrase(){
+        var days=$("days")?clamp(num($("days").value,9),1,9):9;
+        if(days<=3)return "Plazo corto: lectura horaria más útil.";
+        if(days<=6)return "Plazo medio: usar como ventana probable.";
+        return "Días 1-3: más operativos. Días 4-6: tendencia probable. Días 7-9: tendencia extendida.";
       }
 
       function renderQuickRead(summary,snow,rain){
@@ -1830,7 +1754,7 @@ O:
         }else if(snowLevel === 4){
           snowPhrase = "Puede nevar poco, con acumulación ligera o moderada especialmente en superficies frías";
         }else if(snowLevel === 5){
-          snowPhrase = "La señal de nieve es fuerte: puede nevar mucho y acumular con impacto operativo";
+          snowPhrase = "La señal de nieve es fuerte: puede nevar mucho y acumular";
         }else{
           snowPhrase = "La señal de nieve es incierta";
         }
@@ -1862,11 +1786,11 @@ O:
         }
 
         if(rainW.has && snowW.has){
-          timing = "La lluvia tendría su ventana principal entre <b>"+localTime(rainW.start.time)+"</b> y <b>"+localTime(rainW.end.time)+"</b>. La nieve o mezcla aparecería entre <b>"+localTime(snowW.start.time)+"</b> y <b>"+localTime(snowW.end.time)+"</b>.";
+          timing = "La lluvia tendría su bloque principal entre <b>"+localTime(rainW.start.time)+"</b> y <b>"+localTime(rainW.end.time)+"</b>. La nieve o mezcla aparecería entre <b>"+localTime(snowW.start.time)+"</b> y <b>"+localTime(snowW.end.time)+"</b>.";
         }else if(rainW.has && !snowW.has){
-          timing = "La lluvia tendría su ventana principal entre <b>"+localTime(rainW.start.time)+"</b> y <b>"+localTime(rainW.end.time)+"</b>. No aparece una ventana nival clara.";
+          timing = "La lluvia tendría su bloque principal entre <b>"+localTime(rainW.start.time)+"</b> y <b>"+localTime(rainW.end.time)+"</b>. No aparece una ventana nival clara.";
         }else if(!rainW.has && snowW.has){
-          timing = "No aparece una ventana de lluvia relevante. La nieve o mezcla tendría su ventana principal entre <b>"+localTime(snowW.start.time)+"</b> y <b>"+localTime(snowW.end.time)+"</b>.";
+          timing = "No aparece una ventana de lluvia relevante. La nieve o mezcla tendría su bloque principal entre <b>"+localTime(snowW.start.time)+"</b> y <b>"+localTime(snowW.end.time)+"</b>.";
         }else{
           timing = "No se detecta una ventana clara de lluvia ni de nieve/mezcla con los umbrales actuales.";
         }
@@ -1881,12 +1805,15 @@ O:
           "<br><br>"+
           timing+
           "<br><br>"+
-          "Nieve probable: <b>"+fmt(summary.snowQ50,1)+" cm</b> "+
-          "(rango P25-P75: <b>"+fmt(summary.snowQ25,1)+"-"+fmt(summary.snowQ75,1)+" cm</b>). "+
+          "Temperatura mínima: <b>"+fmt(summary.tempMin,1)+" °C</b> cerca de <b>"+localTime(summary.tempMinTime)+"</b>. "+
+          "Máxima: <b>"+fmt(summary.tempMax,1)+" °C</b> cerca de <b>"+localTime(summary.tempMaxTime)+"</b>. "+
+          "Sensación térmica mínima: <b>"+fmt(summary.feelsMin,1)+" °C</b>."+
+          "<br><br>"+
+          "Nieve probable: <b>"+fmt(summary.snowQ50,1)+" cm</b>. "+
           "Precipitación probable: <b>"+fmt(summary.rainQ50,1)+" mm</b>. "+
-          "Fase crítica: <b>"+(peak.phaseLabel||"—")+"</b>. "+
-          "Tendencia 12 h: <b>"+summary.trend.label+"</b>. "+
-          "Consenso operativo: <b>"+Math.round(summary.consensus*100)+"%</b>."
+          "Fase principal: <b>"+(peak.phaseLabel||"—")+"</b>. "+
+          "Acuerdo entre modelos: <b>"+Math.round(summary.consensus*100)+"%</b>. "+
+          "<br><br><b>Plazo:</b> "+horizonPhrase()
         );
       }
 
@@ -1897,12 +1824,12 @@ O:
 
       function updateChartMeta(summary){
         var p=selectedPlace();
-        html("chartMeta","📍 "+p.name+" · "+Math.round(p.elev)+" m<br>Fuente: "+latestSourceLabel+"<br>Consenso: "+Math.round((summary.consensus||0)*100)+"%");
+        html("chartMeta","📍 "+p.name+" · "+Math.round(p.elev)+" m<br>Fuente: "+latestSourceLabel+"<br>Acuerdo: "+Math.round((summary.consensus||0)*100)+"%<br>"+horizonPhrase());
       }
 
       function renderDiagnosis(summary){
         var p=summary.peak;
-        html("diagnosis","<b>Hora crítica:</b> "+localTime(p.time)+". Fase dominante: <b>"+p.phaseLabel+"</b>. Tw efectivo: <b>"+fmt(p.TwEff)+" °C</b>. Cota de nieve: <b>"+Math.round(p.snowLine)+" m</b>. Fusión proxy: <b>"+fmt(p.melt,0)+" °C·m</b>. Recongelamiento proxy: <b>"+fmt(p.refreeze,0)+" °C·m</b>. DGZ proxy: <b>"+fmt(p.dgzScore,2)+"</b>. Supervivencia estimada: <b>"+Math.round((p.survival||0)*100)+"%</b>. SLR: <b>"+fmt(p.slr,1)+":1</b>. Pico nieve P50: <b>"+fmt(p.cmh,2)+" cm/h</b>. Rango horario P25-P75: <b>"+fmt(p.cmhP25,2)+"-"+fmt(p.cmhP75,2)+" cm/h</b>.");
+        html("diagnosis","<b>Hora más activa:</b> "+localTime(p.time)+". Fase dominante: <b>"+p.phaseLabel+"</b>. T: <b>"+fmt(p.T)+" °C</b>. Sensación: <b>"+fmt(p.feels)+" °C</b>. Tw efectivo: <b>"+fmt(p.TwEff)+" °C</b>. Cota de nieve: <b>"+Math.round(p.snowLine)+" m</b>. Fusión proxy: <b>"+fmt(p.melt,0)+" °C·m</b>. DGZ proxy: <b>"+fmt(p.dgzScore,2)+"</b>. Supervivencia estimada: <b>"+Math.round((p.survival||0)*100)+"%</b>. SLR: <b>"+fmt(p.slr,1)+":1</b>. Pico nieve P50: <b>"+fmt(p.cmh,2)+" cm/h</b>.");
       }
 
       function needClass(ok,mid){return ok?"need-ok":mid?"need-mid":"need-bad";}
@@ -1913,48 +1840,44 @@ O:
         var elev=num($("elev").value,selectedPlace().elev);
         var cotaDiff=p.snowLine-elev;
 
-        var twOk=p.TwEff<=0.3;
-        var twMid=p.TwEff<=1.1;
+        var tempOk=p.TwEff<=0.3;
+        var tempMid=p.TwEff<=1.1;
         var cotaOk=cotaDiff<=100;
         var cotaMid=cotaDiff<=350;
-        var meltOk=p.melt<=350;
-        var meltMid=p.melt<=850;
         var precipOk=p.P>=0.6;
         var precipMid=p.P>=0.15;
-        var dgzOk=p.dgzScore>=0.65;
-        var dgzMid=p.dgzScore>=0.3;
         var phaseOk=phaseRankFromRow(p)>=3;
         var phaseMid=phaseRankFromRow(p)>=2;
+        var accumOk=(p.cmh||0)>=0.45;
+        var accumMid=(p.cmh||0)>=0.05;
 
         html("snowNeeds",
-          '<div class="need"><span>Fase dominante cercana a nieve</span><b class="'+needClass(phaseOk,phaseMid)+'">'+needLabel(phaseOk,phaseMid)+" · "+p.phaseLabel+'</b></div>'+
-          '<div class="need"><span>Bulbo húmedo efectivo ≤ 0.3 °C</span><b class="'+needClass(twOk,twMid)+'">'+needLabel(twOk,twMid)+" · "+fmt(p.TwEff)+" °C</b></div>"+
-          '<div class="need"><span>Cota cerca o debajo del barrio</span><b class="'+needClass(cotaOk,cotaMid)+'">'+needLabel(cotaOk,cotaMid)+" · "+Math.round(p.snowLine)+" m</b></div>"+
-          '<div class="need"><span>Energía de fusión baja</span><b class="'+needClass(meltOk,meltMid)+'">'+needLabel(meltOk,meltMid)+" · "+fmt(p.melt,0)+" °C·m</b></div>"+
-          '<div class="need"><span>Precipitación suficiente</span><b class="'+needClass(precipOk,precipMid)+'">'+needLabel(precipOk,precipMid)+" · "+fmt(p.P)+" mm/h</b></div>"+
-          '<div class="need"><span>DGZ proxy favorable</span><b class="'+needClass(dgzOk,dgzMid)+'">'+needLabel(dgzOk,dgzMid)+" · "+fmt(p.dgzScore,2)+"</b></div>"
+          '<div class="need"><span>Fase</span><b class="'+needClass(phaseOk,phaseMid)+'">'+needLabel(phaseOk,phaseMid)+" · "+p.phaseLabel+'</b></div>'+
+          '<div class="need"><span>Temperatura para nieve</span><b class="'+needClass(tempOk,tempMid)+'">'+needLabel(tempOk,tempMid)+'</b></div>'+
+          '<div class="need"><span>Cota respecto del barrio</span><b class="'+needClass(cotaOk,cotaMid)+'">'+needLabel(cotaOk,cotaMid)+'</b></div>'+
+          '<div class="need"><span>Precipitación</span><b class="'+needClass(precipOk,precipMid)+'">'+needLabel(precipOk,precipMid)+'</b></div>'+
+          '<div class="need"><span>Acumulación posible</span><b class="'+needClass(accumOk,accumMid)+'">'+needLabel(accumOk,accumMid)+'</b></div>'
         );
 
         var score=Math.round(100*clamp(
-          0.22*(phaseOk?1:phaseMid?0.55:0.10)+
-          0.20*(twOk?1:twMid?0.55:0.15)+
-          0.18*(cotaOk?1:cotaMid?0.55:0.10)+
-          0.16*(meltOk?1:meltMid?0.55:0.10)+
-          0.12*(precipOk?1:precipMid?0.55:0.10)+
-          0.12*(dgzOk?1:dgzMid?0.55:0.10),0,1));
+          0.28*(phaseOk?1:phaseMid?0.55:0.10)+
+          0.24*(tempOk?1:tempMid?0.55:0.15)+
+          0.20*(cotaOk?1:cotaMid?0.55:0.10)+
+          0.14*(precipOk?1:precipMid?0.55:0.10)+
+          0.14*(accumOk?1:accumMid?0.55:0.10),0,1));
 
         var lectura;
         if(score>=75){
-          lectura="El entorno físico acompaña bien una posible señal de nieve o mezcla. La limitante principal pasa a ser la intensidad y persistencia de la precipitación.";
+          lectura="El entorno acompaña una posible señal de nieve o mezcla. La clave será la intensidad y persistencia de la precipitación.";
         }else if(score>=45){
           lectura="El entorno es marginal. Pequeños cambios de temperatura, cota o intensidad pueden mover el resultado entre lluvia, aguanieve y nieve húmeda.";
         }else{
-          lectura="El entorno físico no favorece nieve acumuladora. Aunque haya precipitación, la fase dominante tiende a lluvia o mezcla muy débil.";
+          lectura="El entorno no favorece nieve acumuladora. Aunque haya precipitación, la fase dominante tiende a lluvia o mezcla muy débil.";
         }
 
         html(
           "snowNeedsText",
-          "Índice físico diagnóstico de entorno nivoso: <b>"+score+"/100</b>. "+lectura+
+          "Índice de entorno nivoso: <b>"+score+"/100</b>. "+lectura+
           "<div class=\"meter\"><div class=\"meter-fill\" style=\"width:"+score+"%\"></div></div>"
         );
       }
@@ -1965,7 +1888,7 @@ O:
           x=model[i];
           wg=finite(x.wg)?fmt(x.wg,2):"—";
           diff=finite(x.diff)?fmt(x.diff,2):"—";
-          out+="<tr><td>"+localTime(x.time)+"</td><td>"+fmt(x.T)+" °C</td><td>"+fmt(x.TwEff)+" °C</td><td>"+fmt(x.P)+" mm/h</td><td>"+Math.round(x.snowLine)+" m</td><td>"+Math.round(x.prob*100)+"%</td><td>"+x.phaseLabel+"</td><td>"+fmt(x.cmh,2)+" cm/h</td><td>"+fmt(x.cmhP25,2)+"-"+fmt(x.cmhP75,2)+"</td><td>"+Math.round((x.consensus||0)*100)+"%</td><td>"+x.members+"</td><td>"+fmt(x.dgzScore,2)+"</td><td>"+fmt(x.melt,0)+"</td><td class=\"purple\">"+wg+"</td><td>"+diff+"</td><td>"+badge(x.risk)+"</td></tr>";
+          out+="<tr><td>"+localTime(x.time)+"</td><td>"+fmt(x.T)+" °C</td><td>"+fmt(x.feels)+" °C</td><td>"+fmt(x.TwEff)+" °C</td><td>"+fmt(x.P)+" mm/h</td><td>"+Math.round(x.snowLine)+" m</td><td>"+Math.round(x.prob*100)+"%</td><td>"+x.phaseLabel+"</td><td>"+fmt(x.cmh,2)+" cm/h</td><td>"+fmt(x.cmhP25,2)+"-"+fmt(x.cmhP75,2)+"</td><td>"+Math.round((x.consensus||0)*100)+"%</td><td>"+x.members+"</td><td>"+fmt(x.dgzScore,2)+"</td><td>"+fmt(x.melt,0)+"</td><td class=\"purple\">"+wg+"</td><td>"+diff+"</td><td>"+badge(x.risk)+"</td></tr>";
         }
         html("rows",out);
       }
@@ -1990,12 +1913,17 @@ O:
           render(model,summary);
           renderSourceStatus(okPacks,failPacks);
 
-          text("status",(partial?"🟡 Resultado parcial ya calculado":"🟢 Corrida completa")+" · "+okPacks.length+" fuente(s) OK · "+failPacks.length+" fallida(s)");
+          text("status",(partial?"🟡 Resultado parcial calculado":"🟢 Corrida completa")+" · "+okPacks.length+" fuente(s) OK · "+failPacks.length+" fallida(s)");
 
           for(i=0;i<okPacks.length;i++)urls+=okPacks[i].source.label+": "+okPacks[i].url+"<br><br>";
           for(i=0;i<failPacks.length;i++)errors+=failPacks[i].source.label+": "+failPacks[i].error+"<br>";
 
           debug("JS: OK<br>API: OK<br>Fuentes OK: "+okPacks.length+"<br>Fuentes fallidas: "+failPacks.length+"<br>Horas modeladas: "+model.length+"<br>Tiempo: "+ms+" ms<br><br>URLs OK:<br>"+(urls||"—")+"<br>Fallos:<br>"+(errors||"—"));
+
+          if(!partial){
+            autoArchiveForecast(model,summary,okPacks,failPacks);
+            runNeighborhoodMap(false);
+          }
         }catch(e){
           text("status","Error procesando datos: "+e.message);
           text("snowVerdict","Error");
@@ -2009,16 +1937,22 @@ O:
         text("snowVerdict","Calculando…");$("snowVerdict").className="yellow";text("snowVerdictText","Ejecutando postprocesamiento.");
         text("rainVerdict","Calculando…");$("rainVerdict").className="yellow";text("rainVerdictText","Descargando datos meteorológicos.");
         text("phaseVerdict","—");text("phaseVerdictText","Esperando datos.");
-        text("ensembleConsensus","—");text("consensusText","Calculando acuerdo operativo.");
+        text("ensembleConsensus","—");text("consensusText","Calculando acuerdo.");
+        text("tempNow","—");text("tempNowText","Esperando datos.");
+        text("feelsNow","—");text("feelsNowText","Esperando datos.");
+        text("coldestMoment","—");text("coldestMomentText","Esperando datos.");
+        text("warmestMoment","—");text("warmestMomentText","Esperando datos.");
         text("trendVerdict","—");text("trendText","Esperando datos.");
         text("snowScenario","—");text("snowScenarioText","Esperando datos.");
         text("rainScenario","—");text("rainScenarioText","Esperando datos.");
         text("criticalWindow","—");text("criticalWindowText","Esperando datos.");
         text("rainStart","—");text("rainStartText","Esperando datos.");
+        text("rainPeak","—");text("rainPeakText","Esperando datos.");
         text("rainEnd","—");text("rainEndText","Esperando datos.");
         text("snowStart","—");text("snowStartText","Esperando datos.");
+        text("snowPeak","—");text("snowPeakText","Esperando datos.");
         text("snowEnd","—");text("snowEndText","Esperando datos.");
-        text("quickRead","Corriendo modelo BariSnow.");
+        text("quickRead","Corriendo método BariSnow.");
         text("chartMeta","Descargando datos…");
         text("snowNeedsText","Esperando datos.");
       }
@@ -2026,12 +1960,13 @@ O:
       function run(){
         var runId=++currentRunId;
         var sources=selectedSources();
+        var place=selectedPlace();
         var ok=[],fail=[],pending=sources.length,firstRendered=false,t0=new Date().getTime(),i;
 
         updatePlaceBadge();
         setLoading();
 
-        text("status","Descargando datos de Open-Meteo…");
+        text("status","Descargando datos meteorológicos…");
         html("sourceStatus","Solicitando fuentes…");
         debug("JS: OK<br>Corrida: "+runId+"<br>Fuentes seleccionadas: "+sources.length+"<br>Primera fuente: "+sources[0].label);
 
@@ -2054,14 +1989,14 @@ O:
             text("status","Error: no respondió ninguna fuente.");
             text("snowVerdict","Error");
             $("snowVerdict").className="red";
-            text("snowVerdictText","No se pudo obtener datos de Open-Meteo.");
+            text("snowVerdictText","No se pudo obtener datos.");
             debug("JS: OK<br>API: ERROR<br>Fuentes intentadas: "+sources.length+"<br><br>"+fail.map(function(f){return f.source.label+": "+f.error+"<br>URL: "+f.url;}).join("<br><br>"));
           }
         }
 
         for(i=0;i<sources.length;i++){
           (function(source){
-            fetchSource(source,function(err,pack){
+            fetchSource(source,place,function(err,pack){
               if(runId!==currentRunId)return;
               if(err)fail.push(err);
               else ok.push(pack);
@@ -2070,6 +2005,139 @@ O:
               oneFinished();
             });
           })(sources[i]);
+        }
+      }
+
+      function mapColorClass(summary){
+        if(!summary)return "blue";
+        var s=snowScale(summary);
+        var r=rainScale(summary);
+        var sl=Number(String(s.label||"1").charAt(0));
+        var rl=Number(String(r.label||"1").charAt(0));
+        if(sl>=5||rl>=5)return "red";
+        if(sl>=4)return "orange";
+        if(sl>=3)return "yellow";
+        if(rl>=2)return "blue";
+        return "green";
+      }
+
+      function summarizeSinglePack(pack){
+        var model=aggregateHourly([pack]);
+        var summary=summarize(model,[pack]);
+        attachEventWindows(model,summary);
+        renderTemperatureIndicators(model,summary,false);
+        return {model:model,summary:summary};
+      }
+
+      function drawMapShell(){
+        var out='<div class="ridge"></div>';
+        var i,k,p;
+        for(i=0;i<MAP_KEYS.length;i++){
+          k=MAP_KEYS[i];
+          p=PLACES[k];
+          out+='<button class="map-point blue" id="point_'+k+'" style="left:'+p.x+'%;top:'+p.y+'%" type="button" title="'+p.name+'"><span>'+p.short+'</span><div class="map-label">'+p.name.replace("Barrio ","")+'</div></button>';
+        }
+        html("bariMap",out);
+        for(i=0;i<MAP_KEYS.length;i++){
+          k=MAP_KEYS[i];
+          $("point_"+k).onclick=(function(key){
+            return function(){
+              $("locationPreset").value=key;
+              applyLocationPreset(true);
+              window.scrollTo({top:0,behavior:"smooth"});
+            };
+          })(k);
+        }
+      }
+
+      function renderMapCards(){
+        var out="",i,k,p,res,snow,rain,cls,summary,phase,temp,feels;
+        for(i=0;i<MAP_KEYS.length;i++){
+          k=MAP_KEYS[i];
+          p=PLACES[k];
+          res=neighborhoodResults[k];
+          if(!res){
+            out+='<div class="map-card"><div class="map-card-top"><div><b>'+p.name+'</b><small>Esperando datos.</small></div></div></div>';
+            continue;
+          }
+          summary=res.summary;
+          snow=snowScale(summary);
+          rain=rainScale(summary);
+          cls=mapColorClass(summary);
+          phase=summary.peak?summary.peak.phaseLabel:"—";
+          temp=summary.tempNow;
+          feels=summary.feelsNow;
+
+          if($("point_"+k)){
+            $("point_"+k).className="map-point "+cls;
+          }
+
+          out+='<div class="map-card" data-key="'+k+'">'+
+            '<div class="map-card-top"><div><b>'+p.name+'</b><small>'+snow.label+' · '+rain.label+' · '+phase+'</small></div><span class="badge '+(cls==="red"?"high":cls==="yellow"||cls==="orange"?"mid":"low")+'">'+cls+'</span></div>'+
+            '<div class="map-mini">'+
+              '<div><span>Temp</span><strong>'+fmt(temp,1)+' °C</strong></div>'+
+              '<div><span>Sens.</span><strong>'+fmt(feels,1)+' °C</strong></div>'+
+              '<div><span>Lluvia</span><strong>'+fmt(summary.rainQ50,1)+' mm</strong></div>'+
+              '<div><span>Nieve</span><strong>'+fmt(summary.snowQ50,1)+' cm</strong></div>'+
+            '</div>'+
+          '</div>';
+        }
+        html("mapCards",out||'<div class="map-card">Sin datos.</div>');
+
+        var cards=document.querySelectorAll(".map-card[data-key]");
+        for(i=0;i<cards.length;i++){
+          cards[i].onclick=function(){
+            var key=this.getAttribute("data-key");
+            $("locationPreset").value=key;
+            applyLocationPreset(true);
+            window.scrollTo({top:0,behavior:"smooth"});
+          };
+        }
+      }
+
+      function runNeighborhoodMap(manual){
+        var mapRunId=++currentMapRunId;
+        var source=SOURCES[0];
+        var days=$("days")?clamp(num($("days").value,9),1,9):9;
+        var pending=MAP_KEYS.length;
+        var ok=0,fail=0;
+        var i,k,p;
+
+        if(manual)neighborhoodResults={};
+        drawMapShell();
+        renderMapCards();
+        text("mapStatus","Actualizando mapa por barrios con cálculo rápido…");
+
+        function doneOne(){
+          if(mapRunId!==currentMapRunId)return;
+          text("mapStatus","Mapa por barrios: "+ok+" OK, "+fail+" fallidos, "+pending+" pendientes.");
+          renderMapCards();
+          if(pending===0){
+            text("mapStatus","Mapa actualizado · "+ok+" barrios OK · "+fail+" fallidos. El barrio principal mantiene el cálculo multimodelo completo.");
+          }
+        }
+
+        for(i=0;i<MAP_KEYS.length;i++){
+          k=MAP_KEYS[i];
+          p=PLACES[k];
+
+          (function(key,place){
+            fetchSource(source,place,function(err,pack){
+              if(mapRunId!==currentMapRunId)return;
+              pending--;
+              if(err){
+                fail++;
+              }else{
+                try{
+                  neighborhoodResults[key]=summarizeSinglePack(pack);
+                  ok++;
+                }catch(e){
+                  fail++;
+                }
+              }
+              doneOne();
+            },days);
+          })(k,p);
         }
       }
 
@@ -2133,6 +2201,43 @@ O:
         function xAt(idx){return padL+plotW*idx/Math.max(1,model.length-1);}
         function yProb(v){return padT+(1-clamp(v,0,1))*plotH;}
         function yCmh(v){return padT+(1-clamp(v/maxC,0,1))*plotH;}
+        function indexByKey(key){
+          var j;
+          for(j=0;j<model.length;j++)if(model[j].key===key)return j;
+          return -1;
+        }
+        function shadeWindow(win,color){
+          if(!win||!win.has)return;
+          var si=indexByKey(win.start.key);
+          var ei=indexByKey(win.end.key);
+          if(si<0||ei<0)return;
+          var pad=Math.max(2,plotW/Math.max(1,model.length)*0.35);
+          var x1=xAt(si)-pad;
+          var x2=xAt(ei)+pad;
+          ctx.save();
+          ctx.fillStyle=color;
+          ctx.fillRect(Math.max(padL,x1),padT,Math.min(W-padR,x2)-Math.max(padL,x1),plotH);
+          ctx.restore();
+        }
+        function markPeak(win,color,label){
+          if(!win||!win.has||!win.peak)return;
+          var pi=indexByKey(win.peak.key);
+          if(pi<0)return;
+          var x=xAt(pi);
+          ctx.save();
+          ctx.strokeStyle=color;
+          ctx.lineWidth=1.5;
+          ctx.setLineDash([5,5]);
+          ctx.beginPath();
+          ctx.moveTo(x,padT);
+          ctx.lineTo(x,H-padB);
+          ctx.stroke();
+          ctx.fillStyle=color;
+          ctx.textAlign="center";
+          ctx.font=(isMobile?9:11)+"px system-ui";
+          ctx.fillText(label,x,padT+14);
+          ctx.restore();
+        }
 
         ctx.clearRect(0,0,W,H);
 
@@ -2145,6 +2250,9 @@ O:
 
         ctx.fillStyle="rgba(255,255,255,.028)";
         ctx.fillRect(padL,padT,plotW,plotH);
+
+        shadeWindow(latestSummary?latestSummary.rainWindow:null,"rgba(97,220,255,.08)");
+        shadeWindow(latestSummary?latestSummary.snowWindow:null,"rgba(121,255,178,.10)");
 
         ctx.strokeStyle="rgba(255,255,255,.12)";
         ctx.lineWidth=1;
@@ -2192,13 +2300,16 @@ O:
           drawLine(ctx,model,xAt,function(row){return yCmh(row.wg);},"#c5a6ff",2.3,true,true);
         }
 
+        markPeak(latestSummary?latestSummary.rainWindow:null,"rgba(97,220,255,.95)","pico lluvia");
+        markPeak(latestSummary?latestSummary.snowWindow:null,"rgba(121,255,178,.95)","pico nieve");
+
         ctx.save();
         ctx.translate(17,padT+plotH/2);
         ctx.rotate(-Math.PI/2);
         ctx.fillStyle="#ffd166";
         ctx.textAlign="center";
         ctx.font=(isMobile?10:12)+"px system-ui";
-        ctx.fillText("Probabilidad de nieve (%)",0,0);
+        ctx.fillText("Probabilidad nieve (%)",0,0);
         ctx.restore();
 
         ctx.save();
@@ -2219,7 +2330,7 @@ O:
         ctx.textAlign="center";
         ctx.font=(isMobile?10:11)+"px system-ui";
 
-        var step=Math.max(isMobile?12:6,Math.round(model.length/(isMobile?5:9)));
+        var step=Math.max(isMobile?18:12,Math.round(model.length/(isMobile?5:9)));
         for(i=0;i<model.length;i+=step){
           ctx.fillText(localTime(model[i].time),xAt(i),H-padB+23);
         }
@@ -2317,8 +2428,279 @@ O:
         if(latestModel.length&&latestSummary){renderRows(latestModel);drawChart(latestModel);}
       }
 
+      function loadArchive(){
+        try{
+          var raw=localStorage.getItem(ARCHIVE_KEY);
+          if(!raw)return [];
+          var arr=JSON.parse(raw);
+          return Array.isArray(arr)?arr:[];
+        }catch(e){
+          return [];
+        }
+      }
+
+      function saveArchive(arr){
+        try{
+          localStorage.setItem(ARCHIVE_KEY,JSON.stringify(arr.slice(-200)));
+          return true;
+        }catch(e){
+          text("adminStatus","No se pudo guardar archivo local: "+e.message);
+          return false;
+        }
+      }
+
+      function compactWindow(win){
+        if(!win||!win.has)return {has:false,start:"",peak:"",end:"",hours:0,total:0};
+        return {
+          has:true,
+          start:win.start?win.start.time:"",
+          peak:win.peak?win.peak.time:"",
+          end:win.end?win.end.time:"",
+          hours:win.hours||0,
+          total:win.total||0
+        };
+      }
+
+      function makeSnapshot(model,summary,okPacks,failPacks){
+        var p=selectedPlace();
+        var snow=snowScale(summary);
+        var rain=rainScale(summary);
+        var now=new Date();
+        var days=$("days")?clamp(num($("days").value,9),1,9):9;
+        var mode=$("sourceMode")?$("sourceMode").value:"ensemble";
+        var key=[
+          issueHourKey(now),
+          selectedPlaceKey(),
+          mode,
+          days,
+          model.length?model[0].key:"start",
+          model.length?model[model.length-1].key:"end"
+        ].join("|");
+
+        return {
+          version:3,
+          key:key,
+          savedAt:now.toISOString(),
+          issueHour:issueHourKey(now),
+          placeKey:selectedPlaceKey(),
+          placeName:p.name,
+          lat:p.lat,
+          lon:p.lon,
+          elev:p.elev,
+          oro:p.oro,
+          coldBias:p.coldBias,
+          sourceMode:mode,
+          sourceLabel:latestSourceLabel,
+          okSources:okPacks.length,
+          failSources:failPacks.length,
+          days:days,
+          horizon:horizonPhrase(),
+          snowVerdict:snow.label,
+          rainVerdict:rain.label,
+          phase:summary.peak?summary.peak.phaseLabel:"",
+          consensus:summary.consensus,
+          trend:summary.trend?summary.trend.label:"",
+          tempNow:summary.tempNow,
+          feelsNow:summary.feelsNow,
+          tempMin:summary.tempMin,
+          tempMinTime:summary.tempMinTime,
+          tempMax:summary.tempMax,
+          tempMaxTime:summary.tempMaxTime,
+          feelsMin:summary.feelsMin,
+          feelsMinTime:summary.feelsMinTime,
+          rainQ25:summary.rainQ25,
+          rainQ50:summary.rainQ50,
+          rainQ75:summary.rainQ75,
+          rainQ90:summary.rainQ90,
+          snowQ25:summary.snowQ25,
+          snowQ50:summary.snowQ50,
+          snowQ75:summary.snowQ75,
+          snowQ90:summary.snowQ90,
+          probSnowGt05:summary.probSnowGt05,
+          probSnowGt1:summary.probSnowGt1,
+          probSnowGt3:summary.probSnowGt3,
+          probSnowGt5:summary.probSnowGt5,
+          probRainGt10:summary.probRainGt10,
+          probRainGt20:summary.probRainGt20,
+          probRainGt40:summary.probRainGt40,
+          rainWindow:compactWindow(summary.rainWindow),
+          snowWindow:compactWindow(summary.snowWindow),
+          peak:{
+            time:summary.peak?summary.peak.time:"",
+            T:summary.peak?summary.peak.T:null,
+            feels:summary.peak?summary.peak.feels:null,
+            TwEff:summary.peak?summary.peak.TwEff:null,
+            P:summary.peak?summary.peak.P:null,
+            cmh:summary.peak?summary.peak.cmh:null,
+            prob:summary.peak?summary.peak.prob:null,
+            snowLine:summary.peak?summary.peak.snowLine:null,
+            phase:summary.peak?summary.peak.phaseLabel:"",
+            risk:summary.peak?summary.peak.risk:""
+          },
+          rows:model.filter(function(r,idx){return idx%3===0;}).map(function(r){
+            return {
+              time:r.time,T:r.T,feels:r.feels,TwEff:r.TwEff,P:r.P,cmh:r.cmh,prob:r.prob,
+              snowLine:r.snowLine,phase:r.phaseLabel,consensus:r.consensus,risk:r.risk
+            };
+          }),
+          observation:null
+        };
+      }
+
+      function autoArchiveForecast(model,summary,okPacks,failPacks){
+        var arr=loadArchive();
+        var snap=makeSnapshot(model,summary,okPacks,failPacks);
+        var i,found=false;
+
+        for(i=0;i<arr.length;i++){
+          if(arr[i].key===snap.key){
+            if(arr[i].observation)snap.observation=arr[i].observation;
+            arr[i]=snap;
+            found=true;
+            break;
+          }
+        }
+
+        if(!found)arr.push(snap);
+        saveArchive(arr);
+        if(adminUnlocked)renderArchiveAdmin();
+      }
+
+      function csvEscape(v){
+        if(v===null||typeof v==="undefined")return "";
+        var s=String(v);
+        if(/[",\n;]/.test(s))return '"'+s.replace(/"/g,'""')+'"';
+        return s;
+      }
+
+      function downloadText(filename,content,type){
+        var blob=new Blob([content],{type:type||"text/plain;charset=utf-8"});
+        var url=URL.createObjectURL(blob);
+        var a=document.createElement("a");
+        a.href=url;
+        a.download=filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function(){
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        },0);
+      }
+
+      function exportArchiveJSON(){
+        var arr=loadArchive();
+        downloadText("barisnow_historial.json",JSON.stringify(arr,null,2),"application/json;charset=utf-8");
+      }
+
+      function exportArchiveCSV(){
+        var arr=loadArchive();
+        var cols=[
+          "savedAt","issueHour","placeName","lat","lon","elev","sourceMode","sourceLabel","days",
+          "snowVerdict","rainVerdict","phase","consensus","tempNow","feelsNow","tempMin","tempMax",
+          "snowQ50","rainQ50","rainStart","rainPeak","rainEnd","snowStart","snowPeak","snowEnd",
+          "obsRain","obsSnow","obsPhase","obsComment"
+        ];
+        var lines=[cols.join(",")];
+        var i,r,o;
+        for(i=0;i<arr.length;i++){
+          r=arr[i];
+          o=r.observation||{};
+          lines.push([
+            r.savedAt,r.issueHour,r.placeName,r.lat,r.lon,r.elev,r.sourceMode,r.sourceLabel,r.days,
+            r.snowVerdict,r.rainVerdict,r.phase,finite(r.consensus)?Math.round(r.consensus*100):"",
+            r.tempNow,r.feelsNow,r.tempMin,r.tempMax,
+            r.snowQ50,r.rainQ50,
+            r.rainWindow&&r.rainWindow.start?r.rainWindow.start:"",
+            r.rainWindow&&r.rainWindow.peak?r.rainWindow.peak:"",
+            r.rainWindow&&r.rainWindow.end?r.rainWindow.end:"",
+            r.snowWindow&&r.snowWindow.start?r.snowWindow.start:"",
+            r.snowWindow&&r.snowWindow.peak?r.snowWindow.peak:"",
+            r.snowWindow&&r.snowWindow.end?r.snowWindow.end:"",
+            o.rainMm,o.snowCm,o.phase,o.comment
+          ].map(csvEscape).join(","));
+        }
+        downloadText("barisnow_historial.csv",lines.join("\n"),"text/csv;charset=utf-8");
+      }
+
+      function renderArchiveAdmin(){
+        var arr=loadArchive();
+        var i,r,o,out="",obs=0,opt="";
+        var last=arr.length?arr[arr.length-1]:null;
+
+        for(i=0;i<arr.length;i++)if(arr[i].observation)obs++;
+
+        text("archiveCount",String(arr.length));
+        text("archiveLast",last?localTime(last.savedAt):"—");
+        text("obsCount",String(obs));
+
+        var recent=arr.slice(-60).reverse();
+        for(i=0;i<recent.length;i++){
+          r=recent[i];
+          o=r.observation||{};
+          out+="<tr><td>"+localTime(r.savedAt)+"</td><td>"+r.placeName+"</td><td>"+r.sourceLabel+"</td><td>"+r.days+"</td><td>"+fmt(r.snowQ50,1)+" cm</td><td>"+fmt(r.rainQ50,1)+" mm</td><td>"+(r.phase||"—")+"</td><td>"+(finite(r.consensus)?Math.round(r.consensus*100)+"%":"—")+"</td><td>"+(finite(o.rainMm)?fmt(o.rainMm,1)+" mm":"—")+"</td><td>"+(finite(o.snowCm)?fmt(o.snowCm,1)+" cm":"—")+"</td><td>"+(o.phase||"—")+"</td></tr>";
+        }
+        html("archiveRows",out||'<tr><td colspan="11">Sin corridas guardadas todavía.</td></tr>');
+
+        for(i=arr.length-1;i>=0;i--){
+          r=arr[i];
+          opt+='<option value="'+String(r.key).replace(/"/g,"&quot;")+'">'+localTime(r.savedAt)+" · "+r.placeName+" · nieve "+fmt(r.snowQ50,1)+" cm · lluvia "+fmt(r.rainQ50,1)+" mm</option>";
+        }
+        html("obsForecastKey",opt||'<option value="">Sin corridas</option>');
+        text("adminStatus","Historial local actualizado.");
+      }
+
+      function unlockAdmin(){
+        if(($("adminKey").value||"")===ADMIN_PASS){
+          adminUnlocked=true;
+          $("adminPanel").className="admin-panel active";
+          $("adminLock").style.display="none";
+          text("adminLockMsg","");
+          renderArchiveAdmin();
+        }else{
+          text("adminLockMsg","Clave incorrecta.");
+        }
+      }
+
+      function clearArchive(){
+        if(!adminUnlocked)return;
+        if(!confirm("¿Borrar todo el historial local de BariSnow en este navegador?"))return;
+        localStorage.removeItem(ARCHIVE_KEY);
+        renderArchiveAdmin();
+        text("adminStatus","Historial local borrado.");
+      }
+
+      function saveObservation(){
+        var arr=loadArchive();
+        var key=$("obsForecastKey").value;
+        var i,found=false;
+        for(i=0;i<arr.length;i++){
+          if(arr[i].key===key){
+            arr[i].observation={
+              observedAt:new Date().toISOString(),
+              rainMm:finite($("obsRain").value)?Number($("obsRain").value):null,
+              snowCm:finite($("obsSnow").value)?Number($("obsSnow").value):null,
+              phase:$("obsPhase").value||"",
+              comment:$("obsComment").value||""
+            };
+            found=true;
+            break;
+          }
+        }
+        if(!found){
+          text("adminStatus","No encontré la corrida seleccionada.");
+          return;
+        }
+        saveArchive(arr);
+        $("obsRain").value="";
+        $("obsSnow").value="";
+        $("obsPhase").value="";
+        $("obsComment").value="";
+        renderArchiveAdmin();
+        text("adminStatus","Observación guardada.");
+      }
+
       function auditDom(){
-        var ids=["status","sourceStatus","debugBox","currentPlace","placeNote","locationPreset","lat","lon","elev","days","oro","coldBias","sourceMode","runBtn","windguruBtn","quickRead","snowVerdict","snowVerdictText","rainVerdict","rainVerdictText","phaseVerdict","phaseVerdictText","ensembleConsensus","consensusText","trendVerdict","trendText","snowScenario","snowScenarioText","rainScenario","rainScenarioText","criticalWindow","criticalWindowText","rainStart","rainStartText","rainEnd","rainEndText","snowStart","snowStartText","snowEnd","snowEndText","chart","chartMeta","scenarioRows","thresholdRows","diagnosis","snowNeeds","snowNeedsText","rows","windguruInput","compareBtn","clearWgBtn","wgSummary"];
+        var ids=["status","sourceStatus","debugBox","currentPlace","placeNote","locationPreset","lat","lon","elev","days","oro","coldBias","sourceMode","runBtn","windguruBtn","quickRead","snowVerdict","snowVerdictText","rainVerdict","rainVerdictText","phaseVerdict","phaseVerdictText","ensembleConsensus","consensusText","tempNow","tempNowText","feelsNow","feelsNowText","coldestMoment","coldestMomentText","warmestMoment","warmestMomentText","trendVerdict","trendText","snowScenario","snowScenarioText","rainScenario","rainScenarioText","criticalWindow","criticalWindowText","rainStart","rainStartText","rainPeak","rainPeakText","rainEnd","rainEndText","snowStart","snowStartText","snowPeak","snowPeakText","snowEnd","snowEndText","chart","chartMeta","scenarioRows","thresholdRows","diagnosis","snowNeeds","snowNeedsText","rows","windguruInput","compareBtn","clearWgBtn","wgSummary","refreshMapBtn","bariMap","mapCards","mapStatus","adminKey","unlockAdminBtn","adminPanel","adminLockMsg","archiveCount","archiveLast","obsCount","archiveRows","exportCsvBtn","exportJsonBtn","refreshArchiveBtn","clearArchiveBtn","obsForecastKey","obsRain","obsSnow","obsPhase","obsComment","saveObsBtn","adminStatus"];
         var missing=[],i;
         for(i=0;i<ids.length;i++)if(!$(ids[i]))missing.push(ids[i]);
         if(missing.length){
@@ -2337,6 +2719,7 @@ O:
           $("runBtn").onclick=run;
           $("compareBtn").onclick=compareWindguru;
           $("clearWgBtn").onclick=clearWindguru;
+          $("refreshMapBtn").onclick=function(){runNeighborhoodMap(true);};
           $("windguruBtn").onclick=function(){window.open(WINDGURU_URL,"_blank","noopener,noreferrer");};
           $("locationPreset").onchange=function(){applyLocationPreset(true);};
 
@@ -2350,14 +2733,21 @@ O:
           $("sourceMode").onchange=run;
           $("days").onchange=run;
 
+          $("unlockAdminBtn").onclick=unlockAdmin;
+          $("exportCsvBtn").onclick=exportArchiveCSV;
+          $("exportJsonBtn").onclick=exportArchiveJSON;
+          $("refreshArchiveBtn").onclick=renderArchiveAdmin;
+          $("clearArchiveBtn").onclick=clearArchive;
+          $("saveObsBtn").onclick=saveObservation;
+          $("adminKey").onkeydown=function(e){if(e.key==="Enter")unlockAdmin();};
+
           window.onresize=function(){
             clearTimeout(resizeTimer);
             resizeTimer=setTimeout(function(){if(latestModel.length)drawChart(latestModel);},120);
           };
 
-          var settings=$("settingsBox");
-          if(settings&&window.innerWidth>=981)settings.open=false;
-
+          drawMapShell();
+          renderMapCards();
           applyLocationPreset(false);
           debug("JS: OK<br>DOM: OK<br>Inicializando corrida automática.");
           run();
