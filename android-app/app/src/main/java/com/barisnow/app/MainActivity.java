@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -41,8 +41,9 @@ public class MainActivity extends Activity {
         settings.setDisplayZoomControls(false);
         settings.setMediaPlaybackRequiresUserGesture(true);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
-        settings.setUserAgentString(settings.getUserAgentString() + " BariSnowAndroid/1.0");
+        settings.setUserAgentString(settings.getUserAgentString() + " BariSnowAndroid/1.1");
 
+        webView.addJavascriptInterface(new ZoneBridge(), "BariSnowNative");
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -60,6 +61,15 @@ public class MainActivity extends Activity {
             }
 
             @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                Uri uri = Uri.parse(url);
+                if (uri.getHost() != null && uri.getHost().equalsIgnoreCase(INTERNAL_HOST)) {
+                    view.postDelayed(() -> bindZoneSync(view), 500);
+                }
+            }
+
+            @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 if (request.isForMainFrame()) {
                     showOfflinePage();
@@ -71,6 +81,30 @@ public class MainActivity extends Activity {
             webView.loadUrl(HOME_URL);
         } else {
             webView.restoreState(savedInstanceState);
+        }
+    }
+
+    private void bindZoneSync(WebView view) {
+        String js = "(function(){" +
+                "var s=document.getElementById('locationPreset');" +
+                "if(!s||!window.BariSnowNative)return;" +
+                "function sync(){var o=s.options[s.selectedIndex];BariSnowNative.setZone(s.value,o?o.text:s.value);}" +
+                "if(!s.dataset.nativeWidgetBound){s.addEventListener('change',sync);s.dataset.nativeWidgetBound='1';}" +
+                "sync();" +
+                "})();";
+        view.evaluateJavascript(js, null);
+    }
+
+    private final class ZoneBridge {
+        @JavascriptInterface
+        public void setZone(String key, String name) {
+            if (key == null || key.trim().isEmpty()) return;
+            getSharedPreferences(BariSnowWidgetProvider.PREFS, MODE_PRIVATE)
+                    .edit()
+                    .putString(BariSnowWidgetProvider.PREF_ZONE_KEY, key)
+                    .putString(BariSnowWidgetProvider.PREF_ZONE_NAME, name == null ? key : name)
+                    .apply();
+            BariSnowWidgetProvider.requestRefresh(getApplicationContext());
         }
     }
 
@@ -104,6 +138,7 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         if (webView != null) {
             webView.stopLoading();
+            webView.removeJavascriptInterface("BariSnowNative");
             webView.setWebChromeClient(null);
             webView.setWebViewClient(null);
             webView.destroy();
