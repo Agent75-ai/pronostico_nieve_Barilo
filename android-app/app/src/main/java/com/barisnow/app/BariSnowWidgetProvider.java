@@ -46,6 +46,18 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         PLACES.put("el_alto", new Place("el_alto", "El Alto / Frutillar / 2 de Abril", -41.1678, -71.3389, 860));
     }
 
+    protected Class<? extends AppWidgetProvider> providerClass() {
+        return BariSnowWidgetProvider.class;
+    }
+
+    protected int layoutResId() {
+        return R.layout.widget_barisnow;
+    }
+
+    protected int refreshRequestCode() {
+        return 1002;
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
@@ -57,7 +69,7 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
                     AppWidgetManager manager = AppWidgetManager.getInstance(appContext);
                     int[] ids = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
                     if (ids == null || ids.length == 0) {
-                        ids = manager.getAppWidgetIds(new ComponentName(appContext, BariSnowWidgetProvider.class));
+                        ids = manager.getAppWidgetIds(new ComponentName(appContext, providerClass()));
                     }
                     refreshWidgets(appContext, manager, ids);
                 } finally {
@@ -70,12 +82,18 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
     }
 
     public static void requestRefresh(Context context) {
-        Intent intent = new Intent(context, BariSnowWidgetProvider.class);
+        sendRefresh(context, BariSnowWidgetProvider.class);
+        sendRefresh(context, BariSnowCompactWidgetProvider.class);
+        sendRefresh(context, BariSnowDailyWidgetProvider.class);
+    }
+
+    private static void sendRefresh(Context context, Class<? extends AppWidgetProvider> cls) {
+        Intent intent = new Intent(context, cls);
         intent.setAction(ACTION_REFRESH);
         context.sendBroadcast(intent);
     }
 
-    private static void refreshWidgets(Context context, AppWidgetManager manager, int[] ids) {
+    private void refreshWidgets(Context context, AppWidgetManager manager, int[] ids) {
         if (ids == null || ids.length == 0) return;
         Place place = selectedPlace(context);
         for (int id : ids) manager.updateAppWidget(id, loadingViews(context, place));
@@ -100,8 +118,8 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    private static RemoteViews baseViews(Context context, Place place) {
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_barisnow);
+    protected RemoteViews baseViews(Context context, Place place) {
+        RemoteViews views = new RemoteViews(context.getPackageName(), layoutResId());
         views.setTextViewText(R.id.widget_zone, place.name);
 
         Intent openIntent = new Intent(context, MainActivity.class);
@@ -111,17 +129,17 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         );
         views.setOnClickPendingIntent(R.id.widget_root, openPending);
 
-        Intent refreshIntent = new Intent(context, BariSnowWidgetProvider.class);
+        Intent refreshIntent = new Intent(context, providerClass());
         refreshIntent.setAction(ACTION_REFRESH);
         PendingIntent refreshPending = PendingIntent.getBroadcast(
-                context, 1002, refreshIntent,
+                context, refreshRequestCode(), refreshIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
         views.setOnClickPendingIntent(R.id.widget_refresh, refreshPending);
         return views;
     }
 
-    private static RemoteViews loadingViews(Context context, Place place) {
+    protected RemoteViews loadingViews(Context context, Place place) {
         RemoteViews views = baseViews(context, place);
         setHourLoading(views, R.id.now_clock, R.id.now_state, R.id.now_temp, R.id.now_feels, "ACTUALIZANDO…");
         setHourLoading(views, R.id.plus1_clock, R.id.plus1_state, R.id.plus1_temp, R.id.plus1_feels, "—");
@@ -133,27 +151,19 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         return views;
     }
 
-    private static void setHourLoading(RemoteViews views, int clockId, int stateId, int tempId, int feelsId, String state) {
-        views.setTextViewText(clockId, "—");
-        views.setTextViewText(stateId, state);
-        views.setTextViewText(tempId, "—");
-        views.setTextViewText(feelsId, "—");
-    }
-
-    private static RemoteViews errorViews(Context context, Place place) {
+    protected RemoteViews errorViews(Context context, Place place) {
         RemoteViews views = baseViews(context, place);
-        views.setTextViewText(R.id.now_icon, "❄");
         setHourLoading(views, R.id.now_clock, R.id.now_state, R.id.now_temp, R.id.now_feels, "SIN CONEXIÓN");
         setHourLoading(views, R.id.plus1_clock, R.id.plus1_state, R.id.plus1_temp, R.id.plus1_feels, "—");
         setHourLoading(views, R.id.plus2_clock, R.id.plus2_state, R.id.plus2_temp, R.id.plus2_feels, "—");
         setHourLoading(views, R.id.plus3_clock, R.id.plus3_state, R.id.plus3_temp, R.id.plus3_feels, "—");
         views.setTextViewText(R.id.day1_state, "—");
         views.setTextViewText(R.id.day2_state, "—");
-        views.setTextViewText(R.id.widget_updated, "Sin conexión · tocá ↻ para reintentar");
+        views.setTextViewText(R.id.widget_updated, "Sin conexión · tocá ↻");
         return views;
     }
 
-    private static RemoteViews dataViews(Context context, WidgetData data) {
+    protected RemoteViews dataViews(Context context, WidgetData data) {
         RemoteViews views = baseViews(context, data.place);
         applyHour(views, R.id.now_icon, R.id.now_clock, R.id.now_state, R.id.now_temp, R.id.now_feels, data.now);
         applyHour(views, R.id.plus1_icon, R.id.plus1_clock, R.id.plus1_state, R.id.plus1_temp, R.id.plus1_feels, data.plus1);
@@ -165,7 +175,14 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         return views;
     }
 
-    private static void applyHour(RemoteViews views, int iconId, int clockId, int stateId, int tempId, int feelsId, HourData hour) {
+    protected static void setHourLoading(RemoteViews views, int clockId, int stateId, int tempId, int feelsId, String state) {
+        views.setTextViewText(clockId, "—");
+        views.setTextViewText(stateId, state);
+        views.setTextViewText(tempId, "—");
+        views.setTextViewText(feelsId, "—");
+    }
+
+    protected static void applyHour(RemoteViews views, int iconId, int clockId, int stateId, int tempId, int feelsId, HourData hour) {
         views.setTextViewText(iconId, iconFor(hour.state));
         views.setTextViewText(clockId, hour.clock);
         views.setTextViewText(stateId, hour.state);
@@ -174,7 +191,7 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         views.setTextColor(stateId, colorFor(hour.state));
     }
 
-    private static void applyDay(RemoteViews views, boolean first, DayData day) {
+    protected static void applyDay(RemoteViews views, boolean first, DayData day) {
         int iconId = first ? R.id.day1_icon : R.id.day2_icon;
         int stateId = first ? R.id.day1_state : R.id.day2_state;
         int tempId = first ? R.id.day1_temp : R.id.day2_temp;
@@ -210,7 +227,7 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         connection.setReadTimeout(8000);
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Accept", "application/json");
-        connection.setRequestProperty("User-Agent", "BariSnowAndroidWidget/1.2.1");
+        connection.setRequestProperty("User-Agent", "BariSnowAndroidWidget/1.3");
 
         int status = connection.getResponseCode();
         if (status < 200 || status >= 300) throw new IllegalStateException("HTTP " + status);
@@ -255,7 +272,6 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         data.plus1 = readHour(hourly, firstFuture);
         data.plus2 = readHour(hourly, firstFuture + 1);
         data.plus3 = readHour(hourly, firstFuture + 2);
-
         data.tomorrow = readDay(daily, 1);
         data.dayAfter = readDay(daily, 2);
         data.updated = "Actualizado " + localClock();
@@ -343,13 +359,13 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
                 - 4.686035;
     }
 
-    private static String iconFor(String state) {
+    protected static String iconFor(String state) {
         if ("SIN NIEVE".equals(state)) return "⛅";
         if (state.contains("LLUVIA") || state.contains("HÚMEDA") || state.contains("CHAPARRÓN")) return "🌨";
         return "❄";
     }
 
-    private static int colorFor(String state) {
+    protected static int colorFor(String state) {
         if (state.contains("NEVADA ACUMULABLE")) return Color.rgb(241, 112, 126);
         if (state.equals("NIEVA") || state.contains("CHAPARRÓN")) return Color.rgb(243, 162, 76);
         if (state.contains("HÚMEDA") || state.contains("LLUVIA") || state.contains("GRANULADA")) return Color.rgb(233, 200, 92);
@@ -357,17 +373,17 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         return Color.rgb(91, 214, 160);
     }
 
-    private static String formatTemp(double value) {
+    protected static String formatTemp(double value) {
         if (Double.isNaN(value)) return "—";
         return String.format(Locale.getDefault(), "%.0f°", value);
     }
 
-    private static String formatRange(double min, double max) {
+    protected static String formatRange(double min, double max) {
         if (Double.isNaN(min) || Double.isNaN(max)) return "—";
         return String.format(Locale.getDefault(), "%.0f° / %.0f°", min, max);
     }
 
-    private static String formatSnow(double cm) {
+    protected static String formatSnow(double cm) {
         if (Double.isNaN(cm) || cm < 0.03) return "0 cm";
         if (cm < 0.12) return "Traza";
         if (cm < 1) return String.format(Locale.getDefault(), "%.1f cm", cm);
@@ -424,7 +440,7 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    private static final class Place {
+    protected static final class Place {
         final String key;
         final String name;
         final double lat;
@@ -440,7 +456,7 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    private static final class WidgetData {
+    protected static final class WidgetData {
         Place place;
         HourData now;
         HourData plus1;
@@ -451,14 +467,14 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         String updated;
     }
 
-    private static final class HourData {
+    protected static final class HourData {
         String state;
         String clock;
         double temp;
         double feels;
     }
 
-    private static final class DayData {
+    protected static final class DayData {
         String state;
         double minTemp;
         double maxTemp;
