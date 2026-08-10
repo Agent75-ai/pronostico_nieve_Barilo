@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.BariSnow" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:colorAccent">#53B7FF</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">#040E19</item>
+        <item name="android:navigationBarColor">#040E19</item>
+        <item name="android:windowBackground">#040E19</item>
+    </style>
+</resources>
