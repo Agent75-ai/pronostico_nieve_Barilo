@@ -1,0 +1,28 @@
+{
+  "name": "BariSnow · Nieve en Bariloche",
+  "short_name": "BariSnow",
+  "description": "Pronóstico y nowcast de nieve para Bariloche.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone"],
+  "background_color": "#06111c",
+  "theme_color": "#081826",
+  "orientation": "any",
+  "lang": "es-AR",
+  "categories": ["weather", "utilities"],
+  "icons": [
+    {
+      "src": "icons/barisnow-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/barisnow-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
