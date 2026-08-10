@@ -35,15 +35,15 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
     private static final Map<String, Place> PLACES = new HashMap<>();
 
     static {
-        PLACES.put("bustillo_95", new Place("bustillo_95", "Bustillo km 9,5", -41.11369, -71.41412, 800));
-        PLACES.put("lago_moreno", new Place("lago_moreno", "Lago Moreno", -41.1000, -71.4500, 778));
-        PLACES.put("melipal", new Place("melipal", "Melipal", -41.1240, -71.3660, 790));
-        PLACES.put("centro", new Place("centro", "Centro", -41.1343, -71.3085, 770));
+        PLACES.put("bustillo_95", new Place("bustillo_95", "Bustillo km 9,5 / Centro Atómico", -41.11369, -71.41412, 800));
+        PLACES.put("lago_moreno", new Place("lago_moreno", "Barrio Lago Moreno", -41.1000, -71.4500, 778));
+        PLACES.put("melipal", new Place("melipal", "Barrio Melipal", -41.1240, -71.3660, 790));
+        PLACES.put("centro", new Place("centro", "Barrio Centro", -41.1343, -71.3085, 770));
         PLACES.put("las_victorias", new Place("las_victorias", "Las Victorias", -41.1355, -71.2540, 780));
         PLACES.put("dina_huapi", new Place("dina_huapi", "Dina Huapi", -41.0705, -71.1635, 780));
         PLACES.put("cerro_catedral", new Place("cerro_catedral", "Cerro Catedral", -41.1677, -71.4381, 1030));
         PLACES.put("llao_llao", new Place("llao_llao", "Llao Llao", -41.0525, -71.5310, 785));
-        PLACES.put("el_alto", new Place("el_alto", "El Alto", -41.1678, -71.3389, 860));
+        PLACES.put("el_alto", new Place("el_alto", "El Alto / Frutillar / 2 de Abril", -41.1678, -71.3389, 860));
     }
 
     @Override
@@ -123,52 +123,54 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
 
     private static RemoteViews loadingViews(Context context, Place place) {
         RemoteViews views = baseViews(context, place);
-        setHourLoading(views, R.id.now_state, R.id.now_temp, R.id.now_feels, "ACTUALIZANDO…");
-        setHourLoading(views, R.id.plus1_state, R.id.plus1_temp, R.id.plus1_feels, "—");
-        setHourLoading(views, R.id.plus2_state, R.id.plus2_temp, R.id.plus2_feels, "—");
-        setHourLoading(views, R.id.plus3_state, R.id.plus3_temp, R.id.plus3_feels, "—");
+        setHourLoading(views, R.id.now_clock, R.id.now_state, R.id.now_temp, R.id.now_feels, "ACTUALIZANDO…");
+        setHourLoading(views, R.id.plus1_clock, R.id.plus1_state, R.id.plus1_temp, R.id.plus1_feels, "—");
+        setHourLoading(views, R.id.plus2_clock, R.id.plus2_state, R.id.plus2_temp, R.id.plus2_feels, "—");
+        setHourLoading(views, R.id.plus3_clock, R.id.plus3_state, R.id.plus3_temp, R.id.plus3_feels, "—");
         views.setTextViewText(R.id.day1_state, "—");
         views.setTextViewText(R.id.day2_state, "—");
-        views.setTextViewText(R.id.widget_updated, "Buscando datos…");
+        views.setTextViewText(R.id.widget_updated, "Preparando pronóstico…");
         return views;
     }
 
-    private static void setHourLoading(RemoteViews views, int stateId, int tempId, int feelsId, String state) {
+    private static void setHourLoading(RemoteViews views, int clockId, int stateId, int tempId, int feelsId, String state) {
+        views.setTextViewText(clockId, "—");
         views.setTextViewText(stateId, state);
         views.setTextViewText(tempId, "—");
-        views.setTextViewText(feelsId, "Sens. —");
+        views.setTextViewText(feelsId, "—");
     }
 
     private static RemoteViews errorViews(Context context, Place place) {
         RemoteViews views = baseViews(context, place);
         views.setTextViewText(R.id.now_icon, "❄");
-        setHourLoading(views, R.id.now_state, R.id.now_temp, R.id.now_feels, "SIN CONEXIÓN");
-        setHourLoading(views, R.id.plus1_state, R.id.plus1_temp, R.id.plus1_feels, "—");
-        setHourLoading(views, R.id.plus2_state, R.id.plus2_temp, R.id.plus2_feels, "—");
-        setHourLoading(views, R.id.plus3_state, R.id.plus3_temp, R.id.plus3_feels, "—");
-        views.setTextViewText(R.id.day1_state, "Tocá ↻ para reintentar");
+        setHourLoading(views, R.id.now_clock, R.id.now_state, R.id.now_temp, R.id.now_feels, "SIN CONEXIÓN");
+        setHourLoading(views, R.id.plus1_clock, R.id.plus1_state, R.id.plus1_temp, R.id.plus1_feels, "—");
+        setHourLoading(views, R.id.plus2_clock, R.id.plus2_state, R.id.plus2_temp, R.id.plus2_feels, "—");
+        setHourLoading(views, R.id.plus3_clock, R.id.plus3_state, R.id.plus3_temp, R.id.plus3_feels, "—");
+        views.setTextViewText(R.id.day1_state, "—");
         views.setTextViewText(R.id.day2_state, "—");
-        views.setTextViewText(R.id.widget_updated, "No se pudo actualizar");
+        views.setTextViewText(R.id.widget_updated, "Sin conexión · tocá ↻ para reintentar");
         return views;
     }
 
     private static RemoteViews dataViews(Context context, WidgetData data) {
         RemoteViews views = baseViews(context, data.place);
-        applyHour(views, R.id.now_icon, R.id.now_state, R.id.now_temp, R.id.now_feels, data.now);
-        applyHour(views, R.id.plus1_icon, R.id.plus1_state, R.id.plus1_temp, R.id.plus1_feels, data.plus1);
-        applyHour(views, R.id.plus2_icon, R.id.plus2_state, R.id.plus2_temp, R.id.plus2_feels, data.plus2);
-        applyHour(views, R.id.plus3_icon, R.id.plus3_state, R.id.plus3_temp, R.id.plus3_feels, data.plus3);
+        applyHour(views, R.id.now_icon, R.id.now_clock, R.id.now_state, R.id.now_temp, R.id.now_feels, data.now);
+        applyHour(views, R.id.plus1_icon, R.id.plus1_clock, R.id.plus1_state, R.id.plus1_temp, R.id.plus1_feels, data.plus1);
+        applyHour(views, R.id.plus2_icon, R.id.plus2_clock, R.id.plus2_state, R.id.plus2_temp, R.id.plus2_feels, data.plus2);
+        applyHour(views, R.id.plus3_icon, R.id.plus3_clock, R.id.plus3_state, R.id.plus3_temp, R.id.plus3_feels, data.plus3);
         applyDay(views, true, data.tomorrow);
         applyDay(views, false, data.dayAfter);
         views.setTextViewText(R.id.widget_updated, data.updated);
         return views;
     }
 
-    private static void applyHour(RemoteViews views, int iconId, int stateId, int tempId, int feelsId, HourData hour) {
+    private static void applyHour(RemoteViews views, int iconId, int clockId, int stateId, int tempId, int feelsId, HourData hour) {
         views.setTextViewText(iconId, iconFor(hour.state));
+        views.setTextViewText(clockId, hour.clock);
         views.setTextViewText(stateId, hour.state);
         views.setTextViewText(tempId, formatTemp(hour.temp));
-        views.setTextViewText(feelsId, "Sens. " + formatTemp(hour.feels));
+        views.setTextViewText(feelsId, formatTemp(hour.feels));
         views.setTextColor(stateId, colorFor(hour.state));
     }
 
@@ -182,8 +184,8 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         views.setTextViewText(iconId, iconFor(day.state));
         views.setTextViewText(stateId, day.state);
         views.setTextViewText(tempId, formatRange(day.minTemp, day.maxTemp));
-        views.setTextViewText(feelsId, "Sens. " + formatRange(day.minFeels, day.maxFeels));
-        views.setTextViewText(snowId, "❄ " + formatSnow(day.snowCm));
+        views.setTextViewText(feelsId, formatRange(day.minFeels, day.maxFeels));
+        views.setTextViewText(snowId, formatSnow(day.snowCm));
         views.setTextColor(stateId, colorFor(day.state));
     }
 
@@ -196,8 +198,8 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
 
     private static JSONObject fetchForecast(Place place) throws Exception {
         String timezone = Uri.encode("America/Argentina/Buenos_Aires");
-        String current = "temperature_2m,apparent_temperature,weather_code,snowfall";
-        String hourly = "temperature_2m,apparent_temperature,weather_code,snowfall";
+        String current = "temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code";
+        String hourly = "temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code";
         String daily = "weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,snowfall_sum";
         String endpoint = String.format(Locale.US,
                 "https://api.open-meteo.com/v1/forecast?latitude=%.5f&longitude=%.5f&elevation=%d&current=%s&hourly=%s&daily=%s&forecast_days=3&timezone=%s&temperature_unit=celsius&precipitation_unit=mm",
@@ -208,7 +210,7 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         connection.setReadTimeout(8000);
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Accept", "application/json");
-        connection.setRequestProperty("User-Agent", "BariSnowAndroidWidget/1.2");
+        connection.setRequestProperty("User-Agent", "BariSnowAndroidWidget/1.2.1");
 
         int status = connection.getResponseCode();
         if (status < 200 || status >= 300) throw new IllegalStateException("HTTP " + status);
@@ -234,9 +236,16 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         data.now = new HourData();
         data.now.temp = current.optDouble("temperature_2m", Double.NaN);
         data.now.feels = current.optDouble("apparent_temperature", Double.NaN);
-        int currentCode = current.optInt("weather_code", -1);
-        double currentSnow = current.optDouble("snowfall", 0);
-        data.now.state = currentState(currentCode, currentSnow);
+        data.now.clock = clockFromIso(current.optString("time", ""));
+        data.now.state = currentState(
+                current.optInt("weather_code", -1),
+                current.optDouble("snowfall", 0),
+                current.optDouble("precipitation", 0),
+                current.optDouble("rain", 0),
+                current.optDouble("showers", 0),
+                data.now.temp,
+                current.optDouble("relative_humidity_2m", Double.NaN)
+        );
 
         JSONArray times = hourly.optJSONArray("time");
         int firstFuture = firstFutureHourIndex(times, current.optString("time", ""));
@@ -266,9 +275,14 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         HourData hour = new HourData();
         hour.temp = arrayDouble(hourly.optJSONArray("temperature_2m"), index);
         hour.feels = arrayDouble(hourly.optJSONArray("apparent_temperature"), index);
+        hour.clock = clockFromIso(arrayString(hourly.optJSONArray("time"), index));
         int code = arrayInt(hourly.optJSONArray("weather_code"), index, -1);
         double snow = arrayDouble(hourly.optJSONArray("snowfall"), index, 0);
-        hour.state = currentState(code, snow);
+        double precip = arrayDouble(hourly.optJSONArray("precipitation"), index, 0);
+        double rain = arrayDouble(hourly.optJSONArray("rain"), index, 0);
+        double showers = arrayDouble(hourly.optJSONArray("showers"), index, 0);
+        double rh = arrayDouble(hourly.optJSONArray("relative_humidity_2m"), index);
+        hour.state = forecastState(code, snow, precip, rain, showers, hour.temp, rh);
         return hour;
     }
 
@@ -280,37 +294,67 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         day.minFeels = arrayDouble(daily.optJSONArray("apparent_temperature_min"), index);
         day.maxFeels = arrayDouble(daily.optJSONArray("apparent_temperature_max"), index);
         day.snowCm = Math.max(0, arrayDouble(daily.optJSONArray("snowfall_sum"), index, 0));
-        day.state = dailyState(code, day.snowCm);
+        day.state = dailyState(code, day.snowCm, day.maxTemp);
         return day;
     }
 
-    private static String currentState(int code, double snow) {
-        if (code == 85 || code == 86) return "CHAPARRÓN";
-        if (isSnowCode(code) || snow > 0.005) return "NIEVA";
+    private static String currentState(int code, double snow, double precip, double rain, double showers, double temp, double rh) {
+        if (code == 85 || code == 86) return "CHAPARRÓN DE NIEVE";
+        if (code == 77) return "NIEVE GRANULADA";
+        if (code == 71 || code == 73 || code == 75 || snow >= 0.05) return "NIEVA";
+        if (snow >= 0.01) return "COPOS AISLADOS";
+        double tw = wetBulb(temp, rh);
+        if (precip > 0 && !Double.isNaN(tw) && tw <= 0.55) return "NIEVA";
+        if ((rain > 0 || showers > 0 || precip > 0) && !Double.isNaN(tw) && tw <= 1.5) return "LLUVIA Y NIEVE";
         return "SIN NIEVE";
     }
 
-    private static String dailyState(int code, double snowCm) {
-        if (code == 85 || code == 86) return "CHAPARRONES";
-        if (snowCm >= 2.0) return "NEVADA";
-        if (isSnowCode(code) || snowCm >= 0.05) return "NIEVE";
+    private static String forecastState(int code, double snow, double precip, double rain, double showers, double temp, double rh) {
+        if (snow >= 0.8) return "NEVADA ACUMULABLE";
+        if (code == 85 || code == 86) return "CHAPARRÓN DE NIEVE";
+        if (code == 77) return "NIEVE GRANULADA";
+        if (code == 71 || code == 73 || code == 75 || snow >= 0.16) return "NIEVA";
+        double tw = wetBulb(temp, rh);
+        if (snow >= 0.03 && !Double.isNaN(tw) && tw > 0.5) return "NIEVE HÚMEDA";
+        if ((rain > 0 || showers > 0 || precip > 0) && !Double.isNaN(tw) && tw <= 1.5) return "LLUVIA Y NIEVE";
+        if (snow >= 0.01) return "COPOS AISLADOS";
         return "SIN NIEVE";
     }
 
-    private static boolean isSnowCode(int code) {
-        return code == 71 || code == 73 || code == 75 || code == 77 || code == 85 || code == 86;
+    private static String dailyState(int code, double snowCm, double maxTemp) {
+        if (snowCm >= 2.0) return "NEVADA ACUMULABLE";
+        if (code == 85 || code == 86) return "CHAPARRÓN DE NIEVE";
+        if (snowCm >= 0.3 || code == 71 || code == 73 || code == 75) {
+            if (!Double.isNaN(maxTemp) && maxTemp > 1.5 && snowCm < 1.0) return "NIEVE HÚMEDA";
+            return "NIEVA";
+        }
+        if (code == 77) return "NIEVE GRANULADA";
+        if (snowCm >= 0.05) return "COPOS AISLADOS";
+        return "SIN NIEVE";
+    }
+
+    private static double wetBulb(double temp, double rh) {
+        if (Double.isNaN(temp) || Double.isNaN(rh)) return Double.NaN;
+        double h = Math.max(1, Math.min(100, rh));
+        return temp * Math.atan(0.151977 * Math.sqrt(h + 8.313659))
+                + Math.atan(temp + h)
+                - Math.atan(h - 1.676331)
+                + 0.00391838 * Math.pow(h, 1.5) * Math.atan(0.023101 * h)
+                - 4.686035;
     }
 
     private static String iconFor(String state) {
-        if (state.contains("CHAPARR")) return "🌨";
-        if (state.contains("NIEVE") || state.contains("NEVADA") || state.equals("NIEVA")) return "❄";
-        return "☁";
+        if ("SIN NIEVE".equals(state)) return "⛅";
+        if (state.contains("LLUVIA") || state.contains("HÚMEDA") || state.contains("CHAPARRÓN")) return "🌨";
+        return "❄";
     }
 
     private static int colorFor(String state) {
-        if (state.contains("NEVADA")) return Color.rgb(255, 183, 77);
-        if (state.contains("NIEVE") || state.equals("NIEVA") || state.contains("CHAPARR")) return Color.rgb(120, 223, 255);
-        return Color.rgb(167, 196, 216);
+        if (state.contains("NEVADA ACUMULABLE")) return Color.rgb(241, 112, 126);
+        if (state.equals("NIEVA") || state.contains("CHAPARRÓN")) return Color.rgb(243, 162, 76);
+        if (state.contains("HÚMEDA") || state.contains("LLUVIA") || state.contains("GRANULADA")) return Color.rgb(233, 200, 92);
+        if (state.contains("COPOS")) return Color.rgb(93, 183, 255);
+        return Color.rgb(91, 214, 160);
     }
 
     private static String formatTemp(double value) {
@@ -324,9 +368,17 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
     }
 
     private static String formatSnow(double cm) {
-        if (Double.isNaN(cm) || cm < 0.05) return "0 cm";
+        if (Double.isNaN(cm) || cm < 0.03) return "0 cm";
+        if (cm < 0.12) return "Traza";
         if (cm < 1) return String.format(Locale.getDefault(), "%.1f cm", cm);
         return String.format(Locale.getDefault(), "%.0f cm", cm);
+    }
+
+    private static String clockFromIso(String iso) {
+        if (iso == null) return "—";
+        int t = iso.indexOf('T');
+        if (t < 0 || iso.length() < t + 6) return "—";
+        return iso.substring(t + 1, t + 6);
     }
 
     private static String localClock() {
@@ -347,6 +399,11 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
     private static int arrayInt(JSONArray array, int index, int fallback) {
         if (array == null || index < 0 || index >= array.length() || array.isNull(index)) return fallback;
         return array.optInt(index, fallback);
+    }
+
+    private static String arrayString(JSONArray array, int index) {
+        if (array == null || index < 0 || index >= array.length() || array.isNull(index)) return "";
+        return array.optString(index, "");
     }
 
     private static void saveCache(Context context, String zoneKey, String json) {
@@ -396,6 +453,7 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
 
     private static final class HourData {
         String state;
+        String clock;
         double temp;
         double feels;
     }
