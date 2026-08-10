@@ -123,21 +123,29 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
 
     private static RemoteViews loadingViews(Context context, Place place) {
         RemoteViews views = baseViews(context, place);
-        views.setTextViewText(R.id.now_state, "ACTUALIZANDO…");
-        views.setTextViewText(R.id.now_temp, "—");
-        views.setTextViewText(R.id.now_feels, "Sens. —");
+        setHourLoading(views, R.id.now_state, R.id.now_temp, R.id.now_feels, "ACTUALIZANDO…");
+        setHourLoading(views, R.id.plus1_state, R.id.plus1_temp, R.id.plus1_feels, "—");
+        setHourLoading(views, R.id.plus2_state, R.id.plus2_temp, R.id.plus2_feels, "—");
+        setHourLoading(views, R.id.plus3_state, R.id.plus3_temp, R.id.plus3_feels, "—");
         views.setTextViewText(R.id.day1_state, "—");
         views.setTextViewText(R.id.day2_state, "—");
         views.setTextViewText(R.id.widget_updated, "Buscando datos…");
         return views;
     }
 
+    private static void setHourLoading(RemoteViews views, int stateId, int tempId, int feelsId, String state) {
+        views.setTextViewText(stateId, state);
+        views.setTextViewText(tempId, "—");
+        views.setTextViewText(feelsId, "Sens. —");
+    }
+
     private static RemoteViews errorViews(Context context, Place place) {
         RemoteViews views = baseViews(context, place);
         views.setTextViewText(R.id.now_icon, "❄");
-        views.setTextViewText(R.id.now_state, "SIN CONEXIÓN");
-        views.setTextViewText(R.id.now_temp, "—");
-        views.setTextViewText(R.id.now_feels, "Sens. —");
+        setHourLoading(views, R.id.now_state, R.id.now_temp, R.id.now_feels, "SIN CONEXIÓN");
+        setHourLoading(views, R.id.plus1_state, R.id.plus1_temp, R.id.plus1_feels, "—");
+        setHourLoading(views, R.id.plus2_state, R.id.plus2_temp, R.id.plus2_feels, "—");
+        setHourLoading(views, R.id.plus3_state, R.id.plus3_temp, R.id.plus3_feels, "—");
         views.setTextViewText(R.id.day1_state, "Tocá ↻ para reintentar");
         views.setTextViewText(R.id.day2_state, "—");
         views.setTextViewText(R.id.widget_updated, "No se pudo actualizar");
@@ -146,17 +154,22 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
 
     private static RemoteViews dataViews(Context context, WidgetData data) {
         RemoteViews views = baseViews(context, data.place);
-
-        views.setTextViewText(R.id.now_icon, iconFor(data.nowState));
-        views.setTextViewText(R.id.now_state, data.nowState);
-        views.setTextViewText(R.id.now_temp, formatTemp(data.nowTemp));
-        views.setTextViewText(R.id.now_feels, "Sens. " + formatTemp(data.nowFeels));
-        views.setTextColor(R.id.now_state, colorFor(data.nowState));
-
+        applyHour(views, R.id.now_icon, R.id.now_state, R.id.now_temp, R.id.now_feels, data.now);
+        applyHour(views, R.id.plus1_icon, R.id.plus1_state, R.id.plus1_temp, R.id.plus1_feels, data.plus1);
+        applyHour(views, R.id.plus2_icon, R.id.plus2_state, R.id.plus2_temp, R.id.plus2_feels, data.plus2);
+        applyHour(views, R.id.plus3_icon, R.id.plus3_state, R.id.plus3_temp, R.id.plus3_feels, data.plus3);
         applyDay(views, true, data.tomorrow);
         applyDay(views, false, data.dayAfter);
         views.setTextViewText(R.id.widget_updated, data.updated);
         return views;
+    }
+
+    private static void applyHour(RemoteViews views, int iconId, int stateId, int tempId, int feelsId, HourData hour) {
+        views.setTextViewText(iconId, iconFor(hour.state));
+        views.setTextViewText(stateId, hour.state);
+        views.setTextViewText(tempId, formatTemp(hour.temp));
+        views.setTextViewText(feelsId, "Sens. " + formatTemp(hour.feels));
+        views.setTextColor(stateId, colorFor(hour.state));
     }
 
     private static void applyDay(RemoteViews views, boolean first, DayData day) {
@@ -184,17 +197,18 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
     private static JSONObject fetchForecast(Place place) throws Exception {
         String timezone = Uri.encode("America/Argentina/Buenos_Aires");
         String current = "temperature_2m,apparent_temperature,weather_code,snowfall";
+        String hourly = "temperature_2m,apparent_temperature,weather_code,snowfall";
         String daily = "weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,snowfall_sum";
         String endpoint = String.format(Locale.US,
-                "https://api.open-meteo.com/v1/forecast?latitude=%.5f&longitude=%.5f&elevation=%d&current=%s&daily=%s&forecast_days=3&timezone=%s&temperature_unit=celsius&precipitation_unit=mm",
-                place.lat, place.lon, place.elev, current, daily, timezone);
+                "https://api.open-meteo.com/v1/forecast?latitude=%.5f&longitude=%.5f&elevation=%d&current=%s&hourly=%s&daily=%s&forecast_days=3&timezone=%s&temperature_unit=celsius&precipitation_unit=mm",
+                place.lat, place.lon, place.elev, current, hourly, daily, timezone);
 
         HttpURLConnection connection = (HttpURLConnection) new URL(endpoint).openConnection();
         connection.setConnectTimeout(8000);
         connection.setReadTimeout(8000);
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Accept", "application/json");
-        connection.setRequestProperty("User-Agent", "BariSnowAndroidWidget/1.1");
+        connection.setRequestProperty("User-Agent", "BariSnowAndroidWidget/1.2");
 
         int status = connection.getResponseCode();
         if (status < 200 || status >= 300) throw new IllegalStateException("HTTP " + status);
@@ -211,21 +225,51 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
 
     private static WidgetData parseForecast(JSONObject json, Place place) {
         JSONObject current = json.optJSONObject("current");
+        JSONObject hourly = json.optJSONObject("hourly");
         JSONObject daily = json.optJSONObject("daily");
-        if (current == null || daily == null) throw new IllegalArgumentException("Datos incompletos");
+        if (current == null || hourly == null || daily == null) throw new IllegalArgumentException("Datos incompletos");
 
         WidgetData data = new WidgetData();
         data.place = place;
-        data.nowTemp = current.optDouble("temperature_2m", Double.NaN);
-        data.nowFeels = current.optDouble("apparent_temperature", Double.NaN);
+        data.now = new HourData();
+        data.now.temp = current.optDouble("temperature_2m", Double.NaN);
+        data.now.feels = current.optDouble("apparent_temperature", Double.NaN);
         int currentCode = current.optInt("weather_code", -1);
         double currentSnow = current.optDouble("snowfall", 0);
-        data.nowState = currentState(currentCode, currentSnow);
+        data.now.state = currentState(currentCode, currentSnow);
+
+        JSONArray times = hourly.optJSONArray("time");
+        int firstFuture = firstFutureHourIndex(times, current.optString("time", ""));
+        if (firstFuture < 0 || firstFuture + 2 >= (times == null ? 0 : times.length())) {
+            throw new IllegalArgumentException("Horizonte horario incompleto");
+        }
+        data.plus1 = readHour(hourly, firstFuture);
+        data.plus2 = readHour(hourly, firstFuture + 1);
+        data.plus3 = readHour(hourly, firstFuture + 2);
 
         data.tomorrow = readDay(daily, 1);
         data.dayAfter = readDay(daily, 2);
         data.updated = "Actualizado " + localClock();
         return data;
+    }
+
+    private static int firstFutureHourIndex(JSONArray times, String currentTime) {
+        if (times == null || currentTime == null || currentTime.isEmpty()) return -1;
+        for (int i = 0; i < times.length(); i++) {
+            String time = times.optString(i, "");
+            if (!time.isEmpty() && time.compareTo(currentTime) > 0) return i;
+        }
+        return -1;
+    }
+
+    private static HourData readHour(JSONObject hourly, int index) {
+        HourData hour = new HourData();
+        hour.temp = arrayDouble(hourly.optJSONArray("temperature_2m"), index);
+        hour.feels = arrayDouble(hourly.optJSONArray("apparent_temperature"), index);
+        int code = arrayInt(hourly.optJSONArray("weather_code"), index, -1);
+        double snow = arrayDouble(hourly.optJSONArray("snowfall"), index, 0);
+        hour.state = currentState(code, snow);
+        return hour;
     }
 
     private static DayData readDay(JSONObject daily, int index) {
@@ -241,13 +285,13 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
     }
 
     private static String currentState(int code, double snow) {
-        if (code == 85 || code == 86) return "CHAPARRÓN DE NIEVE";
+        if (code == 85 || code == 86) return "CHAPARRÓN";
         if (isSnowCode(code) || snow > 0.005) return "NIEVA";
         return "SIN NIEVE";
     }
 
     private static String dailyState(int code, double snowCm) {
-        if (code == 85 || code == 86) return "CHAPARRONES DE NIEVE";
+        if (code == 85 || code == 86) return "CHAPARRONES";
         if (snowCm >= 2.0) return "NEVADA";
         if (isSnowCode(code) || snowCm >= 0.05) return "NIEVE";
         return "SIN NIEVE";
@@ -265,7 +309,7 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
 
     private static int colorFor(String state) {
         if (state.contains("NEVADA")) return Color.rgb(255, 183, 77);
-        if (state.contains("NIEVE") || state.equals("NIEVA")) return Color.rgb(120, 223, 255);
+        if (state.contains("NIEVE") || state.equals("NIEVA") || state.contains("CHAPARR")) return Color.rgb(120, 223, 255);
         return Color.rgb(167, 196, 216);
     }
 
@@ -341,12 +385,19 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
 
     private static final class WidgetData {
         Place place;
-        String nowState;
-        double nowTemp;
-        double nowFeels;
+        HourData now;
+        HourData plus1;
+        HourData plus2;
+        HourData plus3;
         DayData tomorrow;
         DayData dayAfter;
         String updated;
+    }
+
+    private static final class HourData {
+        String state;
+        double temp;
+        double feels;
     }
 
     private static final class DayData {
