@@ -8,22 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.net.Uri;
 import android.widget.RemoteViews;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 public class BariSnowWidgetProvider extends AppWidgetProvider {
     public static final String ACTION_REFRESH = "com.barisnow.app.ACTION_WIDGET_REFRESH";
@@ -35,15 +24,15 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
     private static final Map<String, Place> PLACES = new HashMap<>();
 
     static {
-        PLACES.put("bustillo_95", new Place("bustillo_95", "Bustillo km 9,5 / Centro Atómico", -41.11369, -71.41412, 800));
-        PLACES.put("lago_moreno", new Place("lago_moreno", "Barrio Lago Moreno", -41.1000, -71.4500, 778));
-        PLACES.put("melipal", new Place("melipal", "Barrio Melipal", -41.1240, -71.3660, 790));
-        PLACES.put("centro", new Place("centro", "Barrio Centro", -41.1343, -71.3085, 770));
-        PLACES.put("las_victorias", new Place("las_victorias", "Las Victorias", -41.1355, -71.2540, 780));
-        PLACES.put("dina_huapi", new Place("dina_huapi", "Dina Huapi", -41.0705, -71.1635, 780));
-        PLACES.put("cerro_catedral", new Place("cerro_catedral", "Cerro Catedral", -41.1677, -71.4381, 1030));
-        PLACES.put("llao_llao", new Place("llao_llao", "Llao Llao", -41.0525, -71.5310, 785));
-        PLACES.put("el_alto", new Place("el_alto", "El Alto / Frutillar / 2 de Abril", -41.1678, -71.3389, 860));
+        PLACES.put("bustillo_95", new Place("bustillo_95", "Bustillo km 9,5 / Centro Atómico", -41.11369, -71.41412, 800, .44, -.1));
+        PLACES.put("lago_moreno", new Place("lago_moreno", "Barrio Lago Moreno", -41.1000, -71.4500, 778, .42, 0));
+        PLACES.put("melipal", new Place("melipal", "Barrio Melipal", -41.1240, -71.3660, 790, .34, 0));
+        PLACES.put("centro", new Place("centro", "Barrio Centro", -41.1343, -71.3085, 770, .24, .2));
+        PLACES.put("las_victorias", new Place("las_victorias", "Las Victorias", -41.1355, -71.2540, 780, .18, .1));
+        PLACES.put("dina_huapi", new Place("dina_huapi", "Dina Huapi", -41.0705, -71.1635, 780, .12, .1));
+        PLACES.put("cerro_catedral", new Place("cerro_catedral", "Cerro Catedral", -41.1677, -71.4381, 1030, .58, -1.4));
+        PLACES.put("llao_llao", new Place("llao_llao", "Llao Llao", -41.0525, -71.5310, 785, .48, -.1));
+        PLACES.put("el_alto", new Place("el_alto", "El Alto / Frutillar / 2 de Abril", -41.1678, -71.3389, 860, .32, -.4));
     }
 
     protected Class<? extends AppWidgetProvider> providerClass() {
@@ -99,15 +88,14 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         for (int id : ids) manager.updateAppWidget(id, loadingViews(context, place));
 
         try {
-            JSONObject json = fetchForecast(place);
-            WidgetData data = parseForecast(json, place);
-            saveCache(context, place.key, json.toString());
+            WidgetData data = BariSnowForecastEngine.fetch(place);
+            saveCache(context, place.key, BariSnowForecastEngine.toCache(data));
             for (int id : ids) manager.updateAppWidget(id, dataViews(context, data));
         } catch (Exception error) {
             try {
-                JSONObject cached = loadCache(context, place.key);
+                String cached = loadCache(context, place.key);
                 if (cached != null) {
-                    WidgetData data = parseForecast(cached, place);
+                    WidgetData data = BariSnowForecastEngine.fromCache(cached, place);
                     data.updated = "Dato guardado";
                     for (int id : ids) manager.updateAppWidget(id, dataViews(context, data));
                     return;
@@ -213,152 +201,6 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         return place != null ? place : PLACES.get(DEFAULT_ZONE);
     }
 
-    private static JSONObject fetchForecast(Place place) throws Exception {
-        String timezone = Uri.encode("America/Argentina/Buenos_Aires");
-        String current = "temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code";
-        String hourly = "temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code";
-        String daily = "weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,snowfall_sum";
-        String endpoint = String.format(Locale.US,
-                "https://api.open-meteo.com/v1/forecast?latitude=%.5f&longitude=%.5f&elevation=%d&current=%s&hourly=%s&daily=%s&forecast_days=3&timezone=%s&temperature_unit=celsius&precipitation_unit=mm",
-                place.lat, place.lon, place.elev, current, hourly, daily, timezone);
-
-        HttpURLConnection connection = (HttpURLConnection) new URL(endpoint).openConnection();
-        connection.setConnectTimeout(8000);
-        connection.setReadTimeout(8000);
-        connection.setRequestMethod("GET");
-        connection.setRequestProperty("Accept", "application/json");
-        connection.setRequestProperty("User-Agent", "BariSnowAndroidWidget/1.3");
-
-        int status = connection.getResponseCode();
-        if (status < 200 || status >= 300) throw new IllegalStateException("HTTP " + status);
-
-        StringBuilder body = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-            String line;
-            while ((line = reader.readLine()) != null) body.append(line);
-        } finally {
-            connection.disconnect();
-        }
-        return new JSONObject(body.toString());
-    }
-
-    private static WidgetData parseForecast(JSONObject json, Place place) {
-        JSONObject current = json.optJSONObject("current");
-        JSONObject hourly = json.optJSONObject("hourly");
-        JSONObject daily = json.optJSONObject("daily");
-        if (current == null || hourly == null || daily == null) throw new IllegalArgumentException("Datos incompletos");
-
-        WidgetData data = new WidgetData();
-        data.place = place;
-        data.now = new HourData();
-        data.now.temp = current.optDouble("temperature_2m", Double.NaN);
-        data.now.feels = current.optDouble("apparent_temperature", Double.NaN);
-        data.now.clock = clockFromIso(current.optString("time", ""));
-        data.now.state = currentState(
-                current.optInt("weather_code", -1),
-                current.optDouble("snowfall", 0),
-                current.optDouble("precipitation", 0),
-                current.optDouble("rain", 0),
-                current.optDouble("showers", 0),
-                data.now.temp,
-                current.optDouble("relative_humidity_2m", Double.NaN)
-        );
-
-        JSONArray times = hourly.optJSONArray("time");
-        int firstFuture = firstFutureHourIndex(times, current.optString("time", ""));
-        if (firstFuture < 0 || firstFuture + 2 >= (times == null ? 0 : times.length())) {
-            throw new IllegalArgumentException("Horizonte horario incompleto");
-        }
-        data.plus1 = readHour(hourly, firstFuture);
-        data.plus2 = readHour(hourly, firstFuture + 1);
-        data.plus3 = readHour(hourly, firstFuture + 2);
-        data.tomorrow = readDay(daily, 1);
-        data.dayAfter = readDay(daily, 2);
-        data.updated = "Actualizado " + localClock();
-        return data;
-    }
-
-    private static int firstFutureHourIndex(JSONArray times, String currentTime) {
-        if (times == null || currentTime == null || currentTime.isEmpty()) return -1;
-        for (int i = 0; i < times.length(); i++) {
-            String time = times.optString(i, "");
-            if (!time.isEmpty() && time.compareTo(currentTime) > 0) return i;
-        }
-        return -1;
-    }
-
-    private static HourData readHour(JSONObject hourly, int index) {
-        HourData hour = new HourData();
-        hour.temp = arrayDouble(hourly.optJSONArray("temperature_2m"), index);
-        hour.feels = arrayDouble(hourly.optJSONArray("apparent_temperature"), index);
-        hour.clock = clockFromIso(arrayString(hourly.optJSONArray("time"), index));
-        int code = arrayInt(hourly.optJSONArray("weather_code"), index, -1);
-        double snow = arrayDouble(hourly.optJSONArray("snowfall"), index, 0);
-        double precip = arrayDouble(hourly.optJSONArray("precipitation"), index, 0);
-        double rain = arrayDouble(hourly.optJSONArray("rain"), index, 0);
-        double showers = arrayDouble(hourly.optJSONArray("showers"), index, 0);
-        double rh = arrayDouble(hourly.optJSONArray("relative_humidity_2m"), index);
-        hour.state = forecastState(code, snow, precip, rain, showers, hour.temp, rh);
-        return hour;
-    }
-
-    private static DayData readDay(JSONObject daily, int index) {
-        DayData day = new DayData();
-        int code = arrayInt(daily.optJSONArray("weather_code"), index, -1);
-        day.minTemp = arrayDouble(daily.optJSONArray("temperature_2m_min"), index);
-        day.maxTemp = arrayDouble(daily.optJSONArray("temperature_2m_max"), index);
-        day.minFeels = arrayDouble(daily.optJSONArray("apparent_temperature_min"), index);
-        day.maxFeels = arrayDouble(daily.optJSONArray("apparent_temperature_max"), index);
-        day.snowCm = Math.max(0, arrayDouble(daily.optJSONArray("snowfall_sum"), index, 0));
-        day.state = dailyState(code, day.snowCm, day.maxTemp);
-        return day;
-    }
-
-    private static String currentState(int code, double snow, double precip, double rain, double showers, double temp, double rh) {
-        if (code == 85 || code == 86) return "CHAPARRÓN DE NIEVE";
-        if (code == 77) return "NIEVE GRANULADA";
-        if (code == 71 || code == 73 || code == 75 || snow >= 0.05) return "NIEVA";
-        if (snow >= 0.01) return "COPOS AISLADOS";
-        double tw = wetBulb(temp, rh);
-        if (precip > 0 && !Double.isNaN(tw) && tw <= 0.55) return "NIEVA";
-        if ((rain > 0 || showers > 0 || precip > 0) && !Double.isNaN(tw) && tw <= 1.5) return "LLUVIA Y NIEVE";
-        return "SIN NIEVE";
-    }
-
-    private static String forecastState(int code, double snow, double precip, double rain, double showers, double temp, double rh) {
-        if (snow >= 0.8) return "NEVADA ACUMULABLE";
-        if (code == 85 || code == 86) return "CHAPARRÓN DE NIEVE";
-        if (code == 77) return "NIEVE GRANULADA";
-        if (code == 71 || code == 73 || code == 75 || snow >= 0.16) return "NIEVA";
-        double tw = wetBulb(temp, rh);
-        if (snow >= 0.03 && !Double.isNaN(tw) && tw > 0.5) return "NIEVE HÚMEDA";
-        if ((rain > 0 || showers > 0 || precip > 0) && !Double.isNaN(tw) && tw <= 1.5) return "LLUVIA Y NIEVE";
-        if (snow >= 0.01) return "COPOS AISLADOS";
-        return "SIN NIEVE";
-    }
-
-    private static String dailyState(int code, double snowCm, double maxTemp) {
-        if (snowCm >= 2.0) return "NEVADA ACUMULABLE";
-        if (code == 85 || code == 86) return "CHAPARRÓN DE NIEVE";
-        if (snowCm >= 0.3 || code == 71 || code == 73 || code == 75) {
-            if (!Double.isNaN(maxTemp) && maxTemp > 1.5 && snowCm < 1.0) return "NIEVE HÚMEDA";
-            return "NIEVA";
-        }
-        if (code == 77) return "NIEVE GRANULADA";
-        if (snowCm >= 0.05) return "COPOS AISLADOS";
-        return "SIN NIEVE";
-    }
-
-    private static double wetBulb(double temp, double rh) {
-        if (Double.isNaN(temp) || Double.isNaN(rh)) return Double.NaN;
-        double h = Math.max(1, Math.min(100, rh));
-        return temp * Math.atan(0.151977 * Math.sqrt(h + 8.313659))
-                + Math.atan(temp + h)
-                - Math.atan(h - 1.676331)
-                + 0.00391838 * Math.pow(h, 1.5) * Math.atan(0.023101 * h)
-                - 4.686035;
-    }
-
     protected static String iconFor(String state) {
         if ("SIN NIEVE".equals(state)) return "⛅";
         if (state.contains("LLUVIA") || state.contains("HÚMEDA") || state.contains("CHAPARRÓN")) return "🌨";
@@ -390,38 +232,6 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         return String.format(Locale.getDefault(), "%.0f cm", cm);
     }
 
-    private static String clockFromIso(String iso) {
-        if (iso == null) return "—";
-        int t = iso.indexOf('T');
-        if (t < 0 || iso.length() < t + 6) return "—";
-        return iso.substring(t + 1, t + 6);
-    }
-
-    private static String localClock() {
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        format.setTimeZone(TimeZone.getTimeZone("America/Argentina/Buenos_Aires"));
-        return format.format(new Date());
-    }
-
-    private static double arrayDouble(JSONArray array, int index) {
-        return arrayDouble(array, index, Double.NaN);
-    }
-
-    private static double arrayDouble(JSONArray array, int index, double fallback) {
-        if (array == null || index < 0 || index >= array.length() || array.isNull(index)) return fallback;
-        return array.optDouble(index, fallback);
-    }
-
-    private static int arrayInt(JSONArray array, int index, int fallback) {
-        if (array == null || index < 0 || index >= array.length() || array.isNull(index)) return fallback;
-        return array.optInt(index, fallback);
-    }
-
-    private static String arrayString(JSONArray array, int index) {
-        if (array == null || index < 0 || index >= array.length() || array.isNull(index)) return "";
-        return array.optString(index, "");
-    }
-
     private static void saveCache(Context context, String zoneKey, String json) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
                 .edit()
@@ -429,15 +239,9 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
                 .apply();
     }
 
-    private static JSONObject loadCache(Context context, String zoneKey) {
-        String raw = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+    private static String loadCache(Context context, String zoneKey) {
+        return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
                 .getString("widget_cache_" + zoneKey, null);
-        if (raw == null) return null;
-        try {
-            return new JSONObject(raw);
-        } catch (Exception ignored) {
-            return null;
-        }
     }
 
     protected static final class Place {
@@ -446,13 +250,17 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         final double lat;
         final double lon;
         final int elev;
+        final double oro;
+        final double coldBias;
 
-        Place(String key, String name, double lat, double lon, int elev) {
+        Place(String key, String name, double lat, double lon, int elev, double oro, double coldBias) {
             this.key = key;
             this.name = name;
             this.lat = lat;
             this.lon = lon;
             this.elev = elev;
+            this.oro = oro;
+            this.coldBias = coldBias;
         }
     }
 
