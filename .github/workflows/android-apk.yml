@@ -1,4 +1,4 @@
-name: Build BariSnow Android APK
+name: Build BariSnow Android
 
 on:
   workflow_dispatch:
@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 jobs:
-  build-apk:
+  build-android:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -31,22 +31,32 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Android platform
-        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Install Android 16 platform
+        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.9'
+          gradle-version: '8.13'
 
       - name: Build debug APK
         run: gradle -p android-app assembleDebug --no-daemon
+
+      - name: Build release AAB
+        run: gradle -p android-app bundleRelease --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: BariSnow-APK
           path: android-app/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+
+      - name: Upload Play AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: BariSnow-Play-AAB-unsigned
+          path: android-app/app/build/outputs/bundle/release/app-release.aab
           if-no-files-found: error
 
       - name: Publish APK to GitHub Pages source
