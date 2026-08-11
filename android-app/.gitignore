@@ -1,0 +1,15 @@
+# Android / Gradle
+.gradle/
+**/build/
+local.properties
+
+# Claves y material de firma: NUNCA versionar
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+
+# Bundles y APK locales
+*.aab
+*.apk
