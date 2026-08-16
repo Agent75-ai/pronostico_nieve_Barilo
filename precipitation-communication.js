@@ -1,0 +1,262 @@
+(function(){
+  "use strict";
+
+  var baseRenderMain=window.renderMain;
+  var baseRenderHours=window.renderHours;
+  var baseRenderDays=window.renderDays;
+  var baseRenderQuick=window.renderQuick;
+  var baseRenderPlaces=window.renderPlaces;
+  var currentSeq=0,currentCat=null,applyingCurrent=false;
+
+  function n(x,d){return finite(x)?Number(x):d;}
+  function snowShowerCode(code){return code===85||code===86;}
+  function currentSnowCode(code){return code===71||code===73||code===75;}
+  function freezingDrizzleCode(code){return code===56||code===57;}
+  function freezingRainCode(code){return code===66||code===67;}
+  function drizzleCode(code){return code===51||code===53||code===55;}
+  function thunderCode(code){return code===95||code===96||code===99;}
+  function rainShowerCode(code){return code===80||code===81||code===82;}
+
+  function agreement(row){
+    if(!row)return "—";
+    var members=n(row.members,1);
+    if(members<=1)return "1 fuente";
+    return "Acuerdo "+Math.round(clamp(n(row.precipConsensus,n(row.consensus,.5)),0,1)*100)+"%";
+  }
+
+  function snowCategory(row){
+    if(!row)return {headline:"SIN DATO",short:"Sin dato",cls:"blue",rank:-1,family:"none"};
+    var p=n(row.prob,0),c=n(row.cmh,0),idx=n(row.ptypeIdx,0),sf=n(row.snowfall,0),sh=n(row.snowShowerScore,0),tw=n(row.TwEff,9);
+    if(idx>=5||c>=.8)return {headline:"NEVADA ACUMULABLE",short:"Nevada acumulable",cls:"red",rank:15,family:"snow"};
+    if((sh>=.45||n(row.localSnowShower,0)>=.35)&&(idx>=2||p>=.30||sf>=.01))return {headline:"CHAPARRÓN DE NIEVE",short:"Chaparrón de nieve",cls:sh>=.62?"orange":"yellow",rank:14,family:"snow"};
+    if(idx>=4||sf>=.16||(p>=.58&&tw<=.8))return {headline:"NIEVA",short:"Nieve",cls:"orange",rank:14,family:"snow"};
+    if(idx>=3||(p>=.42&&tw<=1.3))return {headline:"NIEVE HÚMEDA",short:"Nieve húmeda",cls:"yellow",rank:13,family:"snow"};
+    if(idx>=2)return {headline:"LLUVIA Y NIEVE",short:"Lluvia y nieve",cls:"yellow",rank:12,family:"mixed"};
+    if(p>=.23||idx>=1||sf>=.01)return {headline:"COPOS AISLADOS",short:"Copos aislados",cls:"blue",rank:11,family:"snow"};
+    return {headline:"SIN NIEVE",short:"Sin nieve",cls:"green",rank:0,family:"none"};
+  }
+
+  function rainCategory(row){
+    if(!row)return {headline:"SIN DATO",short:"Sin dato",cls:"blue",rank:-1,family:"none"};
+    var liquid=Math.max(0,n(row.liquidRate,0)),type=String(row.rainType||""),support=n(row.rainSupport,0);
+    if(n(row.thunderSupport,0)>=.28||type==="thunder")return {headline:"TORMENTA",short:"Tormenta",cls:"red",rank:10,family:"rain"};
+    if(n(row.freezingRainSupport,0)>=.28||type==="freezing_rain")return {headline:"LLUVIA CONGELANTE",short:"Lluvia congelante",cls:"red",rank:9,family:"rain"};
+    if(n(row.freezingDrizzleSupport,0)>=.28||type==="freezing_drizzle")return {headline:"LLOVIZNA CONGELANTE",short:"Llovizna congelante",cls:"orange",rank:9,family:"rain"};
+    if(n(row.violentRainShowerSupport,0)>=.28||type==="rain_shower_heavy")return {headline:"CHAPARRÓN FUERTE",short:"Chaparrón fuerte",cls:"red",rank:8,family:"rain"};
+    if(type==="rain_heavy"||liquid>=5)return {headline:"LLUVIA FUERTE",short:"Lluvia fuerte",cls:"red",rank:8,family:"rain"};
+    if(n(row.rainShowerSupport,0)>=.32||type==="rain_shower")return {headline:"CHAPARRÓN DE LLUVIA",short:"Chaparrón de lluvia",cls:"orange",rank:7,family:"rain"};
+    if(type==="rain_moderate"||liquid>=2)return {headline:"LLUVIA MODERADA",short:"Lluvia moderada",cls:"orange",rank:6,family:"rain"};
+    if(type==="rain_light"||liquid>=.4)return {headline:"LLUVIA DÉBIL",short:"Lluvia débil",cls:"yellow",rank:5,family:"rain"};
+    if(type==="drizzle"||liquid>=.08||support>=.28||n(row.Psignal,0)>=.12)return {headline:"LLOVIZNA",short:"Llovizna",cls:"blue",rank:4,family:"rain"};
+    return {headline:"SIN PRECIPITACIÓN",short:"Sin precipitación",cls:"green",rank:0,family:"none"};
+  }
+
+  function phenomenon(row){
+    var snow=snowCategory(row),rain=rainCategory(row);
+    if(snow.rank>=12)return snow;
+    if(snow.rank===11&&rain.rank<7)return snow;
+    return rain.rank>0?rain:(snow.rank>0?snow:{headline:"SIN PRECIPITACIÓN",short:"Sin precipitación",cls:"green",rank:0,family:"none"});
+  }
+
+  function icon(cat){
+    if(!cat||cat.rank<=0)return "⛅";
+    if(cat.headline==="TORMENTA")return "⛈️";
+    if(cat.family==="snow")return cat.headline.indexOf("CHAPARRÓN")>=0?"🌨️":"❄️";
+    if(cat.family==="mixed")return "🌨️";
+    if(cat.headline.indexOf("CHAPARRÓN")>=0||cat.headline.indexOf("LLOVIZNA")>=0)return "🌦️";
+    return "🌧️";
+  }
+
+  function amount(row,cat){
+    if(cat.family==="snow"||cat.family==="mixed"){
+      var c=Math.max(0,n(row&&row.cmh,0));
+      if(c<.03)return "❄️ 0 cm";
+      if(c<.12)return "❄️ Traza";
+      return "❄️ "+fmt(c,c<1?2:1)+" cm/h";
+    }
+    if(cat.family==="rain"){
+      var mm=Math.max(0,n(row&&row.liquidRate,0));
+      if(mm<.08)return "🌧️ Traza";
+      return "🌧️ "+fmt(mm,mm<1?2:1)+" mm/h";
+    }
+    return "Sin precipitación";
+  }
+
+  function behavior(row,model,cat){
+    if(!cat||cat.rank<=0)return "Sin precipitación";
+    if(cat.headline.indexOf("CHAPARRÓN")>=0||cat.headline==="TORMENTA")return "Intermitente";
+    var i=-1;
+    for(var k=0;k<(model||[]).length;k++)if(model[k].time===row.time){i=k;break;}
+    var prev=i>0?phenomenon(model[i-1]).rank>0:false;
+    var next=i>=0&&i<(model||[]).length-1?phenomenon(model[i+1]).rank>0:false;
+    if(prev&&next)return "Persistente";
+    if(prev||next)return "Por intervalos";
+    return "Aislado";
+  }
+
+  function roadState(row){
+    var snow=snowCategory(row),rain=rainCategory(row),T=n(row&&row.T,99),f=n(row&&row.feels,99),c=n(row&&row.cmh,0),liquid=n(row&&row.liquidRate,n(row&&row.P,0)),gust=n(row&&row.gust,row&&row.wind||0);
+    if(rain.headline==="LLUVIA CONGELANTE"||rain.headline==="LLOVIZNA CONGELANTE")return {label:"ALTO",cls:"red",detail:"Precipitación congelante: riesgo alto de hielo y pérdida de adherencia."};
+    if((c>=1&&T<=1.2)||(snow.rank>=14&&T<=.5))return {label:"ALTO",cls:"red",detail:"Nieve acumulable o hielo: adherencia comprometida."};
+    if(rain.headline==="TORMENTA"||rain.headline==="CHAPARRÓN FUERTE"||liquid>=5)return {label:"MEDIO-ALTO",cls:"orange",detail:"Lluvia intensa o tormenta: agua en calzada y visibilidad reducida."};
+    if(c>=.25||(snow.rank>=12&&T<=2)||(f<=0&&n(row&&row.P,0)>=.5))return {label:"MEDIO-ALTO",cls:"orange",detail:"Nieve húmeda, hielo localizado o baja adherencia."};
+    if(liquid>=.4||rain.rank>=5)return {label:"MEDIO",cls:"yellow",detail:gust>=35?"Calzada mojada con ráfagas y visibilidad variable.":"Calzada mojada; aumentá distancia de frenado."};
+    if(snow.rank>0)return {label:"MEDIO",cls:"yellow",detail:"Nieve localizada o mezcla posible."};
+    return {label:"BAJO",cls:"green",detail:"Sin señal meteorológica relevante para la adherencia."};
+  }
+
+  function nextChange(model){
+    if(!model||!model.length)return {time:"—",text:"Sin datos."};
+    var base=phenomenon(model[0]);
+    for(var h=1;h<=24;h++){
+      var r=horizon(model,h),c=phenomenon(r);
+      if(c.headline!==base.headline)return {time:"En "+h+" h · "+hourOnly(r.time),text:base.short+" → "+c.short+"."};
+    }
+    return {time:"Sin cambio marcado",text:"El fenómeno dominante se mantiene durante las próximas 24 h."};
+  }
+
+  function currentCategory(c,p){
+    var T=n(c&&c.temperature_2m,null),RH=n(c&&c.relative_humidity_2m,null),code=n(c&&c.weather_code,-1),snow=Math.max(0,n(c&&c.snowfall,0)),rain=Math.max(0,n(c&&c.rain,0)),showers=Math.max(0,n(c&&c.showers,0)),precip=Math.max(0,n(c&&c.precipitation,0));
+    var tw=finite(T)&&finite(RH)?wetBulb(T+p.coldBias,RH):99;
+    if(snowShowerCode(code))return {headline:"CHAPARRÓN DE NIEVE",short:"Chaparrón de nieve",cls:"orange",family:"snow",T:T,time:c.time};
+    if(currentSnowCode(code)||snow>=.01)return {headline:"NIEVA",short:"Nieve",cls:snow>=.10?"orange":"yellow",family:"snow",T:T,time:c.time};
+    if(code===77)return {headline:"NIEVE GRANULADA",short:"Nieve granulada",cls:"yellow",family:"snow",T:T,time:c.time};
+    if(freezingRainCode(code))return {headline:"LLUVIA CONGELANTE",short:"Lluvia congelante",cls:"red",family:"rain",T:T,time:c.time};
+    if(freezingDrizzleCode(code))return {headline:"LLOVIZNA CONGELANTE",short:"Llovizna congelante",cls:"orange",family:"rain",T:T,time:c.time};
+    if(precip>0&&tw<=.55)return {headline:"NIEVA",short:"Nieve",cls:"yellow",family:"snow",T:T,time:c.time};
+    if((rain>0||showers>0||precip>0)&&tw<=1.5)return {headline:"LLUVIA Y NIEVE",short:"Lluvia y nieve",cls:"yellow",family:"mixed",T:T,time:c.time};
+    if(thunderCode(code))return {headline:"TORMENTA",short:"Tormenta",cls:"red",family:"rain",T:T,time:c.time};
+    if(code===82)return {headline:"CHAPARRÓN FUERTE",short:"Chaparrón fuerte",cls:"red",family:"rain",T:T,time:c.time};
+    if(rainShowerCode(code))return {headline:"CHAPARRÓN DE LLUVIA",short:"Chaparrón de lluvia",cls:"orange",family:"rain",T:T,time:c.time};
+    if(drizzleCode(code))return {headline:"LLOVIZNA",short:"Llovizna",cls:"blue",family:"rain",T:T,time:c.time};
+    if(code===65)return {headline:"LLUVIA FUERTE",short:"Lluvia fuerte",cls:"red",family:"rain",T:T,time:c.time};
+    if(code===63)return {headline:"LLUVIA MODERADA",short:"Lluvia moderada",cls:"orange",family:"rain",T:T,time:c.time};
+    if(code===61)return {headline:"LLUVIA DÉBIL",short:"Lluvia débil",cls:"yellow",family:"rain",T:T,time:c.time};
+    var liquid=rain+showers;
+    if(showers>=.15)return {headline:"CHAPARRÓN DE LLUVIA",short:"Chaparrón de lluvia",cls:"yellow",family:"rain",T:T,time:c.time};
+    if(liquid>=5)return {headline:"LLUVIA FUERTE",short:"Lluvia fuerte",cls:"red",family:"rain",T:T,time:c.time};
+    if(liquid>=2)return {headline:"LLUVIA MODERADA",short:"Lluvia moderada",cls:"orange",family:"rain",T:T,time:c.time};
+    if(liquid>=.4)return {headline:"LLUVIA DÉBIL",short:"Lluvia débil",cls:"yellow",family:"rain",T:T,time:c.time};
+    if(liquid>=.05||precip>=.05)return {headline:"LLOVIZNA",short:"Llovizna",cls:"blue",family:"rain",T:T,time:c.time};
+    return {headline:"SIN PRECIPITACIÓN",short:"Sin precipitación",cls:"green",family:"none",T:T,time:c.time};
+  }
+
+  function currentUrl(p){
+    var vars="temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,wind_speed_10m,wind_gusts_10m";
+    return "https://api.open-meteo.com/v1/forecast?latitude="+p.lat+"&longitude="+p.lon+"&elevation="+p.elev+"&current="+encodeURIComponent(vars)+"&timezone="+encodeURIComponent("America/Argentina/Buenos_Aires")+"&temperature_unit=celsius&wind_speed_unit=kmh&precipitation_unit=mm";
+  }
+
+  function applyCurrent(cat){
+    if(!cat)return;
+    var nt=$("nowTemp");if(!nt)return;
+    applyingCurrent=true;
+    text("nowIcon",icon(cat));
+    nt.className="big snow-headline "+cat.cls;
+    nt.textContent=cat.headline;
+    text("nowPhase","ESTADO ACTUAL · resolución 15 min");
+    applyingCurrent=false;
+  }
+
+  function refreshCurrent(){
+    var seq=++currentSeq,p=selectedPlace();
+    fetchJSON(currentUrl(p),9000).then(function(d){
+      if(seq!==currentSeq||!d||!d.current)return;
+      currentCat=currentCategory(d.current,p);applyCurrent(currentCat);
+    }).catch(function(){});
+  }
+
+  function patchCard(prefix,row){
+    if(!row)return;
+    var cat=phenomenon(row),state=$(prefix+"Temp"),main=$(prefix+"Main"),chips=$(prefix+"Chips");
+    text(prefix+"Icon",icon(cat));text(prefix+"Clock",hourOnly(row.time));
+    if(state){state.className="horizon-temp "+cat.cls;state.textContent=cat.headline;}
+    if(main)main.textContent="🌡️ "+fmt(row.T,1)+" °C  ·  Sensación "+fmt(row.feels,1)+" °C";
+    if(chips)chips.innerHTML='<span class="chip">'+esc(agreement(row))+'</span><span class="chip '+cat.cls+'">'+esc(amount(row,cat))+'</span>';
+  }
+
+  function setupLanguage(){
+    var subtitle=document.querySelector(".subtitle");if(subtitle)subtitle.textContent="Lluvia, nieve, temperatura y sensación térmica en Bariloche. Fenómeno concreto ahora, +1, +2 y +3 horas, con horizonte máximo de 5 días.";
+    var p12=Array.prototype.slice.call(document.querySelectorAll(".panel h2")).filter(function(h){return h.textContent.trim()==="Próximas 12 horas";})[0];
+    if(p12){var note=p12.closest(".panel").querySelector(".note");if(note)note.textContent="Fenómeno dominante por hora: lluvia, nieve o mezcla, sin esconder la intensidad.";}
+    var legend=$("snowLanguage");
+    if(legend){
+      var sm=legend.querySelector("summary");if(sm)sm.textContent="Qué significa cada categoría de precipitación";
+      var body=legend.querySelector(".details-body");
+      if(body)body.innerHTML='<div class="snow-legend-grid">'+
+        '<div class="snow-term"><strong>LLOVIZNA</strong><small>Precipitación líquida muy débil.</small></div>'+ 
+        '<div class="snow-term"><strong>LLUVIA DÉBIL / MODERADA / FUERTE</strong><small>Intensidad creciente según tasa horaria y códigos meteorológicos.</small></div>'+ 
+        '<div class="snow-term"><strong>CHAPARRÓN DE LLUVIA</strong><small>Precipitación intermitente o convectiva; puede cambiar rápido.</small></div>'+ 
+        '<div class="snow-term"><strong>TORMENTA</strong><small>Señal de tormenta en el código meteorológico de los modelos.</small></div>'+ 
+        '<div class="snow-term"><strong>LLUVIA CONGELANTE</strong><small>Lluvia superenfriada con riesgo de formación de hielo.</small></div>'+ 
+        '<div class="snow-term"><strong>LLUVIA Y NIEVE</strong><small>Zona de transición entre precipitación líquida y sólida.</small></div>'+ 
+        '<div class="snow-term"><strong>CHAPARRÓN DE NIEVE</strong><small>Nieve intermitente con cambios rápidos de intensidad.</small></div>'+ 
+        '<div class="snow-term"><strong>NEVADA ACUMULABLE</strong><small>Nieve con tasa suficiente para dejar espesor medible.</small></div>'+ 
+        '</div><div class="snow-source-note">El titular muestra el fenómeno dominante. El acuerdo multimodelo se informa por separado.</div>';
+    }
+  }
+
+  window.renderHours=function(model){
+    if(typeof baseRenderHours==="function")baseRenderHours(model);
+    var offsets=[1,2,3,4,6,8,10,12],out="";
+    offsets.forEach(function(h){var r=horizon(model,h),cat=phenomenon(r);out+='<div class="hour-card"><div class="time">+'+h+' h · '+hourOnly(r.time)+'</div><div class="ico">'+icon(cat)+'</div><div class="micro '+cat.cls+'" style="font-weight:700">'+esc(cat.short)+'</div><div class="temp">'+fmt(r.T,0)+'°</div></div>';});
+    html("hourStrip",out);
+  };
+
+  window.renderDays=function(model){
+    var map={},order=[];
+    (model||[]).forEach(function(r){
+      var k=dayKey(r.time),d=parseModelDate(r.time);if(!k||!d)return;
+      if(!map[k]){map[k]={d:d,min:null,max:null,snow:0,rain:0,peak:r,score:-1};order.push(k);}
+      var b=map[k];b.min=finite(b.min)?Math.min(b.min,r.T):r.T;b.max=finite(b.max)?Math.max(b.max,r.T):r.T;b.snow+=Math.max(0,n(r.cmh,0));b.rain+=Math.max(0,n(r.liquidRate,0));
+      var cat=phenomenon(r),score=cat.rank+(cat.family==="snow"?n(r.cmh,0):n(r.liquidRate,0)/5);if(score>b.score){b.score=score;b.peak=r;}
+    });
+    var out="";
+    order.slice(0,5).forEach(function(k,i){
+      var b=map[k],label=i===0?"Hoy":i===1?"Mañana":(typeof dayName==="function"?dayName(b.d):pad2(b.d.getDate())+'/'+pad2(b.d.getMonth()+1)),cat=phenomenon(b.peak);
+      out+='<div class="day-card"><div class="day-name">'+label+'</div><div class="day-date">'+pad2(b.d.getDate())+'/'+pad2(b.d.getMonth()+1)+'</div><div class="day-icon">'+icon(cat)+'</div><div class="day-temp">'+fmt(b.min,0)+'° / '+fmt(b.max,0)+'°</div><div class="day-snow '+cat.cls+'">'+esc(cat.short)+'</div><div class="day-meta">🌧️ '+fmt(b.rain,1)+' mm · ❄️ '+fmt(b.snow,1)+' cm</div></div>';
+    });
+    html("dailyGrid",out||'<div class="day-card">Sin datos.</div>');
+    setupLanguage();
+  };
+
+  window.renderQuick=function(s){
+    var model=latestModel,p=selectedPlace(),change=nextChange(model);
+    function line(h,row){var c=phenomenon(row),rd=roadState(row);return '<p><b>+'+h+' h · '+hourOnly(row.time)+': '+esc(c.headline)+'</b>. '+esc(behavior(row,model,c))+'. '+esc(agreement(row))+'. '+esc(amount(row,c))+'. Caminos '+rd.label.toLowerCase()+'.</p>';}
+    html("quickText",'<p><b>AHORA:</b> la tarjeta principal muestra el fenómeno actual con resolución de 15 minutos.</p>'+line(1,s.plus1)+line(2,s.plus2)+line(3,s.plus3)+'<p><b>Próximo cambio:</b> '+esc(change.time)+'. '+esc(change.text)+'</p>');
+  };
+
+  window.renderPlaces=function(){
+    var out="";
+    PLACE_KEYS.forEach(function(k){
+      var p=PLACES[k],res=placeResults[k];
+      if(!res){out+='<div class="place-card"><div class="place-name">'+esc(p.name)+'</div><div class="place-meta">Cargando…</div></div>';return;}
+      if(res.error){out+='<div class="place-card"><div class="place-name">'+esc(p.name)+'</div><div class="place-meta">Dato no disponible.</div></div>';return;}
+      var s=res.summary,best=null;
+      s.shortHours.forEach(function(x){var c=phenomenon(x.row),a=n(x.row.precipConsensus,n(x.row.consensus,.5));if(!best||c.rank>best.c.rank||(c.rank===best.c.rank&&a>best.a))best={h:x.h,row:x.row,c:c,a:a};});
+      out+='<div class="place-card '+best.c.cls+'" data-key="'+k+'"><div class="place-name">'+esc(p.name)+'</div><div class="place-main">1–3 h: '+esc(best.c.headline)+'</div></div>';
+    });
+    html("placesGrid",out);
+    Array.prototype.slice.call(document.querySelectorAll('.place-card[data-key]')).forEach(function(el){el.onclick=function(){$("locationPreset").value=this.getAttribute("data-key");syncAdjustments();run();window.scrollTo({top:0,behavior:"smooth"});};});
+  };
+
+  window.renderMain=function(model,s){
+    if(typeof baseRenderMain==="function")baseRenderMain(model,s);
+    patchCard("plus1",s.plus1);patchCard("plus2",s.plus2);patchCard("plus3",s.plus3);
+    var rain72=Math.max(0,n(s.rain72,0));text("rain72",fmt(rain72,1)+" mm");text("rain72Text",rain72<.1?"Sin lluvia medible.":rain72<5?"Acumulación líquida menor.":rain72<20?"Acumulación líquida moderada.":"Acumulación líquida importante.");
+    var rows=(model||[]).slice(0,72),peak=rows[0]||s.now,best=-1;
+    rows.forEach(function(r){var c=phenomenon(r),score=c.rank+(c.family==="snow"?n(r.cmh,0):n(r.liquidRate,0)/5);if(score>best){best=score;peak=r;}});
+    var pc=phenomenon(peak);text("peak72",localTime(peak.time));text("peak72Text",pc.headline+" · "+agreement(peak)+" · "+amount(peak,pc).replace(/^🌧️ |^❄️ /,"")+".");
+    text("confidenceLabel","Acuerdo multimodelo");text("confidence",Math.round(n(s.confidence,.5)*100)+"%");text("confidenceText","Acuerdo sobre el fenómeno dominante entre las fuentes disponibles.");
+    var roadBest=null;s.shortHours.forEach(function(x){var v=roadState(x.row),score=({green:0,blue:1,yellow:2,orange:3,red:4})[v.cls]||0;if(!roadBest||score>roadBest.score)roadBest={h:x.h,row:x.row,v:v,score:score};});
+    if(roadBest){var rm=$("roadMain");if(rm){rm.className="big compact "+roadBest.v.cls;rm.textContent=roadBest.v.label;}text("roadText","Peor nivel a +"+roadBest.h+" h ("+hourOnly(roadBest.row.time)+"). "+roadBest.v.detail);}
+    var change=nextChange(model);text("changeMain",change.time);text("changeText",change.text);
+    window.renderHours(model);window.renderDays(model);window.renderQuick(s);window.renderPlaces();
+    refreshCurrent();
+  };
+
+  var nowTemp=$("nowTemp");
+  if(nowTemp){new MutationObserver(function(){if(applyingCurrent||!currentCat)return;if(nowTemp.textContent!==currentCat.headline)setTimeout(function(){applyCurrent(currentCat);},0);}).observe(nowTemp,{childList:true,subtree:true});}
+
+  setupLanguage();
+  try{if(latestModel&&latestModel.length&&latestSummary)window.renderMain(latestModel,latestSummary);else refreshCurrent();}catch(e){}
+})();
