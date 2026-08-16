@@ -54,7 +54,21 @@
     return "dry";
   }
 
-  function phenomenonKey(r){return snowKey(r)||rainKey(r)||"dry";}
+  function skyKey(r){
+    var code=n(r&&r.weatherCode,-1);
+    if(code===45||code===48)return "fog";
+    if(code===0)return "clear";
+    if(code===1)return "mostly_clear";
+    if(code===2)return "partly_cloudy";
+    if(code===3)return "overcast";
+    return "unknown_sky";
+  }
+
+  function phenomenonKey(r){
+    var s=snowKey(r),q=rainKey(r);
+    return s||(q&&q!=="dry"?q:skyKey(r));
+  }
+
   function wmean(rows,fn){
     var sw=0,sx=0;
     rows.forEach(function(r){var x=fn(r);if(finite(x)){var w=n(r.sourceWeight,1);sw+=w;sx+=w*Number(x);}});
@@ -69,17 +83,23 @@
     var rows=baseAggregate(packs),by={};
     (packs||[]).forEach(function(pack){(pack.model||[]).forEach(function(r){(by[String(r.time)]||(by[String(r.time)]=[])).push(r);});});
     rows.forEach(function(row){
-      var a=by[String(row.time)]||[],weights={},rainWeights={},totalW=0;
+      var a=by[String(row.time)]||[],weights={},rainWeights={},skyWeights={},totalW=0;
       a.forEach(function(r){
-        var w=n(r.sourceWeight,1),pk=phenomenonKey(r),rk=rainKey(r)||"dry";
-        weights[pk]=(weights[pk]||0)+w;rainWeights[rk]=(rainWeights[rk]||0)+w;totalW+=w;
+        var w=n(r.sourceWeight,1),pk=phenomenonKey(r),rk=rainKey(r)||"dry",sk=skyKey(r);
+        weights[pk]=(weights[pk]||0)+w;
+        rainWeights[rk]=(rainWeights[rk]||0)+w;
+        skyWeights[sk]=(skyWeights[sk]||0)+w;
+        totalW+=w;
       });
-      var dom=Object.keys(weights).sort(function(x,y){return weights[y]-weights[x];})[0]||"dry";
+      var dom=Object.keys(weights).sort(function(x,y){return weights[y]-weights[x];})[0]||"unknown_sky";
       var rainDom=Object.keys(rainWeights).sort(function(x,y){return rainWeights[y]-rainWeights[x];})[0]||"dry";
+      var skyDom=Object.keys(skyWeights).sort(function(x,y){return skyWeights[y]-skyWeights[x];})[0]||"unknown_sky";
       var agree=totalW?(weights[dom]||0)/totalW:.5;
       row.rainNative=wmean(a,function(r){return n(r.rainNative,0);});
       row.liquidRate=wmean(a,liquidFor);
       row.rainType=rainDom;
+      row.skyType=skyDom;
+      row.skySupport=totalW?(skyWeights[skyDom]||0)/totalW:0;
       row.rainSupport=support(a,totalW,function(k){return !!k&&k!=="dry";});
       row.drizzleSupport=support(a,totalW,function(k){return k==="drizzle";});
       row.freezingDrizzleSupport=support(a,totalW,function(k){return k==="freezing_drizzle";});
