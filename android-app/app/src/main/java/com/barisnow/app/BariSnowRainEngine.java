@@ -24,11 +24,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-/** Adds the same rain vocabulary used by the BariSnow web UI without replacing snow states. */
+/**
+ * Suplemento líquido del motor BariSnow. Conserva la clasificación nival del
+ * motor principal y sólo la sustituye cuando el fenómeno líquido domina con la
+ * misma regla de prioridad usada por precipitation-communication.js.
+ */
 final class BariSnowRainEngine {
     private static final String TZ_ID = "America/Argentina/Buenos_Aires";
     private static final TimeZone TZ = TimeZone.getTimeZone(TZ_ID);
-    private static final int HTTP_TIMEOUT_MS = 6500;
+    private static final int HTTP_TIMEOUT_MS = 5000;
 
     private static final Source[] SOURCES = new Source[]{
             new Source("https://api.open-meteo.com/v1/forecast", .38),
@@ -42,20 +46,56 @@ final class BariSnowRainEngine {
     static void enrich(BariSnowWidgetProvider.WidgetData data, BariSnowWidgetProvider.Place place) throws Exception {
         if (data == null) return;
         RainData rain = fetch(place);
-        replaceDrySnowState(data.now, rain.now);
-        replaceDrySnowState(data.plus1, rain.plus1);
-        replaceDrySnowState(data.plus2, rain.plus2);
-        replaceDrySnowState(data.plus3, rain.plus3);
-        replaceDrySnowState(data.tomorrow, rain.tomorrow);
-        replaceDrySnowState(data.dayAfter, rain.dayAfter);
+        merge(data.now, rain.now);
+        merge(data.plus1, rain.plus1);
+        merge(data.plus2, rain.plus2);
+        merge(data.plus3, rain.plus3);
+        merge(data.tomorrow, rain.tomorrow);
+        merge(data.dayAfter, rain.dayAfter);
     }
 
-    private static void replaceDrySnowState(BariSnowWidgetProvider.HourData h, String rainState) {
-        if (h != null && "SIN NIEVE".equals(h.state) && rainState != null) h.state = rainState;
+    private static void merge(BariSnowWidgetProvider.HourData h, String rainState) {
+        if (h != null) h.state = combine(h.state, rainState);
     }
 
-    private static void replaceDrySnowState(BariSnowWidgetProvider.DayData d, String rainState) {
-        if (d != null && "SIN NIEVE".equals(d.state) && rainState != null) d.state = rainState;
+    private static void merge(BariSnowWidgetProvider.DayData d, String rainState) {
+        if (d != null) d.state = combine(d.state, rainState);
+    }
+
+    private static String combine(String snowState, String rainState) {
+        String base = snowState == null ? "SIN NIEVE" : snowState;
+        String rain = rainState == null ? "SIN PRECIPITACIÓN" : rainState;
+        int snowRank = snowRank(base);
+        int rainRank = rainRank(rain);
+
+        // Nieve húmeda, mezcla, nieve y nevada acumulable mantienen prioridad.
+        if (snowRank >= 12) return base;
+        // Copos aislados se mantienen frente a llovizna/lluvia continua leve o
+        // moderada, pero un chaparrón fuerte/tormenta/lluvia congelante domina.
+        if (snowRank == 11 && rainRank < 7) return base;
+        if (rainRank > 0) return rain;
+        if (snowRank > 0) return base;
+        return "SIN PRECIPITACIÓN";
+    }
+
+    private static int snowRank(String s) {
+        if ("NEVADA ACUMULABLE".equals(s)) return 15;
+        if ("CHAPARRÓN DE NIEVE".equals(s) || "NIEVA".equals(s)) return 14;
+        if ("NIEVE HÚMEDA".equals(s) || "NIEVE GRANULADA".equals(s)) return 13;
+        if ("LLUVIA Y NIEVE".equals(s)) return 12;
+        if ("COPOS AISLADOS".equals(s)) return 11;
+        return 0;
+    }
+
+    private static int rainRank(String s) {
+        if ("TORMENTA".equals(s)) return 10;
+        if ("LLUVIA CONGELANTE".equals(s) || "LLOVIZNA CONGELANTE".equals(s)) return 9;
+        if ("CHAPARRÓN FUERTE".equals(s) || "LLUVIA FUERTE".equals(s)) return 8;
+        if ("CHAPARRÓN DE LLUVIA".equals(s)) return 7;
+        if ("LLUVIA MODERADA".equals(s)) return 6;
+        if ("LLUVIA DÉBIL".equals(s)) return 5;
+        if ("LLOVIZNA".equals(s)) return 4;
+        return 0;
     }
 
     private static RainData fetch(BariSnowWidgetProvider.Place place) throws Exception {
@@ -69,17 +109,17 @@ final class BariSnowRainEngine {
         try {
             for (Future<Pack> future : futures) {
                 try {
-                    Pack pack = future.get(7500, TimeUnit.MILLISECONDS);
+                    Pack pack = future.get(6000, TimeUnit.MILLISECONDS);
                     if (pack != null && !pack.rows.isEmpty()) packs.add(pack);
                 } catch (Exception ignored) {}
             }
-            try { currentRaw = currentFuture.get(7500, TimeUnit.MILLISECONDS); } catch (Exception ignored) {}
+            try { currentRaw = currentFuture.get(6000, TimeUnit.MILLISECONDS); } catch (Exception ignored) {}
         } finally {
             pool.shutdownNow();
         }
-        if (packs.isEmpty()) throw new IllegalStateException("Sin datos de lluvia");
+        if (packs.isEmpty()) throw new IllegalStateException("Sin modelos líquidos disponibles");
         List<Row> model = aggregate(packs);
-        if (model.isEmpty()) throw new IllegalStateException("Sin horas de lluvia");
+        if (model.isEmpty()) throw new IllegalStateException("Sin horas líquidas disponibles");
 
         RainData out = new RainData();
         out.plus1 = category(horizon(model, 1));
@@ -95,18 +135,21 @@ final class BariSnowRainEngine {
     private static final class SourceTask implements Callable<Pack> {
         private final Source source;
         private final BariSnowWidgetProvider.Place place;
-        SourceTask(Source source, BariSnowWidgetProvider.Place place) { this.source = source; this.place = place; }
+        SourceTask(Source source, BariSnowWidgetProvider.Place place) {
+            this.source = source;
+            this.place = place;
+        }
         @Override public Pack call() throws Exception {
-            List<Row> rows = parse(fetchJson(modelUrl(source, place)), source);
+            List<Row> rows = parse(fetchJson(modelUrl(source, place)), source, place);
             if (rows.isEmpty()) throw new IllegalStateException("Sin horas");
             return new Pack(rows);
         }
     }
 
     private static String modelUrl(Source source, BariSnowWidgetProvider.Place p) {
-        String hourly = "precipitation,rain,showers,snowfall,weather_code,cape";
+        String hourly = "relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,wind_speed_10m,wind_direction_10m,cape";
         return String.format(Locale.US,
-                "%s?latitude=%.5f&longitude=%.5f&elevation=%d&hourly=%s&timezone=%s&forecast_days=3&precipitation_unit=mm",
+                "%s?latitude=%.5f&longitude=%.5f&elevation=%d&hourly=%s&timezone=%s&forecast_days=3&wind_speed_unit=kmh&precipitation_unit=mm",
                 source.endpoint, p.lat, p.lon, p.elev, enc(hourly), enc(TZ_ID));
     }
 
@@ -132,26 +175,39 @@ final class BariSnowRainEngine {
         if (status < 200 || status >= 300) throw new IllegalStateException("HTTP " + status);
         StringBuilder body = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(c.getInputStream()))) {
-            String line; while ((line = reader.readLine()) != null) body.append(line);
-        } finally { c.disconnect(); }
+            String line;
+            while ((line = reader.readLine()) != null) body.append(line);
+        } finally {
+            c.disconnect();
+        }
         return new JSONObject(body.toString());
     }
 
-    private static List<Row> parse(JSONObject data, Source source) {
+    private static List<Row> parse(JSONObject data, Source source, BariSnowWidgetProvider.Place place) {
         JSONObject h = data.optJSONObject("hourly");
         if (h == null) return Collections.emptyList();
         JSONArray times = h.optJSONArray("time");
         if (times == null) return Collections.emptyList();
         List<Row> out = new ArrayList<>();
+
         for (int i = 0; i < times.length(); i++) {
             Row r = new Row();
             r.time = times.optString(i, "");
-            r.precip = Math.max(0, arr(h, "precipitation", i, 0));
+            double pBase = Math.max(0, arr(h, "precipitation", i, 0));
             r.rain = Math.max(0, arr(h, "rain", i, 0));
             r.showers = Math.max(0, arr(h, "showers", i, 0));
             r.snow = Math.max(0, arr(h, "snowfall", i, 0));
             r.code = (int) Math.round(arr(h, "weather_code", i, -1));
             r.cape = Math.max(0, arr(h, "cape", i, 0));
+            double rh = arr(h, "relative_humidity_2m", i, 80);
+            double wind = Math.max(0, arr(h, "wind_speed_10m", i, 0));
+            double dir = arr(h, "wind_direction_10m", i, 270);
+            double windward = Math.max(0, Math.cos(Math.toRadians(dir - 280)));
+            double moist = clamp(rh / 90, .3, 1.3);
+            double windTerm = clamp(wind / 45, 0, 1.5);
+            double oroIndex = windward * moist * windTerm;
+            double mult = clamp(1 + place.oro * oroIndex, .85, 1.55);
+            r.precip = pBase * mult;
             r.weight = source.weight;
             r.liquid = Math.max(r.rain + r.showers, r.snow > .01 ? 0 : r.precip);
             r.key = sourceKey(r);
@@ -183,7 +239,9 @@ final class BariSnowRainEngine {
 
     private static List<Row> aggregate(List<Pack> packs) {
         Map<String, List<Row>> by = new TreeMap<>();
-        for (Pack p : packs) for (Row r : p.rows) by.computeIfAbsent(r.time, k -> new ArrayList<>()).add(r);
+        for (Pack p : packs) {
+            for (Row r : p.rows) by.computeIfAbsent(r.time, k -> new ArrayList<>()).add(r);
+        }
         List<Row> out = new ArrayList<>();
         for (Map.Entry<String, List<Row>> e : by.entrySet()) {
             List<Row> a = e.getValue();
@@ -199,11 +257,15 @@ final class BariSnowRainEngine {
             r.liquid = total > 0 ? liquid / total : 0;
             r.key = "dry";
             double best = -1;
-            for (Map.Entry<String, Double> v : votes.entrySet()) if (v.getValue() > best) { best = v.getValue(); r.key = v.getKey(); }
-            r.support = total > 0 ? Math.max(0, best) / total : 0;
+            for (Map.Entry<String, Double> v : votes.entrySet()) {
+                if (v.getValue() > best) {
+                    best = v.getValue();
+                    r.key = v.getKey();
+                }
+            }
             r.freezingRainSupport = vote(votes, "freezing_rain", total);
             r.freezingDrizzleSupport = vote(votes, "freezing_drizzle", total);
-            r.showerSupport = (vote(votes, "rain_shower", total) + vote(votes, "rain_shower_heavy", total));
+            r.showerSupport = vote(votes, "rain_shower", total) + vote(votes, "rain_shower_heavy", total);
             r.violentShowerSupport = vote(votes, "rain_shower_heavy", total);
             r.thunderSupport = vote(votes, "thunder", total);
             out.add(r);
@@ -260,56 +322,108 @@ final class BariSnowRainEngine {
         LinkedHashMap<String, Row> peaks = new LinkedHashMap<>();
         LinkedHashMap<String, Double> scores = new LinkedHashMap<>();
         for (Row r : model) {
-            String key = dayKey(r.time); if (key.isEmpty()) continue;
-            double score = rank(category(r)) + r.liquid / 5;
-            if (!scores.containsKey(key) || score > scores.get(key)) { scores.put(key, score); peaks.put(key, r); }
+            String key = dayKey(r.time);
+            if (key.isEmpty()) continue;
+            double score = rainRank(category(r)) + r.liquid / 5;
+            if (!scores.containsKey(key) || score > scores.get(key)) {
+                scores.put(key, score);
+                peaks.put(key, r);
+            }
         }
         if (peaks.size() <= dayOffset) return "SIN PRECIPITACIÓN";
         return category(new ArrayList<>(peaks.values()).get(dayOffset));
     }
 
-    private static int rank(String s) {
-        if ("TORMENTA".equals(s)) return 10;
-        if (s.contains("CONGELANTE")) return 9;
-        if ("CHAPARRÓN FUERTE".equals(s) || "LLUVIA FUERTE".equals(s)) return 8;
-        if ("CHAPARRÓN DE LLUVIA".equals(s)) return 7;
-        if ("LLUVIA MODERADA".equals(s)) return 6;
-        if ("LLUVIA DÉBIL".equals(s)) return 5;
-        if ("LLOVIZNA".equals(s)) return 4;
-        return 0;
-    }
-
     private static List<Row> filterNow(List<Row> rows) {
-        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:00", Locale.US); f.setTimeZone(TZ);
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:00", Locale.US);
+        f.setTimeZone(TZ);
         long cut = parseMillis(f.format(new Date())) - 5 * 60_000L;
         List<Row> out = new ArrayList<>();
-        for (Row r : rows) { long t = parseMillis(r.time); if (t <= 0 || t >= cut) out.add(r); }
+        for (Row r : rows) {
+            long t = parseMillis(r.time);
+            if (t <= 0 || t >= cut) out.add(r);
+        }
         return out.isEmpty() ? rows : out;
     }
 
     private static Row horizon(List<Row> rows, int hours) {
         long target = System.currentTimeMillis() + hours * 3_600_000L;
-        Row best = rows.get(0); long diff = Long.MAX_VALUE;
-        for (Row r : rows) { long t = parseMillis(r.time); if (t <= 0) continue; long d = Math.abs(t - target); if (d < diff) { diff = d; best = r; } }
+        Row best = rows.get(0);
+        long diff = Long.MAX_VALUE;
+        for (Row r : rows) {
+            long t = parseMillis(r.time);
+            if (t <= 0) continue;
+            long d = Math.abs(t - target);
+            if (d < diff) {
+                diff = d;
+                best = r;
+            }
+        }
         return best;
     }
 
     private static double arr(JSONObject h, String key, int i, double fallback) {
-        JSONArray a = h.optJSONArray(key); if (a == null || i < 0 || i >= a.length() || a.isNull(i)) return fallback; return a.optDouble(i, fallback);
+        JSONArray a = h.optJSONArray(key);
+        if (a == null || i < 0 || i >= a.length() || a.isNull(i)) return fallback;
+        return a.optDouble(i, fallback);
     }
-    private static boolean snowCode(int c) { return c == 71 || c == 73 || c == 75 || c == 77 || c == 85 || c == 86; }
-    private static String dayKey(String iso) { return iso != null && iso.length() >= 10 ? iso.substring(0, 10) : ""; }
+
+    private static double clamp(double x, double a, double b) {
+        return Math.max(a, Math.min(b, x));
+    }
+
+    private static boolean snowCode(int c) {
+        return c == 71 || c == 73 || c == 75 || c == 77 || c == 85 || c == 86;
+    }
+
+    private static String dayKey(String iso) {
+        return iso != null && iso.length() >= 10 ? iso.substring(0, 10) : "";
+    }
+
     private static long parseMillis(String iso) {
         if (iso == null || iso.isEmpty()) return -1;
         String value = iso.length() >= 16 ? iso.substring(0, 16) : iso;
-        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.US); f.setLenient(false); f.setTimeZone(TZ);
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.US);
+        f.setLenient(false);
+        f.setTimeZone(TZ);
         try { return f.parse(value).getTime(); } catch (Exception e) { return -1; }
     }
 
-    private static final class Source { final String endpoint; final double weight; Source(String endpoint, double weight) { this.endpoint = endpoint; this.weight = weight; } }
-    private static final class Pack { final List<Row> rows; Pack(List<Row> rows) { this.rows = rows; } }
-    private static final class Row {
-        String time, key; int code; double precip, rain, showers, snow, cape, liquid, weight, support, freezingRainSupport, freezingDrizzleSupport, showerSupport, violentShowerSupport, thunderSupport;
+    private static final class Source {
+        final String endpoint;
+        final double weight;
+        Source(String endpoint, double weight) { this.endpoint = endpoint; this.weight = weight; }
     }
-    private static final class RainData { String now, plus1, plus2, plus3, tomorrow, dayAfter; }
+
+    private static final class Pack {
+        final List<Row> rows;
+        Pack(List<Row> rows) { this.rows = rows; }
+    }
+
+    private static final class Row {
+        String time;
+        String key;
+        int code;
+        double precip;
+        double rain;
+        double showers;
+        double snow;
+        double cape;
+        double liquid;
+        double weight;
+        double freezingRainSupport;
+        double freezingDrizzleSupport;
+        double showerSupport;
+        double violentShowerSupport;
+        double thunderSupport;
+    }
+
+    private static final class RainData {
+        String now;
+        String plus1;
+        String plus2;
+        String plus3;
+        String tomorrow;
+        String dayAfter;
+    }
 }
