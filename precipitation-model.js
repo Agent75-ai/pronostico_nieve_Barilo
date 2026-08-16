@@ -7,12 +7,10 @@
   if(typeof baseAggregate!=="function")return;
 
   function n(x,d){return finite(x)?Number(x):d;}
-  function snowCode(code){return code===71||code===73||code===75||code===77||code===85||code===86;}
   function snowShowerCode(code){return code===85||code===86;}
   function freezingDrizzleCode(code){return code===56||code===57;}
   function freezingRainCode(code){return code===66||code===67;}
   function drizzleCode(code){return code===51||code===53||code===55;}
-  function rainCode(code){return code===61||code===63||code===65;}
   function rainShowerCode(code){return code===80||code===81||code===82;}
   function violentRainShowerCode(code){return code===82;}
   function thunderCode(code){return code===95||code===96||code===99;}
@@ -62,6 +60,10 @@
     rows.forEach(function(r){var x=fn(r);if(finite(x)){var w=n(r.sourceWeight,1);sw+=w;sx+=w*Number(x);}});
     return sw?sx/sw:null;
   }
+  function support(rows,total,predicate){
+    if(!total)return 0;
+    return rows.reduce(function(s,r){var k=rainKey(r);return s+(predicate(k)?n(r.sourceWeight,1):0);},0)/total;
+  }
 
   window.aggregate=function(packs){
     var rows=baseAggregate(packs),by={};
@@ -78,13 +80,13 @@
       row.rainNative=wmean(a,function(r){return n(r.rainNative,0);});
       row.liquidRate=wmean(a,liquidFor);
       row.rainType=rainDom;
-      row.rainSupport=totalW?a.reduce(function(s,r){return s+(rainKey(r)!=="dry"?n(r.sourceWeight,1):0);},0)/totalW:0;
-      row.drizzleSupport=totalW?a.reduce(function(s,r){var k=rainKey(r);return s+((k==="drizzle")?n(r.sourceWeight,1):0);},0)/totalW:0;
-      row.freezingDrizzleSupport=totalW?a.reduce(function(s,r){return s+(rainKey(r)==="freezing_drizzle"?n(r.sourceWeight,1):0);},0)/totalW:0;
-      row.freezingRainSupport=totalW?a.reduce(function(s,r){return s+(rainKey(r)==="freezing_rain"?n(r.sourceWeight,1):0);},0)/totalW:0;
-      row.rainShowerSupport=totalW?a.reduce(function(s,r){var k=rainKey(r);return s+((k==="rain_shower"||k==="rain_shower_heavy")?n(r.sourceWeight,1):0);},0)/totalW:0;
-      row.violentRainShowerSupport=totalW?a.reduce(function(s,r){return s+(rainKey(r)==="rain_shower_heavy"?n(r.sourceWeight,1):0);},0)/totalW:0;
-      row.thunderSupport=totalW?a.reduce(function(s,r){return s+(rainKey(r)==="thunder"?n(r.sourceWeight,1):0);},0)/totalW:0;
+      row.rainSupport=support(a,totalW,function(k){return !!k&&k!=="dry";});
+      row.drizzleSupport=support(a,totalW,function(k){return k==="drizzle";});
+      row.freezingDrizzleSupport=support(a,totalW,function(k){return k==="freezing_drizzle";});
+      row.freezingRainSupport=support(a,totalW,function(k){return k==="freezing_rain";});
+      row.rainShowerSupport=support(a,totalW,function(k){return k==="rain_shower"||k==="rain_shower_heavy";});
+      row.violentRainShowerSupport=support(a,totalW,function(k){return k==="rain_shower_heavy";});
+      row.thunderSupport=support(a,totalW,function(k){return k==="thunder";});
       row.precipType=dom;
       row.precipConsensus=clamp(.55*agree+.45*clamp(a.length/4,.25,1),.15,.98);
     });
