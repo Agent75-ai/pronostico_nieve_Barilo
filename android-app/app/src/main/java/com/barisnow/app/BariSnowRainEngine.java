@@ -25,9 +25,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Suplemento líquido del motor BariSnow. Conserva la clasificación nival del
- * motor principal y sólo la sustituye cuando el fenómeno líquido domina con la
- * misma regla de prioridad usada por precipitation-communication.js.
+ * Suplemento de precipitación y estado del cielo del motor BariSnow.
+ * Conserva la clasificación nival del motor principal y completa los estados
+ * secos con despejado, nubosidad o niebla.
  */
 final class BariSnowRainEngine {
     private static final String TZ_ID = "America/Argentina/Buenos_Aires";
@@ -54,27 +54,25 @@ final class BariSnowRainEngine {
         merge(data.dayAfter, rain.dayAfter);
     }
 
-    private static void merge(BariSnowWidgetProvider.HourData h, String rainState) {
-        if (h != null) h.state = combine(h.state, rainState);
+    private static void merge(BariSnowWidgetProvider.HourData h, String state) {
+        if (h != null) h.state = combine(h.state, state);
     }
 
-    private static void merge(BariSnowWidgetProvider.DayData d, String rainState) {
-        if (d != null) d.state = combine(d.state, rainState);
+    private static void merge(BariSnowWidgetProvider.DayData d, String state) {
+        if (d != null) d.state = combine(d.state, state);
     }
 
-    private static String combine(String snowState, String rainState) {
+    private static String combine(String snowState, String liquidOrSkyState) {
         String base = snowState == null ? "SIN NIEVE" : snowState;
-        String rain = rainState == null ? "SIN PRECIPITACIÓN" : rainState;
+        String other = liquidOrSkyState == null ? "SIN PRECIPITACIÓN" : liquidOrSkyState;
         int snowRank = snowRank(base);
-        int rainRank = rainRank(rain);
+        int rainRank = rainRank(other);
 
-        // Nieve húmeda, mezcla, nieve y nevada acumulable mantienen prioridad.
         if (snowRank >= 12) return base;
-        // Copos aislados se mantienen frente a llovizna/lluvia continua leve o
-        // moderada, pero un chaparrón fuerte/tormenta/lluvia congelante domina.
         if (snowRank == 11 && rainRank < 7) return base;
-        if (rainRank > 0) return rain;
+        if (rainRank > 0) return other;
         if (snowRank > 0) return base;
+        if (!"SIN PRECIPITACIÓN".equals(other)) return other;
         return "SIN PRECIPITACIÓN";
     }
 
@@ -98,6 +96,15 @@ final class BariSnowRainEngine {
         return 0;
     }
 
+    private static double skyRank(String s) {
+        if ("NIEBLA".equals(s)) return 3;
+        if ("NUBLADO".equals(s)) return 1;
+        if ("PARCIALMENTE NUBLADO".equals(s)) return .8;
+        if ("MAYORMENTE DESPEJADO".equals(s)) return .5;
+        if ("DESPEJADO".equals(s) || "SOLEADO".equals(s)) return .4;
+        return .2;
+    }
+
     private static RainData fetch(BariSnowWidgetProvider.Place place) throws Exception {
         ExecutorService pool = Executors.newFixedThreadPool(5);
         List<Future<Pack>> futures = new ArrayList<>();
@@ -117,9 +124,9 @@ final class BariSnowRainEngine {
         } finally {
             pool.shutdownNow();
         }
-        if (packs.isEmpty()) throw new IllegalStateException("Sin modelos líquidos disponibles");
+        if (packs.isEmpty()) throw new IllegalStateException("Sin modelos disponibles");
         List<Row> model = aggregate(packs);
-        if (model.isEmpty()) throw new IllegalStateException("Sin horas líquidas disponibles");
+        if (model.isEmpty()) throw new IllegalStateException("Sin horas disponibles");
 
         RainData out = new RainData();
         out.plus1 = category(horizon(model, 1));
@@ -154,7 +161,7 @@ final class BariSnowRainEngine {
     }
 
     private static String currentUrl(BariSnowWidgetProvider.Place p) {
-        String vars = "precipitation,rain,showers,snowfall,weather_code";
+        String vars = "precipitation,rain,showers,snowfall,weather_code,cloud_cover,is_day";
         return String.format(Locale.US,
                 "https://api.open-meteo.com/v1/forecast?latitude=%.5f&longitude=%.5f&elevation=%d&current=%s&timezone=%s&precipitation_unit=mm",
                 p.lat, p.lon, p.elev, enc(vars), enc(TZ_ID));
@@ -170,7 +177,7 @@ final class BariSnowRainEngine {
         c.setReadTimeout(HTTP_TIMEOUT_MS);
         c.setRequestMethod("GET");
         c.setRequestProperty("Accept", "application/json");
-        c.setRequestProperty("User-Agent", "BariSnowAndroidWidget/1.4.1");
+        c.setRequestProperty("User-Agent", "BariSnowAndroidWidget/1.4.2");
         int status = c.getResponseCode();
         if (status < 200 || status >= 300) throw new IllegalStateException("HTTP " + status);
         StringBuilder body = new StringBuilder();
@@ -234,7 +241,12 @@ final class BariSnowRainEngine {
         if (r.liquid >= 2) return "rain_moderate";
         if (r.liquid >= .4) return "rain_light";
         if (r.liquid >= .08 || r.precip >= .12) return "drizzle";
-        return "dry";
+        if (code == 45 || code == 48) return "fog";
+        if (code == 0) return "clear";
+        if (code == 1) return "mostly_clear";
+        if (code == 2) return "partly_cloudy";
+        if (code == 3) return "overcast";
+        return "unknown_sky";
     }
 
     private static List<Row> aggregate(List<Pack> packs) {
@@ -255,7 +267,7 @@ final class BariSnowRainEngine {
             Row r = new Row();
             r.time = e.getKey();
             r.liquid = total > 0 ? liquid / total : 0;
-            r.key = "dry";
+            r.key = "unknown_sky";
             double best = -1;
             for (Map.Entry<String, Double> v : votes.entrySet()) {
                 if (v.getValue() > best) {
@@ -288,6 +300,11 @@ final class BariSnowRainEngine {
         if ("rain_moderate".equals(r.key) || r.liquid >= 2) return "LLUVIA MODERADA";
         if ("rain_light".equals(r.key) || r.liquid >= .4) return "LLUVIA DÉBIL";
         if ("drizzle".equals(r.key) || r.liquid >= .08) return "LLOVIZNA";
+        if ("fog".equals(r.key)) return "NIEBLA";
+        if ("overcast".equals(r.key)) return "NUBLADO";
+        if ("partly_cloudy".equals(r.key)) return "PARCIALMENTE NUBLADO";
+        if ("mostly_clear".equals(r.key)) return "MAYORMENTE DESPEJADO";
+        if ("clear".equals(r.key)) return "DESPEJADO";
         return "SIN PRECIPITACIÓN";
     }
 
@@ -315,6 +332,23 @@ final class BariSnowRainEngine {
         if (liquid >= 2) return "LLUVIA MODERADA";
         if (liquid >= .4) return "LLUVIA DÉBIL";
         if (liquid >= .05 || precip >= .05) return "LLOVIZNA";
+        return currentSky(c, code);
+    }
+
+    private static String currentSky(JSONObject c, int code) {
+        boolean day = c.optInt("is_day", 1) == 1;
+        double cloud = c.optDouble("cloud_cover", Double.NaN);
+        if (code == 45 || code == 48) return "NIEBLA";
+        if (code == 0) return day ? "SOLEADO" : "DESPEJADO";
+        if (code == 1) return "MAYORMENTE DESPEJADO";
+        if (code == 2) return "PARCIALMENTE NUBLADO";
+        if (code == 3) return "NUBLADO";
+        if (!Double.isNaN(cloud)) {
+            if (cloud <= 15) return day ? "SOLEADO" : "DESPEJADO";
+            if (cloud <= 40) return "MAYORMENTE DESPEJADO";
+            if (cloud <= 75) return "PARCIALMENTE NUBLADO";
+            return "NUBLADO";
+        }
         return "SIN PRECIPITACIÓN";
     }
 
@@ -324,7 +358,8 @@ final class BariSnowRainEngine {
         for (Row r : model) {
             String key = dayKey(r.time);
             if (key.isEmpty()) continue;
-            double score = rainRank(category(r)) + r.liquid / 5;
+            String c = category(r);
+            double score = rainRank(c) + skyRank(c) + r.liquid / 5;
             if (!scores.containsKey(key) || score > scores.get(key)) {
                 scores.put(key, score);
                 peaks.put(key, r);
