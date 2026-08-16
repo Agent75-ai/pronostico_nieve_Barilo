@@ -89,6 +89,11 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
 
         try {
             WidgetData data = BariSnowForecastEngine.fetch(place);
+            try {
+                BariSnowRainEngine.enrich(data, place);
+            } catch (Exception ignored) {
+                // La nieve sigue disponible aunque falle el suplemento líquido.
+            }
             saveCache(context, place.key, BariSnowForecastEngine.toCache(data));
             for (int id : ids) manager.updateAppWidget(id, dataViews(context, data));
         } catch (Exception error) {
@@ -202,16 +207,20 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
     }
 
     protected static String iconFor(String state) {
-        if ("SIN NIEVE".equals(state)) return "⛅";
-        if (state.contains("LLUVIA") || state.contains("HÚMEDA") || state.contains("CHAPARRÓN")) return "🌨";
+        if (state == null || "SIN NIEVE".equals(state) || "SIN PRECIPITACIÓN".equals(state)) return "⛅";
+        if (state.contains("TORMENTA")) return "⛈";
+        if (state.contains("LLUVIA Y NIEVE") || state.contains("NIEVE HÚMEDA") || state.contains("CHAPARRÓN DE NIEVE")) return "🌨";
+        if (state.contains("CHAPARRÓN") || state.contains("LLOVIZNA")) return "🌦";
+        if (state.contains("LLUVIA")) return "🌧";
         return "❄";
     }
 
     protected static int colorFor(String state) {
-        if (state.contains("NEVADA ACUMULABLE")) return Color.rgb(241, 112, 126);
-        if (state.equals("NIEVA") || state.contains("CHAPARRÓN")) return Color.rgb(243, 162, 76);
-        if (state.contains("HÚMEDA") || state.contains("LLUVIA") || state.contains("GRANULADA")) return Color.rgb(233, 200, 92);
-        if (state.contains("COPOS")) return Color.rgb(93, 183, 255);
+        if (state == null) return Color.rgb(91, 214, 160);
+        if (state.contains("NEVADA ACUMULABLE") || state.contains("TORMENTA") || state.contains("LLUVIA CONGELANTE") || state.contains("LLUVIA FUERTE") || state.contains("CHAPARRÓN FUERTE")) return Color.rgb(241, 112, 126);
+        if (state.equals("NIEVA") || state.contains("CHAPARRÓN DE NIEVE") || state.contains("LLUVIA MODERADA") || state.contains("CHAPARRÓN DE LLUVIA") || state.contains("LLOVIZNA CONGELANTE")) return Color.rgb(243, 162, 76);
+        if (state.contains("HÚMEDA") || state.contains("LLUVIA Y NIEVE") || state.contains("GRANULADA") || state.contains("LLUVIA DÉBIL")) return Color.rgb(233, 200, 92);
+        if (state.contains("COPOS") || state.equals("LLOVIZNA")) return Color.rgb(93, 183, 255);
         return Color.rgb(91, 214, 160);
     }
 
