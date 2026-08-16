@@ -9,6 +9,7 @@ on:
       - 'index.html'
       - 'precipitation-model.js'
       - 'precipitation-communication.js'
+      - 'current-sky-priority.js'
       - 'sw.js'
       - '.github/workflows/android-apk.yml'
   pull_request:
@@ -17,6 +18,7 @@ on:
       - 'index.html'
       - 'precipitation-model.js'
       - 'precipitation-communication.js'
+      - 'current-sky-priority.js'
       - 'sw.js'
       - '.github/workflows/android-apk.yml'
 
@@ -34,6 +36,7 @@ jobs:
         run: |
           node --check precipitation-model.js
           node --check precipitation-communication.js
+          node --check current-sky-priority.js
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
