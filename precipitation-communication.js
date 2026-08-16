@@ -3,9 +3,6 @@
 
   var baseRenderMain=window.renderMain;
   var baseRenderHours=window.renderHours;
-  var baseRenderDays=window.renderDays;
-  var baseRenderQuick=window.renderQuick;
-  var baseRenderPlaces=window.renderPlaces;
   var currentSeq=0,currentCat=null,applyingCurrent=false;
 
   function n(x,d){return finite(x)?Number(x):d;}
@@ -51,20 +48,39 @@
     return {headline:"SIN PRECIPITACIÓN",short:"Sin precipitación",cls:"green",rank:0,family:"none"};
   }
 
+  function skyCategory(row){
+    var type=String(row&&row.skyType||"unknown_sky");
+    if(type==="fog")return {headline:"NIEBLA",short:"Niebla",cls:"yellow",rank:3,family:"sky"};
+    if(type==="overcast")return {headline:"NUBLADO",short:"Nublado",cls:"blue",rank:1.0,family:"sky"};
+    if(type==="partly_cloudy")return {headline:"PARCIALMENTE NUBLADO",short:"Parcialmente nublado",cls:"blue",rank:.8,family:"sky"};
+    if(type==="mostly_clear")return {headline:"MAYORMENTE DESPEJADO",short:"Mayormente despejado",cls:"green",rank:.5,family:"sky"};
+    if(type==="clear")return {headline:"DESPEJADO",short:"Despejado",cls:"green",rank:.4,family:"sky"};
+    return {headline:"SIN PRECIPITACIÓN",short:"Sin precipitación",cls:"green",rank:.2,family:"sky"};
+  }
+
   function phenomenon(row){
     var snow=snowCategory(row),rain=rainCategory(row);
     if(snow.rank>=12)return snow;
     if(snow.rank===11&&rain.rank<7)return snow;
-    return rain.rank>0?rain:(snow.rank>0?snow:{headline:"SIN PRECIPITACIÓN",short:"Sin precipitación",cls:"green",rank:0,family:"none"});
+    if(rain.rank>0)return rain;
+    if(snow.rank>0)return snow;
+    return skyCategory(row);
   }
 
   function icon(cat){
-    if(!cat||cat.rank<=0)return "⛅";
+    if(!cat)return "◌";
+    if(cat.headline==="SOLEADO")return "☀️";
+    if(cat.headline==="DESPEJADO")return "🌙";
+    if(cat.headline==="MAYORMENTE DESPEJADO")return "🌤️";
+    if(cat.headline==="PARCIALMENTE NUBLADO")return "⛅";
+    if(cat.headline==="NUBLADO")return "☁️";
+    if(cat.headline==="NIEBLA")return "🌫️";
     if(cat.headline==="TORMENTA")return "⛈️";
     if(cat.family==="snow")return cat.headline.indexOf("CHAPARRÓN")>=0?"🌨️":"❄️";
     if(cat.family==="mixed")return "🌨️";
     if(cat.headline.indexOf("CHAPARRÓN")>=0||cat.headline.indexOf("LLOVIZNA")>=0)return "🌦️";
-    return "🌧️";
+    if(cat.family==="rain")return "🌧️";
+    return "⛅";
   }
 
   function amount(row,cat){
@@ -83,14 +99,18 @@
   }
 
   function behavior(row,model,cat){
-    if(!cat||cat.rank<=0)return "Sin precipitación";
+    if(!cat)return "—";
+    if(cat.family==="sky"){
+      var i=-1;for(var s=0;s<(model||[]).length;s++)if(model[s].time===row.time){i=s;break;}
+      var prev=i>0?phenomenon(model[i-1]).headline:null,next=i>=0&&i<(model||[]).length-1?phenomenon(model[i+1]).headline:null;
+      return prev===cat.headline&&next===cat.headline?"Cielo estable":"Cielo variable";
+    }
     if(cat.headline.indexOf("CHAPARRÓN")>=0||cat.headline==="TORMENTA")return "Intermitente";
-    var i=-1;
-    for(var k=0;k<(model||[]).length;k++)if(model[k].time===row.time){i=k;break;}
-    var prev=i>0?phenomenon(model[i-1]).rank>0:false;
-    var next=i>=0&&i<(model||[]).length-1?phenomenon(model[i+1]).rank>0:false;
-    if(prev&&next)return "Persistente";
-    if(prev||next)return "Por intervalos";
+    var j=-1;for(var k=0;k<(model||[]).length;k++)if(model[k].time===row.time){j=k;break;}
+    var p=j>0?phenomenon(model[j-1]).family===cat.family:false;
+    var q=j>=0&&j<(model||[]).length-1?phenomenon(model[j+1]).family===cat.family:false;
+    if(p&&q)return "Persistente";
+    if(p||q)return "Por intervalos";
     return "Aislado";
   }
 
@@ -112,7 +132,23 @@
       var r=horizon(model,h),c=phenomenon(r);
       if(c.headline!==base.headline)return {time:"En "+h+" h · "+hourOnly(r.time),text:base.short+" → "+c.short+"."};
     }
-    return {time:"Sin cambio marcado",text:"El fenómeno dominante se mantiene durante las próximas 24 h."};
+    return {time:"Sin cambio marcado",text:"El estado dominante se mantiene durante las próximas 24 h."};
+  }
+
+  function currentSky(c,T){
+    var code=n(c&&c.weather_code,-1),cloud=n(c&&c.cloud_cover,null),day=n(c&&c.is_day,1)===1;
+    if(code===45||code===48)return {headline:"NIEBLA",short:"Niebla",cls:"yellow",family:"sky",rank:3,T:T,time:c.time,cloud:cloud};
+    if(code===0)return {headline:day?"SOLEADO":"DESPEJADO",short:day?"Soleado":"Despejado",cls:"green",family:"sky",rank:.4,T:T,time:c.time,cloud:cloud};
+    if(code===1)return {headline:"MAYORMENTE DESPEJADO",short:"Mayormente despejado",cls:"green",family:"sky",rank:.5,T:T,time:c.time,cloud:cloud};
+    if(code===2)return {headline:"PARCIALMENTE NUBLADO",short:"Parcialmente nublado",cls:"blue",family:"sky",rank:.8,T:T,time:c.time,cloud:cloud};
+    if(code===3)return {headline:"NUBLADO",short:"Nublado",cls:"blue",family:"sky",rank:1,T:T,time:c.time,cloud:cloud};
+    if(finite(cloud)){
+      if(cloud<=15)return {headline:day?"SOLEADO":"DESPEJADO",short:day?"Soleado":"Despejado",cls:"green",family:"sky",rank:.4,T:T,time:c.time,cloud:cloud};
+      if(cloud<=40)return {headline:"MAYORMENTE DESPEJADO",short:"Mayormente despejado",cls:"green",family:"sky",rank:.5,T:T,time:c.time,cloud:cloud};
+      if(cloud<=75)return {headline:"PARCIALMENTE NUBLADO",short:"Parcialmente nublado",cls:"blue",family:"sky",rank:.8,T:T,time:c.time,cloud:cloud};
+      return {headline:"NUBLADO",short:"Nublado",cls:"blue",family:"sky",rank:1,T:T,time:c.time,cloud:cloud};
+    }
+    return {headline:"SIN PRECIPITACIÓN",short:"Sin precipitación",cls:"green",family:"sky",rank:.2,T:T,time:c.time,cloud:cloud};
   }
 
   function currentCategory(c,p){
@@ -138,11 +174,11 @@
     if(liquid>=2)return {headline:"LLUVIA MODERADA",short:"Lluvia moderada",cls:"orange",family:"rain",T:T,time:c.time};
     if(liquid>=.4)return {headline:"LLUVIA DÉBIL",short:"Lluvia débil",cls:"yellow",family:"rain",T:T,time:c.time};
     if(liquid>=.05||precip>=.05)return {headline:"LLOVIZNA",short:"Llovizna",cls:"blue",family:"rain",T:T,time:c.time};
-    return {headline:"SIN PRECIPITACIÓN",short:"Sin precipitación",cls:"green",family:"none",T:T,time:c.time};
+    return currentSky(c,T);
   }
 
   function currentUrl(p){
-    var vars="temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,wind_speed_10m,wind_gusts_10m";
+    var vars="temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,cloud_cover,is_day,wind_speed_10m,wind_gusts_10m";
     return "https://api.open-meteo.com/v1/forecast?latitude="+p.lat+"&longitude="+p.lon+"&elevation="+p.elev+"&current="+encodeURIComponent(vars)+"&timezone="+encodeURIComponent("America/Argentina/Buenos_Aires")+"&temperature_unit=celsius&wind_speed_unit=kmh&precipitation_unit=mm";
   }
 
@@ -153,7 +189,7 @@
     text("nowIcon",icon(cat));
     nt.className="big snow-headline "+cat.cls;
     nt.textContent=cat.headline;
-    text("nowPhase","ESTADO ACTUAL · resolución 15 min");
+    text("nowPhase","ESTADO ACTUAL · 15 min"+(finite(cat.cloud)?" · nubosidad "+Math.round(cat.cloud)+"%":""));
     applyingCurrent=false;
   }
 
@@ -175,23 +211,23 @@
   }
 
   function setupLanguage(){
-    var subtitle=document.querySelector(".subtitle");if(subtitle)subtitle.textContent="Lluvia, nieve, temperatura y sensación térmica en Bariloche. Fenómeno concreto ahora, +1, +2 y +3 horas, con horizonte máximo de 5 días.";
+    var subtitle=document.querySelector(".subtitle");if(subtitle)subtitle.textContent="Estado del cielo, lluvia, nieve, temperatura y sensación térmica en Bariloche. Lectura concreta ahora, +1, +2 y +3 horas, con horizonte máximo de 5 días.";
     var p12=Array.prototype.slice.call(document.querySelectorAll(".panel h2")).filter(function(h){return h.textContent.trim()==="Próximas 12 horas";})[0];
-    if(p12){var note=p12.closest(".panel").querySelector(".note");if(note)note.textContent="Fenómeno dominante por hora: lluvia, nieve o mezcla, sin esconder la intensidad.";}
+    if(p12){var note=p12.closest(".panel").querySelector(".note");if(note)note.textContent="Estado dominante por hora: cielo, lluvia, nieve o mezcla.";}
     var legend=$("snowLanguage");
     if(legend){
-      var sm=legend.querySelector("summary");if(sm)sm.textContent="Qué significa cada categoría de precipitación";
+      var sm=legend.querySelector("summary");if(sm)sm.textContent="Qué significa cada categoría meteorológica";
       var body=legend.querySelector(".details-body");
       if(body)body.innerHTML='<div class="snow-legend-grid">'+
-        '<div class="snow-term"><strong>LLOVIZNA</strong><small>Precipitación líquida muy débil.</small></div>'+ 
-        '<div class="snow-term"><strong>LLUVIA DÉBIL / MODERADA / FUERTE</strong><small>Intensidad creciente según tasa horaria y códigos meteorológicos.</small></div>'+ 
-        '<div class="snow-term"><strong>CHAPARRÓN DE LLUVIA</strong><small>Precipitación intermitente o convectiva; puede cambiar rápido.</small></div>'+ 
-        '<div class="snow-term"><strong>TORMENTA</strong><small>Señal de tormenta en el código meteorológico de los modelos.</small></div>'+ 
-        '<div class="snow-term"><strong>LLUVIA CONGELANTE</strong><small>Lluvia superenfriada con riesgo de formación de hielo.</small></div>'+ 
+        '<div class="snow-term"><strong>SOLEADO / DESPEJADO</strong><small>Sin precipitación y cielo prácticamente libre de nubes.</small></div>'+ 
+        '<div class="snow-term"><strong>MAYORMENTE DESPEJADO</strong><small>Poca nubosidad; domina el cielo abierto.</small></div>'+ 
+        '<div class="snow-term"><strong>PARCIALMENTE NUBLADO / NUBLADO</strong><small>Grados crecientes de cobertura nubosa sin precipitación dominante.</small></div>'+ 
+        '<div class="snow-term"><strong>LLOVIZNA / LLUVIA</strong><small>Precipitación líquida clasificada por tipo e intensidad.</small></div>'+ 
+        '<div class="snow-term"><strong>CHAPARRÓN / TORMENTA</strong><small>Precipitación intermitente o convectiva que puede cambiar rápido.</small></div>'+ 
+        '<div class="snow-term"><strong>LLUVIA CONGELANTE</strong><small>Precipitación líquida con riesgo de formación de hielo.</small></div>'+ 
         '<div class="snow-term"><strong>LLUVIA Y NIEVE</strong><small>Zona de transición entre precipitación líquida y sólida.</small></div>'+ 
-        '<div class="snow-term"><strong>CHAPARRÓN DE NIEVE</strong><small>Nieve intermitente con cambios rápidos de intensidad.</small></div>'+ 
-        '<div class="snow-term"><strong>NEVADA ACUMULABLE</strong><small>Nieve con tasa suficiente para dejar espesor medible.</small></div>'+ 
-        '</div><div class="snow-source-note">El titular muestra el fenómeno dominante. El acuerdo multimodelo se informa por separado.</div>';
+        '<div class="snow-term"><strong>NIEVE / NEVADA ACUMULABLE</strong><small>Nieve en caída, con acumulación indicada por separado.</small></div>'+ 
+        '</div><div class="snow-source-note">El titular muestra el estado dominante. El acuerdo multimodelo se informa por separado.</div>';
     }
   }
 
@@ -206,13 +242,20 @@
     var map={},order=[];
     (model||[]).forEach(function(r){
       var k=dayKey(r.time),d=parseModelDate(r.time);if(!k||!d)return;
-      if(!map[k]){map[k]={d:d,min:null,max:null,snow:0,rain:0,peak:r,score:-1};order.push(k);}
+      if(!map[k]){map[k]={d:d,min:null,max:null,snow:0,rain:0,wetPeak:null,wetScore:-1,skyCount:{},skySample:{}};order.push(k);}
       var b=map[k];b.min=finite(b.min)?Math.min(b.min,r.T):r.T;b.max=finite(b.max)?Math.max(b.max,r.T):r.T;b.snow+=Math.max(0,n(r.cmh,0));b.rain+=Math.max(0,n(r.liquidRate,0));
-      var cat=phenomenon(r),score=cat.rank+(cat.family==="snow"?n(r.cmh,0):n(r.liquidRate,0)/5);if(score>b.score){b.score=score;b.peak=r;}
+      var cat=phenomenon(r);
+      if(cat.family==="rain"||cat.family==="snow"||cat.family==="mixed"){
+        var score=cat.rank+(cat.family==="snow"?n(r.cmh,0):n(r.liquidRate,0)/5);if(score>b.wetScore){b.wetScore=score;b.wetPeak=r;}
+      }else{
+        b.skyCount[cat.headline]=(b.skyCount[cat.headline]||0)+1;b.skySample[cat.headline]=r;
+      }
     });
     var out="";
     order.slice(0,5).forEach(function(k,i){
-      var b=map[k],label=i===0?"Hoy":i===1?"Mañana":(typeof dayName==="function"?dayName(b.d):pad2(b.d.getDate())+'/'+pad2(b.d.getMonth()+1)),cat=phenomenon(b.peak);
+      var b=map[k],peak=b.wetPeak;
+      if(!peak){var key=Object.keys(b.skyCount).sort(function(a,z){return b.skyCount[z]-b.skyCount[a];})[0];peak=b.skySample[key];}
+      var label=i===0?"Hoy":i===1?"Mañana":(typeof dayName==="function"?dayName(b.d):pad2(b.d.getDate())+'/'+pad2(b.d.getMonth()+1)),cat=phenomenon(peak);
       out+='<div class="day-card"><div class="day-name">'+label+'</div><div class="day-date">'+pad2(b.d.getDate())+'/'+pad2(b.d.getMonth()+1)+'</div><div class="day-icon">'+icon(cat)+'</div><div class="day-temp">'+fmt(b.min,0)+'° / '+fmt(b.max,0)+'°</div><div class="day-snow '+cat.cls+'">'+esc(cat.short)+'</div><div class="day-meta">🌧️ '+fmt(b.rain,1)+' mm · ❄️ '+fmt(b.snow,1)+' cm</div></div>';
     });
     html("dailyGrid",out||'<div class="day-card">Sin datos.</div>');
@@ -220,9 +263,9 @@
   };
 
   window.renderQuick=function(s){
-    var model=latestModel,p=selectedPlace(),change=nextChange(model);
+    var model=latestModel,change=nextChange(model);
     function line(h,row){var c=phenomenon(row),rd=roadState(row);return '<p><b>+'+h+' h · '+hourOnly(row.time)+': '+esc(c.headline)+'</b>. '+esc(behavior(row,model,c))+'. '+esc(agreement(row))+'. '+esc(amount(row,c))+'. Caminos '+rd.label.toLowerCase()+'.</p>';}
-    html("quickText",'<p><b>AHORA:</b> la tarjeta principal muestra el fenómeno actual con resolución de 15 minutos.</p>'+line(1,s.plus1)+line(2,s.plus2)+line(3,s.plus3)+'<p><b>Próximo cambio:</b> '+esc(change.time)+'. '+esc(change.text)+'</p>');
+    html("quickText",'<p><b>AHORA:</b> la tarjeta principal usa el estado actual de 15 minutos, incluyendo nubosidad cuando no precipita.</p>'+line(1,s.plus1)+line(2,s.plus2)+line(3,s.plus3)+'<p><b>Próximo cambio:</b> '+esc(change.time)+'. '+esc(change.text)+'</p>');
   };
 
   window.renderPlaces=function(){
@@ -244,9 +287,11 @@
     patchCard("plus1",s.plus1);patchCard("plus2",s.plus2);patchCard("plus3",s.plus3);
     var rain72=Math.max(0,n(s.rain72,0));text("rain72",fmt(rain72,1)+" mm");text("rain72Text",rain72<.1?"Sin lluvia medible.":rain72<5?"Acumulación líquida menor.":rain72<20?"Acumulación líquida moderada.":"Acumulación líquida importante.");
     var rows=(model||[]).slice(0,72),peak=rows[0]||s.now,best=-1;
-    rows.forEach(function(r){var c=phenomenon(r),score=c.rank+(c.family==="snow"?n(r.cmh,0):n(r.liquidRate,0)/5);if(score>best){best=score;peak=r;}});
-    var pc=phenomenon(peak);text("peak72",localTime(peak.time));text("peak72Text",pc.headline+" · "+agreement(peak)+" · "+amount(peak,pc).replace(/^🌧️ |^❄️ /,"")+".");
-    text("confidenceLabel","Acuerdo multimodelo");text("confidence",Math.round(n(s.confidence,.5)*100)+"%");text("confidenceText","Acuerdo sobre el fenómeno dominante entre las fuentes disponibles.");
+    rows.forEach(function(r){var c=phenomenon(r),score=(c.family==="sky"?0:c.rank)+(c.family==="snow"?n(r.cmh,0):c.family==="rain"?n(r.liquidRate,0)/5:0);if(score>best){best=score;peak=r;}});
+    var pc=phenomenon(peak),snow72=Math.max(0,n(s.snow72,0));text("peak72",localTime(peak.time));
+    if(rain72<.1&&snow72<.03)text("peak72Text","Sin precipitación relevante · "+phenomenon(s.now).short+".");
+    else text("peak72Text",pc.headline+" · "+agreement(peak)+" · "+amount(peak,pc).replace(/^🌧️ |^❄️ /,"")+".");
+    text("confidenceLabel","Acuerdo multimodelo");text("confidence",Math.round(n(s.confidence,.5)*100)+"%");text("confidenceText","Acuerdo sobre el estado dominante entre las fuentes disponibles.");
     var roadBest=null;s.shortHours.forEach(function(x){var v=roadState(x.row),score=({green:0,blue:1,yellow:2,orange:3,red:4})[v.cls]||0;if(!roadBest||score>roadBest.score)roadBest={h:x.h,row:x.row,v:v,score:score};});
     if(roadBest){var rm=$("roadMain");if(rm){rm.className="big compact "+roadBest.v.cls;rm.textContent=roadBest.v.label;}text("roadText","Peor nivel a +"+roadBest.h+" h ("+hourOnly(roadBest.row.time)+"). "+roadBest.v.detail);}
     var change=nextChange(model);text("changeMain",change.time);text("changeText",change.text);
