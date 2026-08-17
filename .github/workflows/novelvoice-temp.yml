@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "build/novelvoice-0.4.0" ]
     paths:
-      - "NovelVoiceBuildSrc/v040_*.b64"
+      - "NovelVoiceBuildSrc/v040patch_*.b64"
       - ".github/workflows/novelvoice-temp.yml"
   workflow_dispatch:
 
@@ -15,15 +15,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Reconstruct NovelVoice 0.4 source
+      - name: Reconstruct NovelVoice 0.3 base and apply 0.4 patch
         shell: bash
         run: |
-          cat NovelVoiceBuildSrc/v040_00.b64 NovelVoiceBuildSrc/v040_01.b64 NovelVoiceBuildSrc/v040_02.b64 NovelVoiceBuildSrc/v040_03.b64 | tr -d '\n' | base64 -d > /tmp/novelvoice-v040.tgz
-          mkdir -p /tmp/novelvoice-src NovelVoiceBuild
-          tar -xzf /tmp/novelvoice-v040.tgz -C /tmp/novelvoice-src
-          cp -a /tmp/novelvoice-src/NovelVoiceAndroid_v0.4.0/. NovelVoiceBuild/
+          mkdir -p NovelVoiceBuild
+          cat NovelVoiceBuildSrc/min_00.b64 NovelVoiceBuildSrc/min_01.b64 NovelVoiceBuildSrc/min_02.b64 NovelVoiceBuildSrc/min_03.b64 NovelVoiceBuildSrc/min_04.b64 NovelVoiceBuildSrc/min_05.b64 NovelVoiceBuildSrc/min_06.b64 NovelVoiceBuildSrc/p07a.txt NovelVoiceBuildSrc/p07b.txt > /tmp/novelvoice.b64
+          python - <<'PY'
+          from pathlib import Path
+          h = Path('NovelVoiceBuildSrc/p08.hex').read_text().strip()
+          with Path('/tmp/novelvoice.b64').open('a') as f:
+              f.write(bytes.fromhex(h).decode('ascii'))
+          PY
+          tr -d '\n' < /tmp/novelvoice.b64 | base64 -d > /tmp/novelvoice-v030.tgz
+          tar -xzf /tmp/novelvoice-v030.tgz -C NovelVoiceBuild
+          cp NovelVoiceBuildSrc/app-build-fixed.gradle.kts NovelVoiceBuild/app/build.gradle.kts
+          sed -i '/import androidx.compose.foundation.layout.weight/d' NovelVoiceBuild/app/src/main/java/com/praxys/novelvoice/MainActivity.kt
+
+          cat NovelVoiceBuildSrc/v040patch_00.b64 NovelVoiceBuildSrc/v040patch_01.b64 NovelVoiceBuildSrc/v040patch_02.b64 NovelVoiceBuildSrc/v040patch_03.b64 NovelVoiceBuildSrc/v040patch_04.b64 | tr -d '\n' | base64 -d | gzip -dc > /tmp/v040.patch
+          (cd NovelVoiceBuild && patch --batch -p4 < /tmp/v040.patch)
+
           test -f NovelVoiceBuild/app/src/main/java/com/praxys/novelvoice/tts/PiperTtsEngine.kt
           test -x NovelVoiceBuild/prepare_piper.sh
+          grep -q 'versionName = "0.4.0"' NovelVoiceBuild/app/build.gradle.kts
           ! grep -R "xi-api-key\|ElevenLabsClient\|android.permission.INTERNET" NovelVoiceBuild/app/src/main
 
       - name: Set up Java 17
