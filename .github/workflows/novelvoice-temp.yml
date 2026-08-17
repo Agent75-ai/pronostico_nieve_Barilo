@@ -1,0 +1,54 @@
+name: NovelVoice Android temp build
+
+on:
+  push:
+    branches: [ "build/novelvoice-0.2.0" ]
+    paths:
+      - "NovelVoiceBuildSrc/**"
+      - ".github/workflows/novelvoice-temp.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Reconstruct NovelVoice source
+        shell: bash
+        run: |
+          mkdir -p NovelVoiceBuild
+          cat NovelVoiceBuildSrc/min_00.b64 NovelVoiceBuildSrc/min_01.b64 NovelVoiceBuildSrc/min_02.b64 | tr -d '\n' | base64 -d > /tmp/novelvoice.tgz
+          tar -xzf /tmp/novelvoice.tgz -C NovelVoiceBuild
+          test -f NovelVoiceBuild/app/build.gradle.kts
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 16 platform
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+
+      - name: Unit tests
+        run: gradle -p NovelVoiceBuild :app:testDebugUnitTest --stacktrace
+
+      - name: Build APK
+        run: gradle -p NovelVoiceBuild :app:assembleDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: NovelVoice-Android-0.2.0
+          path: NovelVoiceBuild/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
