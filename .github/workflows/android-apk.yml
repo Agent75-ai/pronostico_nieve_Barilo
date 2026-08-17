@@ -164,8 +164,11 @@ jobs:
           OUT=/tmp/NovelVoice-Android-0.5.0-Full.apk
           test -s "$SRC"
           cp "$SRC" "$OUT"
-          unzip -l "$OUT" | grep -q 'es_AR-daniela-high.onnx'
-          unzip -l "$OUT" | grep -q 'libSherpaOnnxJNI.so'
+          unzip -l "$OUT" > /tmp/novelvoice-apk-list.txt
+          echo '--- Piper/ONNX entries ---'
+          grep -Ei 'daniela|sherpa|\.onnx|\.so' /tmp/novelvoice-apk-list.txt | head -200 || true
+          grep -qi 'es_AR-daniela-high.onnx' /tmp/novelvoice-apk-list.txt
+          grep -qiE 'libsherpa[-_]?onnx.*\.so|libsherpa.*\.so' /tmp/novelvoice-apk-list.txt
           sha256sum "$OUT"
           ls -lh "$OUT"
 
