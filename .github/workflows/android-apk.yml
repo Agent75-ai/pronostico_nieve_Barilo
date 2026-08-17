@@ -6,121 +6,40 @@ on:
     branches: [main]
     paths:
       - 'android-app/**'
-      - 'index.html'
-      - 'precipitation-model.js'
-      - 'precipitation-communication.js'
-      - 'current-sky-priority.js'
-      - 'sw.js'
       - '.github/workflows/android-apk.yml'
   pull_request:
     paths:
       - 'android-app/**'
-      - 'index.html'
-      - 'precipitation-model.js'
-      - 'precipitation-communication.js'
-      - 'current-sky-priority.js'
-      - 'sw.js'
       - '.github/workflows/android-apk.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  build-android:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Validate precipitation JavaScript
-        run: |
-          node --check precipitation-model.js
-          node --check precipitation-communication.js
-          node --check current-sky-priority.js
-
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android 16 platform
-        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.13'
-
-      - name: Build debug APK
-        run: gradle -p android-app assembleDebug --no-daemon
-
-      - name: Build release AAB
-        run: gradle -p android-app bundleRelease --no-daemon
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: BariSnow-APK
-          path: android-app/app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: error
-
-      - name: Upload Play AAB
-        uses: actions/upload-artifact@v4
-        with:
-          name: BariSnow-Play-AAB-unsigned
-          path: android-app/app/build/outputs/bundle/release/app-release.aab
-          if-no-files-found: error
-
-      - name: Publish APK to GitHub Pages source
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        shell: bash
-        run: |
-          VERSION_NAME=$(grep -oP "versionName '\K[^']+" android-app/app/build.gradle)
-          mkdir -p downloads
-          cp android-app/app/build/outputs/apk/debug/app-debug.apk "downloads/BariSnow-Android-${VERSION_NAME}.apk"
-          cp android-app/app/build/outputs/apk/debug/app-debug.apk downloads/BariSnow-Android-latest.apk
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add downloads/
-          if git diff --cached --quiet; then
-            echo "APK sin cambios para publicar."
-          else
-            git commit -m "Publicar APK BariSnow ${VERSION_NAME}"
-            git push origin HEAD:main
-          fi
-
   build-novelvoice:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Checkout PR source
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Reconstruct and verify NovelVoice source
+      - name: Reconstruct source
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p /tmp/nvparts
           for f in .novelvoice-src/part-*; do
-            b=$(basename "$f")
-            tr -d '[:space:]' < "$f" > "/tmp/nvparts/$b"
+            tr -d '[:space:]' < "$f" >> /tmp/novelvoice.b64
           done
-          echo '47166eaa3a12483c21db5fc1d2dfb7f51d3fe6d1acde0c74ae9d0db120252bf8  /tmp/nvparts/part-00' | sha256sum -c -
-          echo '9be6fe2901929a5d7c825e5d01dc0690989710a4c953085071b4b76ead18eab8  /tmp/nvparts/part-01' | sha256sum -c -
-          echo '3e0dd9b52f48ff065b20ba52c51e993e5afe986ba8f171644d3ce1d48026d4d4  /tmp/nvparts/part-02' | sha256sum -c -
-          echo '70091fbd18f50236a74efe65eb91adfc3885a31490eee23c78951491d9b2b8d0  /tmp/nvparts/part-03' | sha256sum -c -
-          echo '188fd262759f121fbcfc73e9d374c3ae8f44fdc5a062fd284540d89dd26a547b  /tmp/nvparts/part-04' | sha256sum -c -
-          echo '4d675dc391e6115524f79440b28e589ac53aefa80dca0df41c1bd8e51411cf1c  /tmp/nvparts/part-05' | sha256sum -c -
-          echo '6a9069c379c8c8d52b9543a5a7c968d68fe99099f9970117d2fddf70ad81fe2c  /tmp/nvparts/part-06' | sha256sum -c -
-          cat /tmp/nvparts/part-* > /tmp/novelvoice.b64
           base64 -d /tmp/novelvoice.b64 > /tmp/NovelVoiceAndroid_v0.5.0-source.zip
           echo '29e0e5b98451f85a94ad4fd9635b8c34813d3a0dea94e8e59ba4b8faa9441136  /tmp/NovelVoiceAndroid_v0.5.0-source.zip' | sha256sum -c -
           rm -rf /tmp/nv && mkdir -p /tmp/nv
           unzip -q /tmp/NovelVoiceAndroid_v0.5.0-source.zip -d /tmp/nv
+          cd /tmp/nv/NovelVoiceAndroid_v0.5.0
+          sed -i 's/applicationId = "com.praxys.novelvoice"/applicationId = "com.praxys.novelvoice.full"/' app/build.gradle.kts
+          sed -i 's/versionCode = 5/versionCode = 6/' app/build.gradle.kts
+          sed -i 's/versionName = "0.5.0"/versionName = "0.5.0-full"/' app/build.gradle.kts
+          grep -n 'applicationId\|versionCode\|versionName' app/build.gradle.kts
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -141,41 +60,39 @@ jobs:
         with:
           gradle-version: '8.13'
 
-      - name: Prepare Piper and bundled Daniela voice
+      - name: Prepare Piper and Daniela
         run: |
           cd /tmp/nv/NovelVoiceAndroid_v0.5.0
           bash prepare_piper.sh
 
-      - name: Run NovelVoice unit tests
+      - name: Test
         run: |
           cd /tmp/nv/NovelVoiceAndroid_v0.5.0
           gradle :app:testDebugUnitTest --stacktrace --no-daemon
 
-      - name: Build NovelVoice full APK
+      - name: Build APK
         run: |
           cd /tmp/nv/NovelVoiceAndroid_v0.5.0
           gradle :app:assembleDebug --stacktrace --no-daemon
 
-      - name: Verify NovelVoice APK contents
+      - name: Verify APK
         shell: bash
         run: |
           set -euo pipefail
           SRC=/tmp/nv/NovelVoiceAndroid_v0.5.0/app/build/outputs/apk/debug/app-debug.apk
-          OUT=/tmp/NovelVoice-Android-0.5.0-Full.apk
+          OUT=/tmp/NovelVoice-Android-0.5.0-Full-NoConflict.apk
           test -s "$SRC"
           cp "$SRC" "$OUT"
-          unzip -l "$OUT" > /tmp/novelvoice-apk-list.txt
-          echo '--- Piper/ONNX entries ---'
-          grep -Ei 'daniela|sherpa|\.onnx|\.so' /tmp/novelvoice-apk-list.txt | head -200 || true
-          grep -qi 'es_AR-daniela-high.onnx' /tmp/novelvoice-apk-list.txt
-          grep -qiE 'libsherpa[-_]?onnx.*\.so|libsherpa.*\.so' /tmp/novelvoice-apk-list.txt
+          unzip -l "$OUT" > /tmp/apk-list.txt
+          grep -qi 'es_AR-daniela-high.onnx' /tmp/apk-list.txt
+          grep -qiE 'libsherpa[-_]?onnx.*\.so|libsherpa.*\.so' /tmp/apk-list.txt
           sha256sum "$OUT"
           ls -lh "$OUT"
 
-      - name: Upload NovelVoice full APK
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: NovelVoice-Android-0.5.0-Full
-          path: /tmp/NovelVoice-Android-0.5.0-Full.apk
+          name: NovelVoice-Android-0.5.0-Full-NoConflict
+          path: /tmp/NovelVoice-Android-0.5.0-Full-NoConflict.apk
           if-no-files-found: error
           retention-days: 7
