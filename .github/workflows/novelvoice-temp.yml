@@ -37,8 +37,6 @@ jobs:
           (cd NovelVoiceBuild && patch --batch -p4 < /tmp/v040.patch)
           PATCH_STATUS=$?
           set -e
-          # The base build.gradle is the previously normalized 0.3 build file;
-          # replace it explicitly with the canonical 0.4 build config.
           cp NovelVoiceBuildSrc/app-build-v040.gradle.kts NovelVoiceBuild/app/build.gradle.kts
           rm -f NovelVoiceBuild/app/build.gradle.kts.rej
           if find NovelVoiceBuild -name '*.rej' -print -quit | grep -q .; then
@@ -46,6 +44,7 @@ jobs:
             find NovelVoiceBuild -name '*.rej' -print
             exit 1
           fi
+          chmod +x NovelVoiceBuild/prepare_piper.sh
 
           test -f NovelVoiceBuild/app/src/main/java/com/praxys/novelvoice/tts/PiperTtsEngine.kt
           test -x NovelVoiceBuild/prepare_piper.sh
