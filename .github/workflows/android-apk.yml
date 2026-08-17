@@ -104,7 +104,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .novelvoice-src/part-* > /tmp/novelvoice.b64
+          mkdir -p /tmp/nvparts
+          for f in .novelvoice-src/part-*; do
+            b=$(basename "$f")
+            tr -d '[:space:]' < "$f" > "/tmp/nvparts/$b"
+          done
+          echo '47166eaa3a12483c21db5fc1d2dfb7f51d3fe6d1acde0c74ae9d0db120252bf8  /tmp/nvparts/part-00' | sha256sum -c -
+          echo '9be6fe2901929a5d7c825e5d01dc0690989710a4c953085071b4b76ead18eab8  /tmp/nvparts/part-01' | sha256sum -c -
+          echo '3e0dd9b52f48ff065b20ba52c51e993e5afe986ba8f171644d3ce1d48026d4d4  /tmp/nvparts/part-02' | sha256sum -c -
+          echo '70091fbd18f50236a74efe65eb91adfc3885a31490eee23c78951491d9b2b8d0  /tmp/nvparts/part-03' | sha256sum -c -
+          echo '188fd262759f121fbcfc73e9d374c3ae8f44fdc5a062fd284540d89dd26a547b  /tmp/nvparts/part-04' | sha256sum -c -
+          echo '4d675dc391e6115524f79440b28e589ac53aefa80dca0df41c1bd8e51411cf1c  /tmp/nvparts/part-05' | sha256sum -c -
+          echo '6a9069c379c8c8d52b9543a5a7c968d68fe99099f9970117d2fddf70ad81fe2c  /tmp/nvparts/part-06' | sha256sum -c -
+          cat /tmp/nvparts/part-* > /tmp/novelvoice.b64
           base64 -d /tmp/novelvoice.b64 > /tmp/NovelVoiceAndroid_v0.5.0-source.zip
           echo '29e0e5b98451f85a94ad4fd9635b8c34813d3a0dea94e8e59ba4b8faa9441136  /tmp/NovelVoiceAndroid_v0.5.0-source.zip' | sha256sum -c -
           rm -rf /tmp/nv && mkdir -p /tmp/nv
