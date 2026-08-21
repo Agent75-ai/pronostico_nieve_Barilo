@@ -1,1 +1,0 @@
-La corrección web usa is_day horario para evitar iconos nocturnos durante horas diurnas.
