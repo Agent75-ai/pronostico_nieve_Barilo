@@ -10,8 +10,8 @@ android {
         applicationId 'com.barisnow.app'
         minSdk 23
         targetSdk 36
-        versionCode 14
-        versionName '1.4.2'
+        versionCode 15
+        versionName '1.4.3'
 
         // AdMob queda preparado pero desactivado hasta cargar IDs reales y consentimiento.
         buildConfigField 'boolean', 'ADS_ENABLED', 'false'
