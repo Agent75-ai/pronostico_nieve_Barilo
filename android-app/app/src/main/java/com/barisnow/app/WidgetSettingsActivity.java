@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -58,10 +59,31 @@ public class WidgetSettingsActivity extends Activity {
         root.addView(note, matchWrap());
 
         zoneSpinner = new Spinner(this, Spinner.MODE_DROPDOWN);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, NAMES);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, NAMES) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                return style(super.getView(position, convertView, parent), false);
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                return style(super.getDropDownView(position, convertView, parent), true);
+            }
+
+            private View style(View view, boolean dropdown) {
+                if (view instanceof TextView) {
+                    TextView text = (TextView) view;
+                    text.setTextColor(Color.rgb(234, 247, 255));
+                    text.setTextSize(16);
+                    text.setPadding(dp(14), dp(12), dp(14), dp(12));
+                    text.setBackgroundColor(dropdown ? Color.rgb(12, 34, 52) : Color.rgb(9, 26, 43));
+                }
+                return view;
+            }
+        };
         zoneSpinner.setAdapter(adapter);
         zoneSpinner.setBackgroundColor(Color.rgb(9, 26, 43));
-        root.addView(zoneSpinner, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(58)));
+        root.addView(zoneSpinner, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(60)));
 
         SharedPreferences prefs = getSharedPreferences(BariSnowWidgetProvider.PREFS, MODE_PRIVATE);
         String current = prefs.getString(BariSnowWidgetProvider.PREF_ZONE_KEY, "lago_moreno");
