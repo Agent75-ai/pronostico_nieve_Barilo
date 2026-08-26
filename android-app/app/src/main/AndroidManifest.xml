@@ -22,6 +22,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".WidgetSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="unspecified" />
+
         <receiver
             android:name=".BariSnowCompactWidgetProvider"
             android:exported="false"
