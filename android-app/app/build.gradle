@@ -13,6 +13,7 @@ android {
         versionCode 16
         versionName '1.4.4'
 
+        // Ubicaciones de app y widgets gestionadas de manera independiente desde 1.4.4.
         // AdMob queda preparado pero desactivado hasta cargar IDs reales y consentimiento.
         buildConfigField 'boolean', 'ADS_ENABLED', 'false'
         buildConfigField 'String', 'ADMOB_BANNER_ID', '""'
