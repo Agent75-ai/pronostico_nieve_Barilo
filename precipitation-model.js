@@ -41,6 +41,14 @@
     return tw<=1.9&&(sf>=.01||idx>=2||ps>=.12||snowShowerCode(code));
   }
 
+  function sourceSnowThermal(r){
+    var T=n(r&&r.T,99),tw=n(r&&r.TwEff,99),sf=Math.max(0,n(r&&r.snowfall,0)),ps=Math.max(0,n(r&&r.Psignal,n(r&&r.P,0))),sh=n(r&&r.snowShowerScore,0),idx=n(r&&r.ptypeIdx,0),code=n(r&&r.weatherCode,-1);
+    if(T>5.5||tw>2.2)return false;
+    if(T>4.5)return tw<=1.0&&sf>=.05&&ps>=.20;
+    if(T>3.0)return tw<=1.5&&sf>=.02&&(ps>=.08||sh>=.55);
+    return tw<=1.9&&(sf>=.01||idx>=2||ps>=.12||snowShowerCode(code));
+  }
+
   function snowKey(r){
     if(!sourceSnowThermal(r))return null;
     var p=n(r&&r.prob,0),c=n(r&&r.cmh,0),idx=n(r&&r.ptypeIdx,0),sf=n(r&&r.snowfall,0),sh=n(r&&r.snowShowerScore,0),tw=n(r&&r.TwEff,9),code=n(r&&r.weatherCode,-1);
