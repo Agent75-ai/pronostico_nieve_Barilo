@@ -22,11 +22,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Motor nativo del widget BariSnow.
- *
  * Desde 1.4.5 el consenso operativo usa ECMWF + GFS + GEM con igual peso.
- * Best Match queda como referencia web. El motor comparte exactamente las
- * mismas respuestas HTTP con BariSnowRainEngine y usa freezing_level_height
- * cuando está disponible para resolver mejor las transiciones lluvia/nieve.
+ * Los motores de nieve y lluvia comparten el mismo snapshot meteorológico.
  */
 final class BariSnowForecastEngine {
     private static final String TZ_ID = "America/Argentina/Buenos_Aires";
@@ -34,9 +31,9 @@ final class BariSnowForecastEngine {
     private static final int HTTP_TIMEOUT_MS = 6500;
 
     private static final Source[] SOURCES = new Source[]{
-            new Source("ecmwf", "ECMWF IFS", "https://api.open-meteo.com/v1/ecmwf", 1d / 3d, false),
-            new Source("gfs", "NOAA GFS", "https://api.open-meteo.com/v1/gfs", 1d / 3d, true),
-            new Source("gem", "CMC GEM", "https://api.open-meteo.com/v1/gem", 1d / 3d, true)
+            new Source("ecmwf", "ECMWF IFS", "https://api.open-meteo.com/v1/ecmwf", 1d / 3d, false, true),
+            new Source("gfs", "NOAA GFS", "https://api.open-meteo.com/v1/gfs", 1d / 3d, true, true),
+            new Source("gem", "CMC GEM", "https://api.open-meteo.com/v1/gem", 1d / 3d, true, false)
     };
 
     private BariSnowForecastEngine() {}
@@ -168,7 +165,8 @@ final class BariSnowForecastEngine {
     }
 
     private static String modelUrl(Source source, BariSnowWidgetProvider.Place p) {
-        String hourly = "temperature_2m,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,cloud_cover,is_day,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cape,freezing_level_height";
+        String hourly = "temperature_2m,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,cloud_cover,is_day,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cape";
+        if (source.freezingLevel) hourly += ",freezing_level_height";
         if (source.precipProbability) hourly += ",precipitation_probability";
         return String.format(Locale.US,
                 "%s?latitude=%.5f&longitude=%.5f&elevation=%d&hourly=%s&timezone=%s&forecast_days=9&temperature_unit=celsius&wind_speed_unit=kmh&precipitation_unit=mm",
@@ -230,9 +228,6 @@ final class BariSnowForecastEngine {
             double mult = clamp(1 + p.oro * oroIndex, .85, 1.55);
             double cool = clamp(.13 * oroIndex, 0, .45);
             double precip = pBase * mult;
-
-            // El suavizado temporal se conserva para la fase de nieve. La lluvia
-            // se clasifica en BariSnowRainEngine con el intervalo horario propio.
             double temporalSignal = max(pBase, .42 * prevP, .42 * nextP, .70 * showers,
                     .32 * prevShowers, .32 * nextShowers, .22 * (prevP + nextP));
             double nativeSnowSignal = max(snowNative, .38 * prevSnow, .38 * nextSnow);
@@ -644,13 +639,15 @@ final class BariSnowForecastEngine {
         final String endpoint;
         final double weight;
         final boolean precipProbability;
+        final boolean freezingLevel;
 
-        Source(String id, String name, String endpoint, double weight, boolean precipProbability) {
+        Source(String id, String name, String endpoint, double weight, boolean precipProbability, boolean freezingLevel) {
             this.id = id;
             this.name = name;
             this.endpoint = endpoint;
             this.weight = weight;
             this.precipProbability = precipProbability;
+            this.freezingLevel = freezingLevel;
         }
     }
 
