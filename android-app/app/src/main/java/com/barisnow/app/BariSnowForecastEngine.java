@@ -470,13 +470,25 @@ final class BariSnowForecastEngine {
         double snow = Math.max(0, c.optDouble("snowfall", 0));
         double rain = Math.max(0, c.optDouble("rain", 0));
         double showers = Math.max(0, c.optDouble("showers", 0));
-        double precip = Math.max(0, c.optDouble("precipitation", 0));
         double tw = finite(t) && finite(rh) ? wetBulb(t + p.coldBias, rh) : 99;
+        double liquid = rain + showers;
+
+        // En el estado actual el código meteorológico contemporáneo domina la fase.
+        // La temperatura húmeda funciona como control físico y no crea nieve por sí sola.
         if (snowShowerCode(code)) return "CHAPARRÓN DE NIEVE";
-        if (code == 71 || code == 73 || code == 75 || snow >= .01) return "NIEVA";
+        if (code == 71 || code == 73 || code == 75) return "NIEVA";
         if (code == 77) return "NIEVE GRANULADA";
-        if (precip > 0 && tw <= .55) return "NIEVA";
-        if ((rain > 0 || showers > 0 || precip > 0) && tw <= 1.5) return "LLUVIA Y NIEVE";
+
+        // Códigos explícitamente líquidos: la capa de lluvia conserva su categoría.
+        if (code == 51 || code == 53 || code == 55 || code == 56 || code == 57
+                || code == 61 || code == 63 || code == 65 || code == 66 || code == 67
+                || code == 80 || code == 81 || code == 82 || code == 95 || code == 96 || code == 99) {
+            return "SIN NIEVE";
+        }
+
+        // Con código no concluyente, exigir snowfall contemporáneo antes de declarar fase sólida.
+        if (snow >= .06 && liquid < .03 && tw <= 1.0) return "NIEVA";
+        if (snow >= .02 && tw <= 1.25) return liquid >= .03 ? "LLUVIA Y NIEVE" : "NIEVE HÚMEDA";
         return "SIN NIEVE";
     }
 
