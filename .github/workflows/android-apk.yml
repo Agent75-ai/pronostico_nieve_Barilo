@@ -9,6 +9,7 @@ on:
       - 'index.html'
       - 'precipitation-model.js'
       - 'precipitation-communication.js'
+      - 'rain-interval-display.js'
       - 'current-sky-priority.js'
       - 'web-daynight-fix.js'
       - 'sw.js'
@@ -19,6 +20,7 @@ on:
       - 'index.html'
       - 'precipitation-model.js'
       - 'precipitation-communication.js'
+      - 'rain-interval-display.js'
       - 'current-sky-priority.js'
       - 'web-daynight-fix.js'
       - 'sw.js'
@@ -38,6 +40,7 @@ jobs:
         run: |
           node --check precipitation-model.js
           node --check precipitation-communication.js
+          node --check rain-interval-display.js
           node --check current-sky-priority.js
           node --check web-daynight-fix.js
 
@@ -87,7 +90,7 @@ jobs:
           cp android-app/app/build/outputs/apk/debug/app-debug.apk "downloads/BariSnow-Android-${VERSION_NAME}.apk"
           cp android-app/app/build/outputs/apk/debug/app-debug.apk downloads/BariSnow-Android-latest.apk
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email "4189824+github-actions[bot]@users.noreply.github.com"
           git add downloads/
           if git diff --cached --quiet; then
             echo "APK sin cambios para publicar."
