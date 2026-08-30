@@ -3,10 +3,6 @@ package com.barisnow.app;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,9 +21,12 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Native port of the BariSnow web post-processing used by core.js +
- * certainty-communication.js. The Android widgets must not classify an
- * independent Open-Meteo forecast: they consume this same multimodel logic.
+ * Motor nativo del widget BariSnow.
+ *
+ * Desde 1.4.5 el consenso operativo usa ECMWF + GFS + GEM con igual peso.
+ * Best Match queda como referencia web. El motor comparte exactamente las
+ * mismas respuestas HTTP con BariSnowRainEngine y usa freezing_level_height
+ * cuando está disponible para resolver mejor las transiciones lluvia/nieve.
  */
 final class BariSnowForecastEngine {
     private static final String TZ_ID = "America/Argentina/Buenos_Aires";
@@ -35,21 +34,18 @@ final class BariSnowForecastEngine {
     private static final int HTTP_TIMEOUT_MS = 6500;
 
     private static final Source[] SOURCES = new Source[]{
-            new Source("Best Match", "https://api.open-meteo.com/v1/forecast", .38),
-            new Source("ECMWF IFS", "https://api.open-meteo.com/v1/ecmwf", .28),
-            new Source("NOAA GFS", "https://api.open-meteo.com/v1/gfs", .22),
-            new Source("CMC GEM", "https://api.open-meteo.com/v1/gem", .12)
+            new Source("ecmwf", "ECMWF IFS", "https://api.open-meteo.com/v1/ecmwf", 1d / 3d, false),
+            new Source("gfs", "NOAA GFS", "https://api.open-meteo.com/v1/gfs", 1d / 3d, true),
+            new Source("gem", "CMC GEM", "https://api.open-meteo.com/v1/gem", 1d / 3d, true)
     };
 
     private BariSnowForecastEngine() {}
 
     static BariSnowWidgetProvider.WidgetData fetch(BariSnowWidgetProvider.Place place) throws Exception {
-        ExecutorService pool = Executors.newFixedThreadPool(5);
+        ExecutorService pool = Executors.newFixedThreadPool(4);
         Future<JSONObject> currentFuture = pool.submit(() -> fetchJson(currentUrl(place)));
         List<Future<Pack>> futures = new ArrayList<>();
-        for (Source source : SOURCES) {
-            futures.add(pool.submit(new SourceTask(source, place)));
-        }
+        for (Source source : SOURCES) futures.add(pool.submit(new SourceTask(source, place)));
 
         List<Pack> packs = new ArrayList<>();
         JSONObject currentRaw = null;
@@ -172,14 +168,15 @@ final class BariSnowForecastEngine {
     }
 
     private static String modelUrl(Source source, BariSnowWidgetProvider.Place p) {
-        String hourly = "temperature_2m,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cape";
+        String hourly = "temperature_2m,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,cloud_cover,is_day,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cape,freezing_level_height";
+        if (source.precipProbability) hourly += ",precipitation_probability";
         return String.format(Locale.US,
                 "%s?latitude=%.5f&longitude=%.5f&elevation=%d&hourly=%s&timezone=%s&forecast_days=9&temperature_unit=celsius&wind_speed_unit=kmh&precipitation_unit=mm",
                 source.endpoint, p.lat, p.lon, p.elev, enc(hourly), enc(TZ_ID));
     }
 
     private static String currentUrl(BariSnowWidgetProvider.Place p) {
-        String vars = "temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m";
+        String vars = "temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,cloud_cover,is_day,wind_speed_10m,wind_direction_10m,wind_gusts_10m";
         return String.format(Locale.US,
                 "https://api.open-meteo.com/v1/forecast?latitude=%.5f&longitude=%.5f&elevation=%d&current=%s&timezone=%s&temperature_unit=celsius&wind_speed_unit=kmh&precipitation_unit=mm",
                 p.lat, p.lon, p.elev, enc(vars), enc(TZ_ID));
@@ -194,22 +191,7 @@ final class BariSnowForecastEngine {
     }
 
     private static JSONObject fetchJson(String endpoint) throws Exception {
-        HttpURLConnection connection = (HttpURLConnection) new URL(endpoint).openConnection();
-        connection.setConnectTimeout(HTTP_TIMEOUT_MS);
-        connection.setReadTimeout(HTTP_TIMEOUT_MS);
-        connection.setRequestMethod("GET");
-        connection.setRequestProperty("Accept", "application/json");
-        connection.setRequestProperty("User-Agent", "BariSnowAndroidWidget/1.3.5");
-        int status = connection.getResponseCode();
-        if (status < 200 || status >= 300) throw new IllegalStateException("HTTP " + status);
-        StringBuilder body = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-            String line;
-            while ((line = reader.readLine()) != null) body.append(line);
-        } finally {
-            connection.disconnect();
-        }
-        return new JSONObject(body.toString());
+        return BariSnowWeatherClient.fetchJson(endpoint, HTTP_TIMEOUT_MS);
     }
 
     private static List<Row> computeModel(JSONObject data, Source source, BariSnowWidgetProvider.Place p) {
@@ -238,6 +220,7 @@ final class BariSnowForecastEngine {
             double dir = arr(h, "wind_direction_10m", i, 270);
             double gust = Math.max(wind, arr(h, "wind_gusts_10m", i, wind));
             double cape = Math.max(0, arr(h, "cape", i, 0));
+            double freezing = arr(h, "freezing_level_height", i, Double.NaN);
 
             double t = tRaw + p.coldBias;
             double windward = Math.max(0, Math.cos(rad(dir - 280)));
@@ -247,6 +230,9 @@ final class BariSnowForecastEngine {
             double mult = clamp(1 + p.oro * oroIndex, .85, 1.55);
             double cool = clamp(.13 * oroIndex, 0, .45);
             double precip = pBase * mult;
+
+            // El suavizado temporal se conserva para la fase de nieve. La lluvia
+            // se clasifica en BariSnowRainEngine con el intervalo horario propio.
             double temporalSignal = max(pBase, .42 * prevP, .42 * nextP, .70 * showers,
                     .32 * prevShowers, .32 * nextShowers, .22 * (prevP + nextP));
             double nativeSnowSignal = max(snowNative, .38 * prevSnow, .38 * nextSnow);
@@ -256,6 +242,8 @@ final class BariSnowForecastEngine {
                     + .28 * clamp((100 - rh) / 50, 0, 1) * Math.sqrt(Math.max(precip, pSignal * .45)), 0, .75);
             double twEff = tw - evap - cool;
             double snowLine = Math.max(0, p.elev + (twEff - .15) * 230);
+            if (finite(freezing)) snowLine = Math.min(snowLine, Math.max(0, freezing - 180));
+
             double melt = Math.max(0, twEff + .1) * 650;
             double refreeze = Math.max(0, -twEff) * 420;
             double survival = clamp(Math.exp(-melt / 380) * (1 + refreeze / 1400), 0, 1);
@@ -283,6 +271,7 @@ final class BariSnowForecastEngine {
                     + .55 * snowShowerScore;
             if (twEff > 2.2) score -= 1.2;
             if (snowLine > p.elev + 650) score -= 1;
+
             boolean hasHydrometeor = precip >= .04 || pSignal >= .025 || snowNative >= .01 || snowWeatherCode(code);
             double idx = !hasHydrometeor ? 0 : (score >= 3.75 ? 5 : score >= 3.05 ? 4 : score >= 2.25 ? 3 : score >= 1.45 ? 2 : score >= .75 ? 1 : 0);
             if (snowNative >= .18 || snowShowerCode(code)) idx = Math.max(idx, 4);
@@ -332,6 +321,7 @@ final class BariSnowForecastEngine {
             r.wind = wind;
             r.gust = gust;
             r.cape = cape;
+            r.freezingLevel = freezing;
             r.TwEff = twEff;
             r.snowLine = snowLine;
             r.prob = prob;
@@ -349,10 +339,9 @@ final class BariSnowForecastEngine {
     private static List<Row> aggregate(List<Pack> packs) {
         Map<String, List<Row>> byTime = new TreeMap<>();
         for (Pack pack : packs) {
-            for (Row row : pack.rows) {
-                byTime.computeIfAbsent(row.time, k -> new ArrayList<>()).add(row);
-            }
+            for (Row row : pack.rows) byTime.computeIfAbsent(row.time, k -> new ArrayList<>()).add(row);
         }
+
         List<Row> out = new ArrayList<>();
         for (Map.Entry<String, List<Row>> entry : byTime.entrySet()) {
             List<Row> a = entry.getValue();
@@ -360,10 +349,9 @@ final class BariSnowForecastEngine {
             double snowSupport = 0;
             for (Row r : a) {
                 totalW += r.sourceWeight;
-                if (r.prob >= .35 || r.snowfall >= .03 || r.snowShowerScore >= .45) {
-                    snowSupport += r.sourceWeight;
-                }
+                if (r.prob >= .35 || r.snowfall >= .03 || r.snowShowerScore >= .45) snowSupport += r.sourceWeight;
             }
+
             Row row = new Row();
             row.time = entry.getKey();
             row.T = wmean(a, "T");
@@ -375,6 +363,7 @@ final class BariSnowForecastEngine {
             row.wind = wmean(a, "wind");
             row.gust = wmean(a, "gust");
             row.cape = wmean(a, "cape");
+            row.freezingLevel = wmean(a, "freezingLevel");
             row.TwEff = wmean(a, "TwEff");
             row.snowLine = wmean(a, "snowLine");
             row.prob = wmean(a, "prob");
@@ -420,7 +409,7 @@ final class BariSnowForecastEngine {
 
     private static BariSnowWidgetProvider.HourData hourData(Row row) {
         BariSnowWidgetProvider.HourData h = new BariSnowWidgetProvider.HourData();
-        h.clock = clockFromIso(row.time);
+        h.clock = intervalFromIso(row.time);
         h.temp = row.T;
         h.feels = row.feels;
         h.state = categoricalSnow(row);
@@ -466,9 +455,8 @@ final class BariSnowForecastEngine {
                 b.peakScore = score;
             }
         }
-        if (days.size() <= dayOffset) {
-            throw new IllegalArgumentException("Horizonte diario incompleto");
-        }
+        if (days.size() <= dayOffset) throw new IllegalArgumentException("Horizonte diario incompleto");
+
         DayBucket b = new ArrayList<>(days.values()).get(dayOffset);
         BariSnowWidgetProvider.DayData d = new BariSnowWidgetProvider.DayData();
         d.minTemp = b.minT;
@@ -506,9 +494,7 @@ final class BariSnowForecastEngine {
         double sh = row.snowShowerScore;
         double tw = row.TwEff;
         if (idx >= 5 || c >= .8) return "NEVADA ACUMULABLE";
-        if ((sh >= .45 || row.localSnowShower >= .35) && (idx >= 2 || p >= .30 || sf >= .01)) {
-            return "CHAPARRÓN DE NIEVE";
-        }
+        if ((sh >= .45 || row.localSnowShower >= .35) && (idx >= 2 || p >= .30 || sf >= .01)) return "CHAPARRÓN DE NIEVE";
         if (idx >= 4 || sf >= .16 || (p >= .58 && tw <= .8)) return "NIEVA";
         if (idx >= 3 || (p >= .42 && tw <= 1.3)) return "NIEVE HÚMEDA";
         if (idx >= 2) return "LLUVIA Y NIEVE";
@@ -541,6 +527,7 @@ final class BariSnowForecastEngine {
                 case "wind": x = r.wind; break;
                 case "gust": x = r.gust; break;
                 case "cape": x = r.cape; break;
+                case "freezingLevel": x = r.freezingLevel; break;
                 case "TwEff": x = r.TwEff; break;
                 case "snowLine": x = r.snowLine; break;
                 case "prob": x = r.prob; break;
@@ -586,9 +573,7 @@ final class BariSnowForecastEngine {
     private static double feels(double t, double wind) {
         if (!finite(t)) return Double.NaN;
         double w = Math.max(0, wind);
-        if (t <= 10 && w >= 4.8) {
-            return 13.12 + .6215 * t - 11.37 * Math.pow(w, .16) + .3965 * t * Math.pow(w, .16);
-        }
+        if (t <= 10 && w >= 4.8) return 13.12 + .6215 * t - 11.37 * Math.pow(w, .16) + .3965 * t * Math.pow(w, .16);
         return t - Math.min(1.6, w / 34);
     }
 
@@ -612,6 +597,14 @@ final class BariSnowForecastEngine {
         double m = -Double.MAX_VALUE;
         for (double v : values) m = Math.max(m, v);
         return m;
+    }
+
+    private static String intervalFromIso(String iso) {
+        long end = parseMillis(iso);
+        if (end <= 0) return "—";
+        SimpleDateFormat h = new SimpleDateFormat("HH", Locale.getDefault());
+        h.setTimeZone(TZ);
+        return h.format(new Date(end - 3_600_000L)) + "–" + h.format(new Date(end)) + "h";
     }
 
     private static String clockFromIso(String iso) {
@@ -646,14 +639,18 @@ final class BariSnowForecastEngine {
     }
 
     private static final class Source {
+        final String id;
         final String name;
         final String endpoint;
         final double weight;
+        final boolean precipProbability;
 
-        Source(String name, String endpoint, double weight) {
+        Source(String id, String name, String endpoint, double weight, boolean precipProbability) {
+            this.id = id;
             this.name = name;
             this.endpoint = endpoint;
             this.weight = weight;
+            this.precipProbability = precipProbability;
         }
     }
 
@@ -678,6 +675,7 @@ final class BariSnowForecastEngine {
         double wind;
         double gust;
         double cape;
+        double freezingLevel;
         double TwEff;
         double snowLine;
         double prob;
