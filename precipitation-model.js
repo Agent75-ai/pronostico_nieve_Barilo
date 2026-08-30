@@ -15,6 +15,24 @@
   function violentRainShowerCode(code){return code===82;}
   function thunderCode(code){return code===95||code===96||code===99;}
 
+  /*
+   * El consenso BariSnow usa tres modelos explícitos e independientes.
+   * Best Match queda disponible como referencia seleccionable, pero fuera
+   * del ensemble para evitar contar dos veces información correlacionada.
+   */
+  if(typeof SOURCES!=="undefined"){
+    SOURCES.forEach(function(s){
+      if(s.id==="best_match")s.weight=1;
+      else if(s.id==="ecmwf"||s.id==="gfs"||s.id==="gem")s.weight=1/3;
+    });
+  }
+
+  window.sourceSelection=function(){
+    var m=$("sourceMode").value;
+    if(m==="ensemble")return SOURCES.filter(function(s){return s.id!=="best_match";});
+    return SOURCES.filter(function(s){return s.id===m;});
+  };
+
   function snowKey(r){
     var p=n(r&&r.prob,0),c=n(r&&r.cmh,0),idx=n(r&&r.ptypeIdx,0),sf=n(r&&r.snowfall,0),sh=n(r&&r.snowShowerScore,0),tw=n(r&&r.TwEff,9),code=n(r&&r.weatherCode,-1);
     if(idx>=5||c>=.8)return "snow_accum";
@@ -35,7 +53,7 @@
 
   function rainKey(r){
     if(snowKey(r))return null;
-    var code=n(r&&r.weatherCode,-1),liquid=liquidFor(r),P=Math.max(0,n(r&&r.P,0)),signal=Math.max(P,n(r&&r.Psignal,P)),showers=Math.max(0,n(r&&r.showers,0));
+    var code=n(r&&r.weatherCode,-1),liquid=liquidFor(r),P=Math.max(0,n(r&&r.P,0)),showers=Math.max(0,n(r&&r.showers,0));
     if(thunderCode(code))return "thunder";
     if(freezingRainCode(code))return "freezing_rain";
     if(freezingDrizzleCode(code))return "freezing_drizzle";
@@ -50,7 +68,9 @@
     if(liquid>=5)return "rain_heavy";
     if(liquid>=2)return "rain_moderate";
     if(liquid>=.4)return "rain_light";
-    if(liquid>=.08||signal>=.12)return "drizzle";
+    /* La lluvia usa exclusivamente el intervalo de esta fila. Psignal conserva
+       el suavizado temporal para nieve, pero ya no adelanta lluvia futura. */
+    if(liquid>=.08||P>=.12)return "drizzle";
     return "dry";
   }
 
@@ -79,6 +99,23 @@
     return rows.reduce(function(s,r){var k=rainKey(r);return s+(predicate(k)?n(r.sourceWeight,1):0);},0)/total;
   }
 
+  /*
+   * computeModel pertenece al motor base. Este wrapper conserva el mismo
+   * cálculo y adjunta la probabilidad de precipitación cuando la fuente la
+   * expone. GFS y GEM la derivan de sus ensembles; ECMWF determinista queda
+   * con valor ausente en este campo.
+   */
+  window.fetchSource=function(s,p){
+    return fetchJSON(buildUrl(s,p)).then(function(d){
+      var model=computeModel(d,s,p);
+      if(!model.length)throw new Error(s.label+": sin horas");
+      var h=d.hourly||{},times=h.time||[],probs=h.precipitation_probability||[],byTime={};
+      for(var i=0;i<times.length;i++)if(finite(probs[i]))byTime[String(times[i])]=Number(probs[i]);
+      model.forEach(function(r){r.precipProbability=finite(byTime[String(r.time)])?Number(byTime[String(r.time)]):null;});
+      return {source:s,model:model,place:p};
+    });
+  };
+
   window.aggregate=function(packs){
     var rows=baseAggregate(packs),by={};
     (packs||[]).forEach(function(pack){(pack.model||[]).forEach(function(r){(by[String(r.time)]||(by[String(r.time)]=[])).push(r);});});
@@ -97,6 +134,7 @@
       var agree=totalW?(weights[dom]||0)/totalW:.5;
       row.rainNative=wmean(a,function(r){return n(r.rainNative,0);});
       row.liquidRate=wmean(a,liquidFor);
+      row.precipProbability=wmean(a,function(r){return r.precipProbability;});
       row.rainType=rainDom;
       row.skyType=skyDom;
       row.skySupport=totalW?(skyWeights[skyDom]||0)/totalW:0;
@@ -108,7 +146,7 @@
       row.violentRainShowerSupport=support(a,totalW,function(k){return k==="rain_shower_heavy";});
       row.thunderSupport=support(a,totalW,function(k){return k==="thunder";});
       row.precipType=dom;
-      row.precipConsensus=clamp(.55*agree+.45*clamp(a.length/4,.25,1),.15,.98);
+      row.precipConsensus=clamp(.55*agree+.45*clamp(a.length/3,.25,1),.15,.98);
     });
     return rows;
   };
@@ -128,6 +166,9 @@
       var url=baseBuildUrl(s,p);
       if(url.indexOf("freezing_level_height")<0){
         url=url.replace("cape",encodeURIComponent("cape,freezing_level_height"));
+      }
+      if(s&&s.id!=="ecmwf"&&url.indexOf("precipitation_probability")<0){
+        url=url.replace("freezing_level_height",encodeURIComponent("freezing_level_height,precipitation_probability"));
       }
       return url;
     };
