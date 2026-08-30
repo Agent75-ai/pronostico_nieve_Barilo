@@ -3,10 +3,6 @@ package com.barisnow.app;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,21 +23,20 @@ import java.util.concurrent.TimeUnit;
 /**
  * Suplemento de precipitación y estado del cielo del motor BariSnow.
  *
- * Desde 1.4.3 cada hora usa el campo horario is_day de Open-Meteo. Esto evita
- * inferir día/noche a partir de la hora actual o del texto del fenómeno. Un
- * cielo despejado a las 16:00 se representa como SOLEADO y sólo pasa a
- * DESPEJADO (luna) cuando esa hora pronosticada ya es nocturna.
+ * Desde 1.4.5 el consenso operativo usa ECMWF + GFS + GEM con igual peso.
+ * Best Match queda reservado a la referencia web. El motor comparte las
+ * respuestas HTTP con BariSnowForecastEngine para clasificar lluvia, nieve y
+ * cielo sobre el mismo snapshot meteorológico.
  */
 final class BariSnowRainEngine {
     private static final String TZ_ID = "America/Argentina/Buenos_Aires";
     private static final TimeZone TZ = TimeZone.getTimeZone(TZ_ID);
-    private static final int HTTP_TIMEOUT_MS = 5000;
+    private static final int HTTP_TIMEOUT_MS = 6500;
 
     private static final Source[] SOURCES = new Source[]{
-            new Source("https://api.open-meteo.com/v1/forecast", .38),
-            new Source("https://api.open-meteo.com/v1/ecmwf", .28),
-            new Source("https://api.open-meteo.com/v1/gfs", .22),
-            new Source("https://api.open-meteo.com/v1/gem", .12)
+            new Source("ecmwf", "https://api.open-meteo.com/v1/ecmwf", 1d / 3d, false),
+            new Source("gfs", "https://api.open-meteo.com/v1/gfs", 1d / 3d, true),
+            new Source("gem", "https://api.open-meteo.com/v1/gem", 1d / 3d, true)
     };
 
     private BariSnowRainEngine() {}
@@ -109,7 +104,7 @@ final class BariSnowRainEngine {
     }
 
     private static RainData fetch(BariSnowWidgetProvider.Place place) throws Exception {
-        ExecutorService pool = Executors.newFixedThreadPool(5);
+        ExecutorService pool = Executors.newFixedThreadPool(4);
         List<Future<Pack>> futures = new ArrayList<>();
         for (Source source : SOURCES) futures.add(pool.submit(new SourceTask(source, place)));
         Future<JSONObject> currentFuture = pool.submit(() -> fetchJson(currentUrl(place)));
@@ -119,13 +114,13 @@ final class BariSnowRainEngine {
         try {
             for (Future<Pack> future : futures) {
                 try {
-                    Pack pack = future.get(6000, TimeUnit.MILLISECONDS);
+                    Pack pack = future.get(7500, TimeUnit.MILLISECONDS);
                     if (pack != null && !pack.rows.isEmpty()) packs.add(pack);
                 } catch (Exception ignored) {
                 }
             }
             try {
-                currentRaw = currentFuture.get(6000, TimeUnit.MILLISECONDS);
+                currentRaw = currentFuture.get(7500, TimeUnit.MILLISECONDS);
             } catch (Exception ignored) {
             }
         } finally {
@@ -165,16 +160,17 @@ final class BariSnowRainEngine {
     }
 
     private static String modelUrl(Source source, BariSnowWidgetProvider.Place p) {
-        String hourly = "relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,cloud_cover,is_day,wind_speed_10m,wind_direction_10m,cape";
+        String hourly = "temperature_2m,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,cloud_cover,is_day,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cape,freezing_level_height";
+        if (source.precipProbability) hourly += ",precipitation_probability";
         return String.format(Locale.US,
-                "%s?latitude=%.5f&longitude=%.5f&elevation=%d&hourly=%s&timezone=%s&forecast_days=3&wind_speed_unit=kmh&precipitation_unit=mm",
+                "%s?latitude=%.5f&longitude=%.5f&elevation=%d&hourly=%s&timezone=%s&forecast_days=9&temperature_unit=celsius&wind_speed_unit=kmh&precipitation_unit=mm",
                 source.endpoint, p.lat, p.lon, p.elev, enc(hourly), enc(TZ_ID));
     }
 
     private static String currentUrl(BariSnowWidgetProvider.Place p) {
-        String vars = "precipitation,rain,showers,snowfall,weather_code,cloud_cover,is_day";
+        String vars = "temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,cloud_cover,is_day,wind_speed_10m,wind_direction_10m,wind_gusts_10m";
         return String.format(Locale.US,
-                "https://api.open-meteo.com/v1/forecast?latitude=%.5f&longitude=%.5f&elevation=%d&current=%s&timezone=%s&precipitation_unit=mm",
+                "https://api.open-meteo.com/v1/forecast?latitude=%.5f&longitude=%.5f&elevation=%d&current=%s&timezone=%s&temperature_unit=celsius&wind_speed_unit=kmh&precipitation_unit=mm",
                 p.lat, p.lon, p.elev, enc(vars), enc(TZ_ID));
     }
 
@@ -187,22 +183,7 @@ final class BariSnowRainEngine {
     }
 
     private static JSONObject fetchJson(String endpoint) throws Exception {
-        HttpURLConnection c = (HttpURLConnection) new URL(endpoint).openConnection();
-        c.setConnectTimeout(HTTP_TIMEOUT_MS);
-        c.setReadTimeout(HTTP_TIMEOUT_MS);
-        c.setRequestMethod("GET");
-        c.setRequestProperty("Accept", "application/json");
-        c.setRequestProperty("User-Agent", "BariSnowAndroidWidget/1.4.3");
-        int status = c.getResponseCode();
-        if (status < 200 || status >= 300) throw new IllegalStateException("HTTP " + status);
-        StringBuilder body = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(c.getInputStream()))) {
-            String line;
-            while ((line = reader.readLine()) != null) body.append(line);
-        } finally {
-            c.disconnect();
-        }
-        return new JSONObject(body.toString());
+        return BariSnowWeatherClient.fetchJson(endpoint, HTTP_TIMEOUT_MS);
     }
 
     private static List<Row> parse(JSONObject data, Source source, BariSnowWidgetProvider.Place place) {
@@ -223,6 +204,7 @@ final class BariSnowRainEngine {
             r.cloud = clamp(arr(h, "cloud_cover", i, Double.NaN), 0, 100);
             r.isDay = arr(h, "is_day", i, fallbackDaylight(r.time)) >= .5 ? 1 : 0;
             r.cape = Math.max(0, arr(h, "cape", i, 0));
+            r.precipProbability = arr(h, "precipitation_probability", i, Double.NaN);
 
             double rh = arr(h, "relative_humidity_2m", i, 80);
             double wind = Math.max(0, arr(h, "wind_speed_10m", i, 0));
@@ -282,6 +264,8 @@ final class BariSnowRainEngine {
             double cloudWeight = 0;
             double cloudSum = 0;
             double daySum = 0;
+            double probWeight = 0;
+            double probSum = 0;
             Map<String, Double> votes = new LinkedHashMap<>();
 
             for (Row r : a) {
@@ -292,6 +276,10 @@ final class BariSnowRainEngine {
                     cloudSum += r.weight * r.cloud;
                     cloudWeight += r.weight;
                 }
+                if (!Double.isNaN(r.precipProbability)) {
+                    probSum += r.weight * r.precipProbability;
+                    probWeight += r.weight;
+                }
                 votes.put(r.key, votes.getOrDefault(r.key, 0d) + r.weight);
             }
 
@@ -300,6 +288,7 @@ final class BariSnowRainEngine {
             r.liquid = total > 0 ? liquid / total : 0;
             r.cloud = cloudWeight > 0 ? cloudSum / cloudWeight : Double.NaN;
             r.isDay = total > 0 && daySum / total >= .5 ? 1 : 0;
+            r.precipProbability = probWeight > 0 ? probSum / probWeight : Double.NaN;
             r.key = "unknown_sky";
 
             double best = -1;
@@ -424,8 +413,6 @@ final class BariSnowRainEngine {
         }
         if (precipPeak != null) return category(precipPeak);
 
-        // Para un día seco, la tarjeta diaria representa el cielo diurno. Así
-        // una hora despejada de madrugada no convierte el resumen en luna.
         Row skyPeak = null;
         double score = -1;
         for (Row r : rows) {
@@ -473,8 +460,6 @@ final class BariSnowRainEngine {
         if (iso == null || iso.length() < 13) return 1;
         try {
             int hour = Integer.parseInt(iso.substring(11, 13));
-            // Sólo se usa si una fuente no devuelve is_day. La clasificación
-            // normal usa el valor astronómico horario de Open-Meteo.
             return hour >= 8 && hour < 19 ? 1 : 0;
         } catch (Exception ignored) {
             return 1;
@@ -514,11 +499,16 @@ final class BariSnowRainEngine {
     }
 
     private static final class Source {
+        final String id;
         final String endpoint;
         final double weight;
-        Source(String endpoint, double weight) {
+        final boolean precipProbability;
+
+        Source(String id, String endpoint, double weight, boolean precipProbability) {
+            this.id = id;
             this.endpoint = endpoint;
             this.weight = weight;
+            this.precipProbability = precipProbability;
         }
     }
 
@@ -541,6 +531,7 @@ final class BariSnowRainEngine {
         double isDay;
         double cape;
         double liquid;
+        double precipProbability;
         double weight;
         double freezingRainSupport;
         double freezingDrizzleSupport;
