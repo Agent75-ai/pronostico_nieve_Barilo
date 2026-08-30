@@ -1,4 +1,4 @@
-const CACHE = 'barisnow-pwa-v6';
+const CACHE = 'barisnow-pwa-v7';
 const SHELL = [
   './',
   './index.html',
@@ -11,6 +11,7 @@ const SHELL = [
   './visual-refresh.js',
   './current-sky-priority.js',
   './precipitation-communication.js',
+  './rain-interval-display.js',
   './web-daynight-fix.js',
   './pwa.js',
   './manifest.webmanifest',
