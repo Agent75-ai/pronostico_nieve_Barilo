@@ -99,12 +99,6 @@
     return rows.reduce(function(s,r){var k=rainKey(r);return s+(predicate(k)?n(r.sourceWeight,1):0);},0)/total;
   }
 
-  /*
-   * computeModel pertenece al motor base. Este wrapper conserva el mismo
-   * cálculo y adjunta la probabilidad de precipitación cuando la fuente la
-   * expone. GFS y GEM la derivan de sus ensembles; ECMWF determinista queda
-   * con valor ausente en este campo.
-   */
   window.fetchSource=function(s,p){
     return fetchJSON(buildUrl(s,p)).then(function(d){
       var model=computeModel(d,s,p);
@@ -163,12 +157,13 @@
 
   if(typeof baseBuildUrl==="function"){
     window.buildUrl=function(s,p){
-      var url=baseBuildUrl(s,p);
-      if(url.indexOf("freezing_level_height")<0){
-        url=url.replace("cape",encodeURIComponent("cape,freezing_level_height"));
-      }
-      if(s&&s.id!=="ecmwf"&&url.indexOf("precipitation_probability")<0){
-        url=url.replace("freezing_level_height",encodeURIComponent("freezing_level_height,precipitation_probability"));
+      var url=baseBuildUrl(s,p),extras=[];
+      /* GEM expone probabilidad de precipitación, mientras que la cota de
+         congelación se solicita a Best Match, ECMWF y GFS. */
+      if(s&&s.id!=="gem")extras.push("freezing_level_height");
+      if(s&&s.id!=="ecmwf")extras.push("precipitation_probability");
+      if(extras.length){
+        url=url.replace("cape",encodeURIComponent("cape,"+extras.join(",")));
       }
       return url;
     };
