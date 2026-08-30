@@ -10,11 +10,11 @@ android {
         applicationId 'com.barisnow.app'
         minSdk 23
         targetSdk 36
-        versionCode 18
-        versionName '1.4.6'
+        versionCode 19
+        versionName '1.4.7'
 
         // Ubicaciones de app y widgets gestionadas de manera independiente desde 1.4.4.
-        // BariSnow 1.4.6 endurece la evidencia contemporánea requerida para declarar nieve en “Ahora”.
+        // BariSnow 1.4.7 valida la fase actual con código, snowfall, precipitación líquida y temperatura húmeda.
         // AdMob queda preparado pero desactivado hasta cargar IDs reales y consentimiento.
         buildConfigField 'boolean', 'ADS_ENABLED', 'false'
         buildConfigField 'String', 'ADMOB_BANNER_ID', '""'
