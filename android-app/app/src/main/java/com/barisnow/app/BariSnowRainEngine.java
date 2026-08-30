@@ -34,9 +34,9 @@ final class BariSnowRainEngine {
     private static final int HTTP_TIMEOUT_MS = 6500;
 
     private static final Source[] SOURCES = new Source[]{
-            new Source("ecmwf", "https://api.open-meteo.com/v1/ecmwf", 1d / 3d, false),
-            new Source("gfs", "https://api.open-meteo.com/v1/gfs", 1d / 3d, true),
-            new Source("gem", "https://api.open-meteo.com/v1/gem", 1d / 3d, true)
+            new Source("ecmwf", "https://api.open-meteo.com/v1/ecmwf", 1d / 3d, false, true),
+            new Source("gfs", "https://api.open-meteo.com/v1/gfs", 1d / 3d, true, true),
+            new Source("gem", "https://api.open-meteo.com/v1/gem", 1d / 3d, true, false)
     };
 
     private BariSnowRainEngine() {}
@@ -160,7 +160,8 @@ final class BariSnowRainEngine {
     }
 
     private static String modelUrl(Source source, BariSnowWidgetProvider.Place p) {
-        String hourly = "temperature_2m,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,cloud_cover,is_day,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cape,freezing_level_height";
+        String hourly = "temperature_2m,relative_humidity_2m,precipitation,rain,showers,snowfall,weather_code,cloud_cover,is_day,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cape";
+        if (source.freezingLevel) hourly += ",freezing_level_height";
         if (source.precipProbability) hourly += ",precipitation_probability";
         return String.format(Locale.US,
                 "%s?latitude=%.5f&longitude=%.5f&elevation=%d&hourly=%s&timezone=%s&forecast_days=9&temperature_unit=celsius&wind_speed_unit=kmh&precipitation_unit=mm",
@@ -503,12 +504,14 @@ final class BariSnowRainEngine {
         final String endpoint;
         final double weight;
         final boolean precipProbability;
+        final boolean freezingLevel;
 
-        Source(String id, String endpoint, double weight, boolean precipProbability) {
+        Source(String id, String endpoint, double weight, boolean precipProbability, boolean freezingLevel) {
             this.id = id;
             this.endpoint = endpoint;
             this.weight = weight;
             this.precipProbability = precipProbability;
+            this.freezingLevel = freezingLevel;
         }
     }
 
