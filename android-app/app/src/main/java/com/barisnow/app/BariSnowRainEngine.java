@@ -137,7 +137,7 @@ final class BariSnowRainEngine {
         out.plus3 = category(horizon(model, 3));
         out.tomorrow = dayCategory(model, 1);
         out.dayAfter = dayCategory(model, 2);
-        out.now = currentCategory(currentRaw);
+        out.now = currentCategory(currentRaw, place);
         if (out.now == null) out.now = category(model.get(0));
         return out;
     }
@@ -345,17 +345,37 @@ final class BariSnowRainEngine {
         return "SIN PRECIPITACIÓN";
     }
 
-    private static String currentCategory(JSONObject raw) {
+    private static String currentCategory(JSONObject raw, BariSnowWidgetProvider.Place place) {
         JSONObject c = raw == null ? null : raw.optJSONObject("current");
         if (c == null) return null;
 
         int code = c.optInt("weather_code", -1);
+        double t = c.optDouble("temperature_2m", Double.NaN);
+        double rh = c.optDouble("relative_humidity_2m", Double.NaN);
         double snow = Math.max(0, c.optDouble("snowfall", 0));
         double rain = Math.max(0, c.optDouble("rain", 0));
         double showers = Math.max(0, c.optDouble("showers", 0));
         double precip = Math.max(0, c.optDouble("precipitation", 0));
+        double liquid = rain + showers;
 
-        if (snowCode(code) || snow >= .01) return null;
+        double tw = 99;
+        if (!Double.isNaN(t) && !Double.isInfinite(t) && !Double.isNaN(rh) && !Double.isInfinite(rh)) {
+            double h = Math.max(1, Math.min(100, rh));
+            double tt = t + place.coldBias;
+            tw = tt * Math.atan(.151977 * Math.sqrt(h + 8.313659))
+                    + Math.atan(tt + h)
+                    - Math.atan(h - 1.676331)
+                    + .00391838 * Math.pow(h, 1.5) * Math.atan(.023101 * h)
+                    - 4.686035;
+        }
+
+        boolean snowCodeNow = snowCode(code);
+        boolean snowEvidence = (snow >= .01 && tw <= .70)
+                || (snow >= .03 && tw <= 1.30)
+                || (snow >= .10 && tw <= 1.80)
+                || (snowCodeNow && tw <= .25 && precip >= .05);
+        if (snowCodeNow && (snowEvidence || (snow >= .15 && tw <= 2.10))) return null;
+
         if (code == 95 || code == 96 || code == 99) return "TORMENTA";
         if (code == 66 || code == 67) return "LLUVIA CONGELANTE";
         if (code == 56 || code == 57) return "LLOVIZNA CONGELANTE";
@@ -366,7 +386,6 @@ final class BariSnowRainEngine {
         if (code == 63) return "LLUVIA MODERADA";
         if (code == 61) return "LLUVIA DÉBIL";
 
-        double liquid = rain + showers;
         if (showers >= .15) return "CHAPARRÓN DE LLUVIA";
         if (liquid >= 5) return "LLUVIA FUERTE";
         if (liquid >= 2) return "LLUVIA MODERADA";
