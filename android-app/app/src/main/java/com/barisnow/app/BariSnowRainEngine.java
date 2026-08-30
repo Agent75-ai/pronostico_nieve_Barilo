@@ -192,7 +192,6 @@ final class BariSnowRainEngine {
         if (h == null) return Collections.emptyList();
         JSONArray times = h.optJSONArray("time");
         if (times == null) return Collections.emptyList();
-
         List<Row> out = new ArrayList<>();
         for (int i = 0; i < times.length(); i++) {
             Row r = new Row();
@@ -206,19 +205,25 @@ final class BariSnowRainEngine {
             r.isDay = arr(h, "is_day", i, fallbackDaylight(r.time)) >= .5 ? 1 : 0;
             r.cape = Math.max(0, arr(h, "cape", i, 0));
             r.precipProbability = arr(h, "precipitation_probability", i, Double.NaN);
-
-            double rh = arr(h, "relative_humidity_2m", i, 80);
+            r.temp = arr(h, "temperature_2m", i, 99) + place.coldBias;
+            r.rh = arr(h, "relative_humidity_2m", i, 80);
+            double hh = Math.max(1, Math.min(100, r.rh));
+            r.tw = r.temp * Math.atan(.151977 * Math.sqrt(hh + 8.313659)) + Math.atan(r.temp + hh)
+                    - Math.atan(hh - 1.676331) + .00391838 * Math.pow(hh, 1.5) * Math.atan(.023101 * hh) - 4.686035;
             double wind = Math.max(0, arr(h, "wind_speed_10m", i, 0));
             double dir = arr(h, "wind_direction_10m", i, 270);
             double windward = Math.max(0, Math.cos(Math.toRadians(dir - 280)));
-            double moist = clamp(rh / 90, .3, 1.3);
+            double moist = clamp(r.rh / 90, .3, 1.3);
             double windTerm = clamp(wind / 45, 0, 1.5);
             double oroIndex = windward * moist * windTerm;
             double mult = clamp(1 + place.oro * oroIndex, .85, 1.55);
-
             r.precip = pBase * mult;
+            if (r.temp > 5.5 || r.tw > 2.2) r.snowPlausible = false;
+            else if (r.temp > 4.5) r.snowPlausible = r.tw <= 1.0 && r.snow >= .05 && r.precip >= .20;
+            else if (r.temp > 3.0) r.snowPlausible = r.tw <= 1.5 && r.snow >= .02 && r.precip >= .08;
+            else r.snowPlausible = r.tw <= 1.9 && (r.snow >= .01 || snowCode(r.code));
             r.weight = source.weight;
-            r.liquid = Math.max(r.rain + r.showers, r.snow > .01 ? 0 : r.precip);
+            r.liquid = Math.max(r.rain + r.showers, r.snowPlausible ? 0 : r.precip);
             r.key = sourceKey(r);
             out.add(r);
         }
@@ -227,7 +232,7 @@ final class BariSnowRainEngine {
 
     private static String sourceKey(Row r) {
         int code = r.code;
-        if (snowCode(code) || r.snow >= .01) return "snow";
+        if (r.snowPlausible && (snowCode(code) || r.snow >= .01)) return "snow";
         if (code == 95 || code == 96 || code == 99) return "thunder";
         if (code == 66 || code == 67) return "freezing_rain";
         if (code == 56 || code == 57) return "freezing_drizzle";
@@ -348,7 +353,6 @@ final class BariSnowRainEngine {
     private static String currentCategory(JSONObject raw, BariSnowWidgetProvider.Place place) {
         JSONObject c = raw == null ? null : raw.optJSONObject("current");
         if (c == null) return null;
-
         int code = c.optInt("weather_code", -1);
         double t = c.optDouble("temperature_2m", Double.NaN);
         double rh = c.optDouble("relative_humidity_2m", Double.NaN);
@@ -357,25 +361,17 @@ final class BariSnowRainEngine {
         double showers = Math.max(0, c.optDouble("showers", 0));
         double precip = Math.max(0, c.optDouble("precipitation", 0));
         double liquid = rain + showers;
-
         double tw = 99;
         if (!Double.isNaN(t) && !Double.isInfinite(t) && !Double.isNaN(rh) && !Double.isInfinite(rh)) {
             double h = Math.max(1, Math.min(100, rh));
             double tt = t + place.coldBias;
-            tw = tt * Math.atan(.151977 * Math.sqrt(h + 8.313659))
-                    + Math.atan(tt + h)
-                    - Math.atan(h - 1.676331)
-                    + .00391838 * Math.pow(h, 1.5) * Math.atan(.023101 * h)
-                    - 4.686035;
+            tw = tt * Math.atan(.151977 * Math.sqrt(h + 8.313659)) + Math.atan(tt + h) - Math.atan(h - 1.676331)
+                    + .00391838 * Math.pow(h, 1.5) * Math.atan(.023101 * h) - 4.686035;
         }
-
         boolean snowCodeNow = snowCode(code);
-        boolean snowEvidence = (snow >= .01 && tw <= .70)
-                || (snow >= .03 && tw <= 1.30)
-                || (snow >= .10 && tw <= 1.80)
+        boolean snowEvidence = (snow >= .01 && tw <= .70) || (snow >= .03 && tw <= 1.30) || (snow >= .10 && tw <= 1.80)
                 || (snowCodeNow && tw <= .25 && precip >= .05);
         if (snowCodeNow && (snowEvidence || (snow >= .15 && tw <= 2.10))) return null;
-
         if (code == 95 || code == 96 || code == 99) return "TORMENTA";
         if (code == 66 || code == 67) return "LLUVIA CONGELANTE";
         if (code == 56 || code == 57) return "LLOVIZNA CONGELANTE";
@@ -385,7 +381,6 @@ final class BariSnowRainEngine {
         if (code == 65) return "LLUVIA FUERTE";
         if (code == 63) return "LLUVIA MODERADA";
         if (code == 61) return "LLUVIA DÉBIL";
-
         if (showers >= .15) return "CHAPARRÓN DE LLUVIA";
         if (liquid >= 5) return "LLUVIA FUERTE";
         if (liquid >= 2) return "LLUVIA MODERADA";
@@ -549,6 +544,10 @@ final class BariSnowRainEngine {
         double rain;
         double showers;
         double snow;
+        double temp;
+        double rh;
+        double tw;
+        boolean snowPlausible;
         double cloud;
         double isDay;
         double cape;

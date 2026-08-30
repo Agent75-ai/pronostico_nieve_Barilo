@@ -23,13 +23,16 @@
 
   function snowCategory(row){
     if(!row)return {headline:"SIN DATO",short:"Sin dato",cls:"blue",rank:-1,family:"none"};
-    var p=n(row.prob,0),c=n(row.cmh,0),idx=n(row.ptypeIdx,0),sf=n(row.snowfall,0),sh=n(row.snowShowerScore,0),tw=n(row.TwEff,9);
-    if(idx>=5||c>=.8)return {headline:"NEVADA ACUMULABLE",short:"Nevada acumulable",cls:"red",rank:15,family:"snow"};
-    if((sh>=.45||n(row.localSnowShower,0)>=.35)&&(idx>=2||p>=.30||sf>=.01))return {headline:"CHAPARRÓN DE NIEVE",short:"Chaparrón de nieve",cls:sh>=.62?"orange":"yellow",rank:14,family:"snow"};
-    if(idx>=4||sf>=.16||(p>=.58&&tw<=.8))return {headline:"NIEVA",short:"Nieve",cls:"orange",rank:14,family:"snow"};
-    if(idx>=3||(p>=.42&&tw<=1.3))return {headline:"NIEVE HÚMEDA",short:"Nieve húmeda",cls:"yellow",rank:13,family:"snow"};
-    if(idx>=2)return {headline:"LLUVIA Y NIEVE",short:"Lluvia y nieve",cls:"yellow",rank:12,family:"mixed"};
-    if(p>=.23||idx>=1||sf>=.01)return {headline:"COPOS AISLADOS",short:"Copos aislados",cls:"blue",rank:11,family:"snow"};
+    var p=n(row.prob,0),c=n(row.cmh,0),idx=n(row.ptypeIdx,0),sf=Math.max(0,n(row.snowfall,0)),sh=n(row.snowShowerScore,0),tw=n(row.TwEff,9),T=n(row.T,99),ps=Math.max(0,n(row.Psignal,n(row.P,0))),support=clamp(n(row.snowSupport,0),0,1),members=Math.max(1,n(row.members,1));
+    var consensusOK=members>=2?support>=.60:(support>=.99&&sf>=.08);
+    var showerThermal=(T<=3.0&&tw<=1.8)||(T>3.0&&T<=4.5&&tw<=1.5&&sf>=.02&&ps>=.08)||(T>4.5&&T<=5.5&&tw<=1.0&&sf>=.05&&ps>=.20);
+    if(T>5.5||tw>2.3)return {headline:"SIN NIEVE",short:"Sin nieve",cls:"green",rank:0,family:"none"};
+    if((idx>=5||c>=.8)&&T<=2.8&&tw<=1.1&&consensusOK)return {headline:"NEVADA ACUMULABLE",short:"Nevada acumulable",cls:"red",rank:15,family:"snow"};
+    if((sh>=.45||n(row.localSnowShower,0)>=.35)&&showerThermal&&consensusOK&&(sf>=.01||ps>=.12))return {headline:"CHAPARRÓN DE NIEVE",short:"Chaparrón de nieve",cls:sh>=.62?"orange":"yellow",rank:14,family:"snow"};
+    if(T<=4.2&&tw<=1.5&&support>=.50&&(idx>=4||sf>=.12||(p>=.60&&sf>=.02)))return {headline:"NIEVA",short:"Nieve",cls:"orange",rank:14,family:"snow"};
+    if(T<=4.8&&tw<=1.8&&support>=.34&&(idx>=3||sf>=.02||(p>=.42&&sf>=.01)))return {headline:"NIEVE HÚMEDA",short:"Nieve húmeda",cls:"yellow",rank:13,family:"snow"};
+    if(T<=5.2&&tw<=2.1&&support>=.34&&(idx>=2||sf>=.01))return {headline:"LLUVIA Y NIEVE",short:"Lluvia y nieve",cls:"yellow",rank:12,family:"mixed"};
+    if(T<=5.5&&tw<=2.2&&support>=.34&&(p>=.23||idx>=1||sf>=.01))return {headline:"COPOS AISLADOS",short:"Copos aislados",cls:"blue",rank:11,family:"snow"};
     return {headline:"SIN NIEVE",short:"Sin nieve",cls:"green",rank:0,family:"none"};
   }
 
@@ -157,10 +160,6 @@
     var snowCodeNow=snowShowerCode(code)||currentSnowCode(code)||code===77;
     var snowEvidence=(snow>=.01&&tw<=.70)||(snow>=.03&&tw<=1.30)||(snow>=.10&&tw<=1.80)||(snowCodeNow&&tw<=.25&&precip>=.05);
     var snowShowerEvidence=snowEvidence||(snow>=.15&&tw<=2.10);
-
-    /* En “Ahora” un código WMO nival requiere coherencia con snowfall y
-       temperatura húmeda. Esto filtra fase sólida marginal que llega como
-       llovizna o lluvia a nivel de superficie. */
     if(snowShowerCode(code)&&snowShowerEvidence)return {headline:"CHAPARRÓN DE NIEVE",short:"Chaparrón de nieve",cls:"orange",family:"snow",T:T,time:c.time};
     if(currentSnowCode(code)&&snowEvidence)return {headline:"NIEVA",short:"Nieve",cls:snow>=.10?"orange":"yellow",family:"snow",T:T,time:c.time};
     if(code===77&&snowEvidence)return {headline:"NIEVE GRANULADA",short:"Nieve granulada",cls:"yellow",family:"snow",T:T,time:c.time};
@@ -173,12 +172,10 @@
     if(code===65)return {headline:"LLUVIA FUERTE",short:"Lluvia fuerte",cls:"red",family:"rain",T:T,time:c.time};
     if(code===63)return {headline:"LLUVIA MODERADA",short:"Lluvia moderada",cls:"orange",family:"rain",T:T,time:c.time};
     if(code===61)return {headline:"LLUVIA DÉBIL",short:"Lluvia débil",cls:"yellow",family:"rain",T:T,time:c.time};
-
     if(!snowCodeNow&&snowEvidence){
       if(snow>=.06&&liquid<.03&&tw<=1.0)return {headline:"NIEVA",short:"Nieve",cls:"yellow",family:"snow",T:T,time:c.time};
       if(snow>=.02&&tw<=1.25)return liquid>=.03?{headline:"LLUVIA Y NIEVE",short:"Lluvia y nieve",cls:"yellow",family:"mixed",T:T,time:c.time}:{headline:"NIEVE HÚMEDA",short:"Nieve húmeda",cls:"yellow",family:"snow",T:T,time:c.time};
     }
-
     if(showers>=.15)return {headline:"CHAPARRÓN DE LLUVIA",short:"Chaparrón de lluvia",cls:"yellow",family:"rain",T:T,time:c.time};
     if(liquid>=5)return {headline:"LLUVIA FUERTE",short:"Lluvia fuerte",cls:"red",family:"rain",T:T,time:c.time};
     if(liquid>=2)return {headline:"LLUVIA MODERADA",short:"Lluvia moderada",cls:"orange",family:"rain",T:T,time:c.time};

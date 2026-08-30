@@ -33,7 +33,16 @@
     return SOURCES.filter(function(s){return s.id===m;});
   };
 
+  function sourceSnowThermal(r){
+    var T=n(r&&r.T,99),tw=n(r&&r.TwEff,99),sf=Math.max(0,n(r&&r.snowfall,0)),ps=Math.max(0,n(r&&r.Psignal,n(r&&r.P,0))),sh=n(r&&r.snowShowerScore,0),idx=n(r&&r.ptypeIdx,0),code=n(r&&r.weatherCode,-1);
+    if(T>5.5||tw>2.2)return false;
+    if(T>4.5)return tw<=1.0&&sf>=.05&&ps>=.20;
+    if(T>3.0)return tw<=1.5&&sf>=.02&&(ps>=.08||sh>=.55);
+    return tw<=1.9&&(sf>=.01||idx>=2||ps>=.12||snowShowerCode(code));
+  }
+
   function snowKey(r){
+    if(!sourceSnowThermal(r))return null;
     var p=n(r&&r.prob,0),c=n(r&&r.cmh,0),idx=n(r&&r.ptypeIdx,0),sf=n(r&&r.snowfall,0),sh=n(r&&r.snowShowerScore,0),tw=n(r&&r.TwEff,9),code=n(r&&r.weatherCode,-1);
     if(idx>=5||c>=.8)return "snow_accum";
     if((snowShowerCode(code)||sh>=.45||n(r&&r.localSnowShower,0)>=.35)&&(idx>=2||p>=.30||sf>=.01))return "snow_shower";
@@ -47,7 +56,7 @@
   function liquidFor(r){
     var nativeLiquid=Math.max(0,n(r&&r.rainNative,0)+n(r&&r.showers,0));
     var P=Math.max(0,n(r&&r.P,0));
-    var snowProb=clamp(n(r&&r.prob,0),0,1);
+    var snowProb=snowKey(r)?clamp(n(r&&r.prob,0),0,1):0;
     return Math.max(nativeLiquid,P*clamp(1-.85*snowProb,.08,1));
   }
 
@@ -114,12 +123,13 @@
     var rows=baseAggregate(packs),by={};
     (packs||[]).forEach(function(pack){(pack.model||[]).forEach(function(r){(by[String(r.time)]||(by[String(r.time)]=[])).push(r);});});
     rows.forEach(function(row){
-      var a=by[String(row.time)]||[],weights={},rainWeights={},skyWeights={},totalW=0;
+      var a=by[String(row.time)]||[],weights={},rainWeights={},skyWeights={},totalW=0,snowW=0;
       a.forEach(function(r){
         var w=n(r.sourceWeight,1),pk=phenomenonKey(r),rk=rainKey(r)||"dry",sk=skyKey(r);
         weights[pk]=(weights[pk]||0)+w;
         rainWeights[rk]=(rainWeights[rk]||0)+w;
         skyWeights[sk]=(skyWeights[sk]||0)+w;
+        if(snowKey(r))snowW+=w;
         totalW+=w;
       });
       var dom=Object.keys(weights).sort(function(x,y){return weights[y]-weights[x];})[0]||"unknown_sky";
@@ -139,11 +149,14 @@
       row.rainShowerSupport=support(a,totalW,function(k){return k==="rain_shower"||k==="rain_shower_heavy";});
       row.violentRainShowerSupport=support(a,totalW,function(k){return k==="rain_shower_heavy";});
       row.thunderSupport=support(a,totalW,function(k){return k==="thunder";});
+      row.snowSupport=totalW?snowW/totalW:0;
+      row.members=a.length;
       row.precipType=dom;
       row.precipConsensus=clamp(.55*agree+.45*clamp(a.length/3,.25,1),.15,.98);
     });
     return rows;
   };
+
 
   if(typeof baseSummarize==="function"){
     window.summarize=function(model,p){

@@ -333,10 +333,7 @@ final class BariSnowForecastEngine {
 
     private static List<Row> aggregate(List<Pack> packs) {
         Map<String, List<Row>> byTime = new TreeMap<>();
-        for (Pack pack : packs) {
-            for (Row row : pack.rows) byTime.computeIfAbsent(row.time, k -> new ArrayList<>()).add(row);
-        }
-
+        for (Pack pack : packs) for (Row row : pack.rows) byTime.computeIfAbsent(row.time, k -> new ArrayList<>()).add(row);
         List<Row> out = new ArrayList<>();
         for (Map.Entry<String, List<Row>> entry : byTime.entrySet()) {
             List<Row> a = entry.getValue();
@@ -344,9 +341,8 @@ final class BariSnowForecastEngine {
             double snowSupport = 0;
             for (Row r : a) {
                 totalW += r.sourceWeight;
-                if (r.prob >= .35 || r.snowfall >= .03 || r.snowShowerScore >= .45) snowSupport += r.sourceWeight;
+                if (sourceSnowEvidence(r)) snowSupport += r.sourceWeight;
             }
-
             Row row = new Row();
             row.time = entry.getKey();
             row.T = wmean(a, "T");
@@ -367,7 +363,8 @@ final class BariSnowForecastEngine {
             row.localSnowShower = wmean(a, "localSnowShower");
             row.feels = wmean(a, "feels");
             row.ptypeIdx = wmean(a, "ptypeIdx");
-            row.prob = Math.max(row.prob, totalW > 0 ? (snowSupport / totalW) * .72 : 0);
+            row.snowSupport = totalW > 0 ? snowSupport / totalW : 0;
+            row.members = a.size();
             out.add(row);
         }
         return filterNow(out);
@@ -479,17 +476,12 @@ final class BariSnowForecastEngine {
                 || (snow >= .10 && tw <= 1.80)
                 || (snowCodeNow && tw <= .25 && precip >= .05);
         boolean snowShowerEvidence = snowEvidence || (snow >= .15 && tw <= 2.10);
-
         if (snowShowerCode(code) && snowShowerEvidence) return "CHAPARRÓN DE NIEVE";
         if ((code == 71 || code == 73 || code == 75) && snowEvidence) return "NIEVA";
         if (code == 77 && snowEvidence) return "NIEVE GRANULADA";
-
         if (code == 51 || code == 53 || code == 55 || code == 56 || code == 57
                 || code == 61 || code == 63 || code == 65 || code == 66 || code == 67
-                || code == 80 || code == 81 || code == 82 || code == 95 || code == 96 || code == 99) {
-            return "SIN NIEVE";
-        }
-
+                || code == 80 || code == 81 || code == 82 || code == 95 || code == 96 || code == 99) return "SIN NIEVE";
         if (!snowCodeNow && snowEvidence) {
             if (snow >= .06 && liquid < .03 && tw <= 1.0) return "NIEVA";
             if (snow >= .02 && tw <= 1.25) return liquid >= .03 ? "LLUVIA Y NIEVE" : "NIEVE HÚMEDA";
@@ -497,20 +489,40 @@ final class BariSnowForecastEngine {
         return "SIN NIEVE";
     }
 
+    private static boolean sourceSnowEvidence(Row r) {
+        if (r == null) return false;
+        double t = r.T;
+        double tw = r.TwEff;
+        double sf = Math.max(0, r.snowfall);
+        double ps = Math.max(0, r.Psignal);
+        if (t > 5.5 || tw > 2.2) return false;
+        if (t > 4.5) return tw <= 1.0 && sf >= .05 && ps >= .20;
+        if (t > 3.0) return tw <= 1.5 && sf >= .02 && (ps >= .08 || r.snowShowerScore >= .55);
+        return tw <= 1.9 && (sf >= .01 || r.ptypeIdx >= 2 || ps >= .12);
+    }
+
     private static String categoricalSnow(Row row) {
         if (row == null) return "SIN DATO";
         double p = row.prob;
         double c = row.cmh;
         double idx = row.ptypeIdx;
-        double sf = row.snowfall;
+        double sf = Math.max(0, row.snowfall);
         double sh = row.snowShowerScore;
         double tw = row.TwEff;
-        if (idx >= 5 || c >= .8) return "NEVADA ACUMULABLE";
-        if ((sh >= .45 || row.localSnowShower >= .35) && (idx >= 2 || p >= .30 || sf >= .01)) return "CHAPARRÓN DE NIEVE";
-        if (idx >= 4 || sf >= .16 || (p >= .58 && tw <= .8)) return "NIEVA";
-        if (idx >= 3 || (p >= .42 && tw <= 1.3)) return "NIEVE HÚMEDA";
-        if (idx >= 2) return "LLUVIA Y NIEVE";
-        if (p >= .23 || idx >= 1 || sf >= .01) return "COPOS AISLADOS";
+        double t = row.T;
+        double ps = Math.max(0, row.Psignal);
+        double support = clamp(row.snowSupport, 0, 1);
+        boolean consensusOK = row.members >= 2 ? support >= .60 : support >= .99 && sf >= .08;
+        boolean showerThermal = (t <= 3.0 && tw <= 1.8)
+                || (t > 3.0 && t <= 4.5 && tw <= 1.5 && sf >= .02 && ps >= .08)
+                || (t > 4.5 && t <= 5.5 && tw <= 1.0 && sf >= .05 && ps >= .20);
+        if (t > 5.5 || tw > 2.3) return "SIN NIEVE";
+        if ((idx >= 5 || c >= .8) && t <= 2.8 && tw <= 1.1 && consensusOK) return "NEVADA ACUMULABLE";
+        if ((sh >= .45 || row.localSnowShower >= .35) && showerThermal && consensusOK && (sf >= .01 || ps >= .12)) return "CHAPARRÓN DE NIEVE";
+        if (t <= 4.2 && tw <= 1.5 && support >= .50 && (idx >= 4 || sf >= .12 || (p >= .60 && sf >= .02))) return "NIEVA";
+        if (t <= 4.8 && tw <= 1.8 && support >= .34 && (idx >= 3 || sf >= .02 || (p >= .42 && sf >= .01))) return "NIEVE HÚMEDA";
+        if (t <= 5.2 && tw <= 2.1 && support >= .34 && (idx >= 2 || sf >= .01)) return "LLUVIA Y NIEVE";
+        if (t <= 5.5 && tw <= 2.2 && support >= .34 && (p >= .23 || idx >= 1 || sf >= .01)) return "COPOS AISLADOS";
         return "SIN NIEVE";
     }
 
@@ -697,6 +709,8 @@ final class BariSnowForecastEngine {
         double ptypeIdx;
         double snowShowerScore;
         double localSnowShower;
+        double snowSupport;
+        int members;
         double feels;
         double sourceWeight;
     }
