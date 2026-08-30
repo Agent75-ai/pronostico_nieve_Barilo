@@ -153,14 +153,16 @@
 
   function currentCategory(c,p){
     var T=n(c&&c.temperature_2m,null),RH=n(c&&c.relative_humidity_2m,null),code=n(c&&c.weather_code,-1),snow=Math.max(0,n(c&&c.snowfall,0)),rain=Math.max(0,n(c&&c.rain,0)),showers=Math.max(0,n(c&&c.showers,0)),precip=Math.max(0,n(c&&c.precipitation,0));
-    var tw=finite(T)&&finite(RH)?wetBulb(T+p.coldBias,RH):99;
+    var tw=finite(T)&&finite(RH)?wetBulb(T+p.coldBias,RH):99,liquid=rain+showers;
+
+    /* En “Ahora” el código meteorológico contemporáneo es la evidencia primaria
+       de fase. La temperatura húmeda actúa como control físico y ya no convierte
+       por sí sola una llovizna o lluvia débil en nieve. */
     if(snowShowerCode(code))return {headline:"CHAPARRÓN DE NIEVE",short:"Chaparrón de nieve",cls:"orange",family:"snow",T:T,time:c.time};
-    if(currentSnowCode(code)||snow>=.01)return {headline:"NIEVA",short:"Nieve",cls:snow>=.10?"orange":"yellow",family:"snow",T:T,time:c.time};
+    if(currentSnowCode(code))return {headline:"NIEVA",short:"Nieve",cls:snow>=.10?"orange":"yellow",family:"snow",T:T,time:c.time};
     if(code===77)return {headline:"NIEVE GRANULADA",short:"Nieve granulada",cls:"yellow",family:"snow",T:T,time:c.time};
     if(freezingRainCode(code))return {headline:"LLUVIA CONGELANTE",short:"Lluvia congelante",cls:"red",family:"rain",T:T,time:c.time};
     if(freezingDrizzleCode(code))return {headline:"LLOVIZNA CONGELANTE",short:"Llovizna congelante",cls:"orange",family:"rain",T:T,time:c.time};
-    if(precip>0&&tw<=.55)return {headline:"NIEVA",short:"Nieve",cls:"yellow",family:"snow",T:T,time:c.time};
-    if((rain>0||showers>0||precip>0)&&tw<=1.5)return {headline:"LLUVIA Y NIEVE",short:"Lluvia y nieve",cls:"yellow",family:"mixed",T:T,time:c.time};
     if(thunderCode(code))return {headline:"TORMENTA",short:"Tormenta",cls:"red",family:"rain",T:T,time:c.time};
     if(code===82)return {headline:"CHAPARRÓN FUERTE",short:"Chaparrón fuerte",cls:"red",family:"rain",T:T,time:c.time};
     if(rainShowerCode(code))return {headline:"CHAPARRÓN DE LLUVIA",short:"Chaparrón de lluvia",cls:"orange",family:"rain",T:T,time:c.time};
@@ -168,7 +170,16 @@
     if(code===65)return {headline:"LLUVIA FUERTE",short:"Lluvia fuerte",cls:"red",family:"rain",T:T,time:c.time};
     if(code===63)return {headline:"LLUVIA MODERADA",short:"Lluvia moderada",cls:"orange",family:"rain",T:T,time:c.time};
     if(code===61)return {headline:"LLUVIA DÉBIL",short:"Lluvia débil",cls:"yellow",family:"rain",T:T,time:c.time};
-    var liquid=rain+showers;
+
+    /* Cuando el código instantáneo no resuelve la fase, la nieve requiere una
+       señal de snowfall contemporánea. Una señal térmica favorable sola queda
+       como contexto, evitando falsos positivos en episodios marginales. */
+    if(snow>=.06&&liquid<.03&&tw<=1.0)return {headline:"NIEVA",short:"Nieve",cls:"yellow",family:"snow",T:T,time:c.time};
+    if(snow>=.02&&tw<=1.25){
+      if(liquid>=.03)return {headline:"LLUVIA Y NIEVE",short:"Lluvia y nieve",cls:"yellow",family:"mixed",T:T,time:c.time};
+      return {headline:"NIEVE HÚMEDA",short:"Nieve húmeda",cls:"yellow",family:"snow",T:T,time:c.time};
+    }
+
     if(showers>=.15)return {headline:"CHAPARRÓN DE LLUVIA",short:"Chaparrón de lluvia",cls:"yellow",family:"rain",T:T,time:c.time};
     if(liquid>=5)return {headline:"LLUVIA FUERTE",short:"Lluvia fuerte",cls:"red",family:"rain",T:T,time:c.time};
     if(liquid>=2)return {headline:"LLUVIA MODERADA",short:"Lluvia moderada",cls:"orange",family:"rain",T:T,time:c.time};
