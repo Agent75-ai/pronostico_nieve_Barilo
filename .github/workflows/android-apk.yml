@@ -13,7 +13,6 @@ on:
       - 'current-sky-priority.js'
       - 'web-daynight-fix.js'
       - 'sw.js'
-      - 'scripts/apply_current_phase_fix.py'
       - '.github/workflows/android-apk.yml'
   pull_request:
     paths:
@@ -25,8 +24,11 @@ on:
       - 'current-sky-priority.js'
       - 'web-daynight-fix.js'
       - 'sw.js'
-      - 'scripts/apply_current_phase_fix.py'
       - '.github/workflows/android-apk.yml'
+
+concurrency:
+  group: barisnow-android-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -37,9 +39,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Apply current phase correction
-        run: python3 scripts/apply_current_phase_fix.py
 
       - name: Validate precipitation JavaScript
         run: |
@@ -86,7 +85,7 @@ jobs:
           path: android-app/app/build/outputs/bundle/release/app-release.aab
           if-no-files-found: error
 
-      - name: Publish corrected sources and APK
+      - name: Publish APK
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         shell: bash
         run: |
@@ -96,13 +95,11 @@ jobs:
           cp android-app/app/build/outputs/apk/debug/app-debug.apk downloads/BariSnow-Android-latest.apk
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add downloads/ precipitation-model.js precipitation-communication.js sw.js android-app/app/build.gradle \
-            android-app/app/src/main/java/com/barisnow/app/BariSnowForecastEngine.java \
-            android-app/app/src/main/java/com/barisnow/app/BariSnowRainEngine.java
+          git add downloads/
           if git diff --cached --quiet; then
-            echo "Fuentes y APK sin cambios para publicar."
+            echo "APK sin cambios para publicar."
           else
-            git commit -m "Aplicar calibración de fase y publicar APK BariSnow ${VERSION_NAME}"
+            git commit -m "Publicar APK BariSnow ${VERSION_NAME}"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
