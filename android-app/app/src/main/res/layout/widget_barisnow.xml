@@ -171,7 +171,7 @@
                 <TextView android:id="@+id/day1_feels" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#70BDFF" android:textSize="14sp" />
             </LinearLayout>
             <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="0.7" android:gravity="center_vertical" android:orientation="horizontal">
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:includeFontPadding="false" android:text="Nieve" android:textColor="#8EA5B5" android:textSize="10sp" />
+                <TextView android:id="@+id/day1_metric_label" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:includeFontPadding="false" android:text="Nieve" android:textColor="#8EA5B5" android:textSize="10sp" />
                 <TextView android:id="@+id/day1_snow" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#BFEFFF" android:textSize="16sp" />
             </LinearLayout>
         </LinearLayout>
@@ -202,7 +202,7 @@
                 <TextView android:id="@+id/day2_feels" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#70BDFF" android:textSize="14sp" />
             </LinearLayout>
             <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="0.7" android:gravity="center_vertical" android:orientation="horizontal">
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:includeFontPadding="false" android:text="Nieve" android:textColor="#8EA5B5" android:textSize="10sp" />
+                <TextView android:id="@+id/day2_metric_label" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:includeFontPadding="false" android:text="Nieve" android:textColor="#8EA5B5" android:textSize="10sp" />
                 <TextView android:id="@+id/day2_snow" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#BFEFFF" android:textSize="16sp" />
             </LinearLayout>
         </LinearLayout>

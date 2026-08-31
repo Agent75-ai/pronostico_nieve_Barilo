@@ -48,6 +48,8 @@ final class BariSnowRainEngine {
         merge(data.plus1, rain.plus1);
         merge(data.plus2, rain.plus2);
         merge(data.plus3, rain.plus3);
+        if (data.tomorrow != null) data.tomorrow.rainMm = rain.tomorrowMm;
+        if (data.dayAfter != null) data.dayAfter.rainMm = rain.dayAfterMm;
         merge(data.tomorrow, rain.tomorrow);
         merge(data.dayAfter, rain.dayAfter);
     }
@@ -137,6 +139,8 @@ final class BariSnowRainEngine {
         out.plus3 = category(horizon(model, 3));
         out.tomorrow = dayCategory(model, 1);
         out.dayAfter = dayCategory(model, 2);
+        out.tomorrowMm = dayLiquidTotal(model, 1);
+        out.dayAfterMm = dayLiquidTotal(model, 2);
         out.now = currentCategory(currentRaw, place);
         if (out.now == null) out.now = category(model.get(0));
         return out;
@@ -406,6 +410,20 @@ final class BariSnowRainEngine {
         return "SIN PRECIPITACIÓN";
     }
 
+    private static double dayLiquidTotal(List<Row> model, int dayOffset) {
+        LinkedHashMap<String, List<Row>> days = new LinkedHashMap<>();
+        for (Row r : model) {
+            String key = dayKey(r.time);
+            if (!key.isEmpty()) days.computeIfAbsent(key, k -> new ArrayList<>()).add(r);
+        }
+        if (days.size() <= dayOffset) return Double.NaN;
+        double total = 0;
+        for (Row r : new ArrayList<>(days.values()).get(dayOffset)) {
+            if (!Double.isNaN(r.liquid) && !Double.isInfinite(r.liquid)) total += Math.max(0, r.liquid);
+        }
+        return total;
+    }
+
     private static String dayCategory(List<Row> model, int dayOffset) {
         LinkedHashMap<String, List<Row>> days = new LinkedHashMap<>();
         for (Row r : model) {
@@ -568,5 +586,7 @@ final class BariSnowRainEngine {
         String plus3;
         String tomorrow;
         String dayAfter;
+        double tomorrowMm = Double.NaN;
+        double dayAfterMm = Double.NaN;
     }
 }

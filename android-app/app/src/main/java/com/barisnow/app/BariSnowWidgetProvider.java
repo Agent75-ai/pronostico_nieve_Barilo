@@ -189,14 +189,35 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         int stateId = first ? R.id.day1_state : R.id.day2_state;
         int tempId = first ? R.id.day1_temp : R.id.day2_temp;
         int feelsId = first ? R.id.day1_feels : R.id.day2_feels;
-        int snowId = first ? R.id.day1_snow : R.id.day2_snow;
+        int metricLabelId = first ? R.id.day1_metric_label : R.id.day2_metric_label;
+        int metricId = first ? R.id.day1_snow : R.id.day2_snow;
 
         views.setTextViewText(iconId, iconFor(day.state));
         views.setTextViewText(stateId, day.state);
         views.setTextViewText(tempId, formatRange(day.minTemp, day.maxTemp));
         views.setTextViewText(feelsId, formatRange(day.minFeels, day.maxFeels));
-        views.setTextViewText(snowId, formatSnow(day.snowCm));
+
+        boolean rainDominant = isRainState(day.state);
+        boolean mixed = "LLUVIA Y NIEVE".equals(day.state)
+                || (rainDominant && !Double.isNaN(day.rainMm) && day.rainMm >= .1 && day.snowCm >= .5);
+        if (mixed) {
+            views.setTextViewText(metricLabelId, "Lluvia / nieve");
+            views.setTextViewText(metricId, formatRain(day.rainMm) + " / " + formatSnow(day.snowCm));
+        } else if (rainDominant) {
+            views.setTextViewText(metricLabelId, "Lluvia");
+            views.setTextViewText(metricId, formatRain(day.rainMm));
+        } else {
+            views.setTextViewText(metricLabelId, "Nieve");
+            views.setTextViewText(metricId, formatSnow(day.snowCm));
+        }
         views.setTextColor(stateId, colorFor(day.state));
+    }
+
+    private static boolean isRainState(String state) {
+        if (state == null) return false;
+        if (state.contains("NIEVE") && !"LLUVIA Y NIEVE".equals(state)) return false;
+        return state.contains("LLUVIA") || state.contains("LLOVIZNA")
+                || state.contains("TORMENTA") || state.contains("CHAPARRÓN");
     }
 
     private static Place selectedPlace(Context context) {
@@ -245,6 +266,13 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         if (cm < 0.12) return "Traza";
         if (cm < 1) return String.format(Locale.getDefault(), "%.1f cm", cm);
         return String.format(Locale.getDefault(), "%.0f cm", cm);
+    }
+
+    protected static String formatRain(double mm) {
+        if (Double.isNaN(mm) || Double.isInfinite(mm)) return "—";
+        if (mm < .05) return "0 mm";
+        if (mm < 10) return String.format(Locale.getDefault(), "%.1f mm", mm);
+        return String.format(Locale.getDefault(), "%.0f mm", mm);
     }
 
     private static void saveCache(Context context, String zoneKey, String json) {
@@ -304,5 +332,6 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         double minFeels;
         double maxFeels;
         double snowCm;
+        double rainMm = Double.NaN;
     }
 }

@@ -127,6 +127,7 @@ final class BariSnowForecastEngine {
         putFinite(o, "minFeels", d.minFeels);
         putFinite(o, "maxFeels", d.maxFeels);
         putFinite(o, "snowCm", d.snowCm);
+        putFinite(o, "rainMm", d.rainMm);
         return o;
     }
 
@@ -138,6 +139,7 @@ final class BariSnowForecastEngine {
         d.minFeels = o.optDouble("minFeels", Double.NaN);
         d.maxFeels = o.optDouble("maxFeels", Double.NaN);
         d.snowCm = o.optDouble("snowCm", 0);
+        d.rainMm = o.has("rainMm") && !o.isNull("rainMm") ? o.optDouble("rainMm", Double.NaN) : Double.NaN;
         return d;
     }
 
@@ -456,6 +458,7 @@ final class BariSnowForecastEngine {
         d.minFeels = b.minFeels;
         d.maxFeels = b.maxFeels;
         d.snowCm = b.snow;
+        d.rainMm = Double.NaN;
         d.state = categoricalSnow(b.peak);
         return d;
     }
