@@ -1,4 +1,4 @@
-const CACHE = 'barisnow-pwa-v10';
+const CACHE = 'barisnow-pwa-v11';
 const SHELL = [
   './',
   './index.html',

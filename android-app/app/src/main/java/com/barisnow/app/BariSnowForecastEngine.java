@@ -108,6 +108,8 @@ final class BariSnowForecastEngine {
         JSONObject o = new JSONObject().put("state", h.state).put("clock", h.clock);
         putFinite(o, "temp", h.temp);
         putFinite(o, "feels", h.feels);
+        putFinite(o, "rainRateMmH", h.rainRateMmH);
+        putFinite(o, "snowRateCmH", h.snowRateCmH);
         return o;
     }
 
@@ -117,6 +119,8 @@ final class BariSnowForecastEngine {
         h.clock = o.optString("clock", "—");
         h.temp = o.optDouble("temp", Double.NaN);
         h.feels = o.optDouble("feels", Double.NaN);
+        h.rainRateMmH = o.has("rainRateMmH") && !o.isNull("rainRateMmH") ? o.optDouble("rainRateMmH", Double.NaN) : Double.NaN;
+        h.snowRateCmH = o.has("snowRateCmH") && !o.isNull("snowRateCmH") ? o.optDouble("snowRateCmH", Double.NaN) : Double.NaN;
         return h;
     }
 
@@ -406,6 +410,7 @@ final class BariSnowForecastEngine {
         h.clock = intervalFromIso(row.time);
         h.temp = row.T;
         h.feels = row.feels;
+        h.snowRateCmH = Math.max(0, row.cmh);
         h.state = categoricalSnow(row);
         return h;
     }

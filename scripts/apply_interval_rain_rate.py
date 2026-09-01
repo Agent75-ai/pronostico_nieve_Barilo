@@ -36,7 +36,7 @@ def add_rate_views(path, text_size):
     for prefix in ("plus1", "plus2", "plus3"):
         if f'@+id/{prefix}_rate' in s:
             continue
-        pattern = re.compile(r'(<TextView\s+android:id="@\+id/' + prefix + r'_feels"\b[^>]*/>)', re.S)
+        pattern = re.compile(r'(<TextView\s+android:id="@\+id/' + prefix + r'_feels"[^>]*/>)', re.S)
         m = pattern.search(s)
         if not m:
             raise RuntimeError(f"No se encontró {prefix}_feels en {path}")

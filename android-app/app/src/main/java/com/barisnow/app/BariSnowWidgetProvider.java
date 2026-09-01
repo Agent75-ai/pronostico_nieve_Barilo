@@ -162,6 +162,9 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         applyHour(views, R.id.plus1_icon, R.id.plus1_clock, R.id.plus1_state, R.id.plus1_temp, R.id.plus1_feels, data.plus1);
         applyHour(views, R.id.plus2_icon, R.id.plus2_clock, R.id.plus2_state, R.id.plus2_temp, R.id.plus2_feels, data.plus2);
         applyHour(views, R.id.plus3_icon, R.id.plus3_clock, R.id.plus3_state, R.id.plus3_temp, R.id.plus3_feels, data.plus3);
+        applyRate(views, R.id.plus1_rate, data.plus1);
+        applyRate(views, R.id.plus2_rate, data.plus2);
+        applyRate(views, R.id.plus3_rate, data.plus3);
         applyDay(views, true, data.tomorrow);
         applyDay(views, false, data.dayAfter);
         views.setTextViewText(R.id.widget_updated, data.updated);
@@ -184,6 +187,25 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         views.setTextColor(stateId, colorFor(hour.state));
     }
 
+    protected static void applyRate(RemoteViews views, int rateId, HourData hour) {
+        views.setTextViewText(rateId, formatHourlyPrecip(hour));
+    }
+
+    protected static String formatHourlyPrecip(HourData hour) {
+        if (hour == null) return "🌧 – · ❄ –";
+        double rain = hour.rainRateMmH;
+        double snow = hour.snowRateCmH;
+        String rainText = Double.isNaN(rain) || Double.isInfinite(rain) || rain < .05
+                ? "–"
+                : (rain < 10 ? String.format(Locale.getDefault(), "%.1f mm/h", rain) : String.format(Locale.getDefault(), "%.0f mm/h", rain));
+        String snowText;
+        if (Double.isNaN(snow) || Double.isInfinite(snow) || snow < .03) snowText = "–";
+        else if (snow < .12) snowText = "Traza";
+        else if (snow < 1) snowText = String.format(Locale.getDefault(), "%.1f cm/h", snow);
+        else snowText = String.format(Locale.getDefault(), "%.0f cm/h", snow);
+        return "🌧 " + rainText + " · ❄ " + snowText;
+    }
+
     protected static void applyDay(RemoteViews views, boolean first, DayData day) {
         int iconId = first ? R.id.day1_icon : R.id.day2_icon;
         int stateId = first ? R.id.day1_state : R.id.day2_state;
@@ -198,9 +220,14 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         views.setTextViewText(feelsId, formatRange(day.minFeels, day.maxFeels));
 
         boolean rainDominant = isRainState(day.state);
+        boolean rainMeasured = !Double.isNaN(day.rainMm) && !Double.isInfinite(day.rainMm) && day.rainMm >= .05;
+        boolean snowMeasured = !Double.isNaN(day.snowCm) && !Double.isInfinite(day.snowCm) && day.snowCm >= .03;
         boolean mixed = "LLUVIA Y NIEVE".equals(day.state)
-                || (rainDominant && !Double.isNaN(day.rainMm) && day.rainMm >= .1 && day.snowCm >= .5);
-        if (mixed) {
+                || (rainDominant && rainMeasured && day.snowCm >= .5);
+        if (!rainMeasured && !snowMeasured && !rainDominant) {
+            views.setTextViewText(metricLabelId, "Lluvia / nieve");
+            views.setTextViewText(metricId, "– / –");
+        } else if (mixed) {
             views.setTextViewText(metricLabelId, "Lluvia / nieve");
             views.setTextViewText(metricId, formatRain(day.rainMm) + " / " + formatSnow(day.snowCm));
         } else if (rainDominant) {
@@ -262,7 +289,7 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
     }
 
     protected static String formatSnow(double cm) {
-        if (Double.isNaN(cm) || cm < 0.03) return "0 cm";
+        if (Double.isNaN(cm) || cm < 0.03) return "–";
         if (cm < 0.12) return "Traza";
         if (cm < 1) return String.format(Locale.getDefault(), "%.1f cm", cm);
         return String.format(Locale.getDefault(), "%.0f cm", cm);
@@ -270,7 +297,7 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
 
     protected static String formatRain(double mm) {
         if (Double.isNaN(mm) || Double.isInfinite(mm)) return "—";
-        if (mm < .05) return "0 mm";
+        if (mm < .05) return "–";
         if (mm < 10) return String.format(Locale.getDefault(), "%.1f mm", mm);
         return String.format(Locale.getDefault(), "%.0f mm", mm);
     }
@@ -323,6 +350,8 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         String clock;
         double temp;
         double feels;
+        double rainRateMmH = Double.NaN;
+        double snowRateCmH = Double.NaN;
     }
 
     protected static final class DayData {

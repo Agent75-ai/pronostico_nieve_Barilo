@@ -89,17 +89,33 @@
   function amount(row,cat){
     if(cat.family==="snow"||cat.family==="mixed"){
       var c=Math.max(0,n(row&&row.cmh,0));
-      if(c<.03)return "❄️ 0 cm";
+      if(c<.03)return "❄️ –";
       if(c<.12)return "❄️ Traza";
       return "❄️ "+fmt(c,c<1?2:1)+" cm/h";
     }
     if(cat.family==="rain"){
       var mm=Math.max(0,n(row&&row.liquidRate,0));
-      if(mm<.08)return "🌧️ Traza";
+      if(mm<.05)return "🌧️ –";
       return "🌧️ "+fmt(mm,mm<1?2:1)+" mm/h";
     }
-    return "Sin precipitación";
+    return "🌧️ – · ❄️ –";
   }
+
+  function rainRateText(row){
+    var mm=Math.max(0,n(row&&row.liquidRate,0));
+    return mm<.05?"🌧️ –":"🌧️ "+fmt(mm,mm<1?2:1)+" mm/h";
+  }
+
+  function snowRateText(row){
+    var cm=Math.max(0,n(row&&row.cmh,0));
+    if(cm<.03)return "❄️ –";
+    if(cm<.12)return "❄️ Traza";
+    return "❄️ "+fmt(cm,cm<1?2:1)+" cm/h";
+  }
+
+  function precipPair(row){return rainRateText(row)+" · "+snowRateText(row);}
+  function dailyRain(mm){mm=Math.max(0,n(mm,0));return mm<.05?"–":fmt(mm,1)+" mm";}
+  function dailySnow(cm){cm=Math.max(0,n(cm,0));return cm<.03?"–":fmt(cm,1)+" cm";}
 
   function behavior(row,model,cat){
     if(!cat)return "—";
@@ -214,7 +230,7 @@
     text(prefix+"Icon",icon(cat));text(prefix+"Clock",hourOnly(row.time));
     if(state){state.className="horizon-temp "+cat.cls;state.textContent=cat.headline;}
     if(main)main.textContent="🌡️ "+fmt(row.T,1)+" °C  ·  Sensación "+fmt(row.feels,1)+" °C";
-    if(chips)chips.innerHTML='<span class="chip">'+esc(agreement(row))+'</span><span class="chip '+cat.cls+'">'+esc(amount(row,cat))+'</span>';
+    if(chips)chips.innerHTML='<span class="chip">'+esc(agreement(row))+'</span><span class="chip">'+esc(rainRateText(row))+'</span><span class="chip">'+esc(snowRateText(row))+'</span>';
   }
 
   function setupLanguage(){
@@ -241,7 +257,7 @@
   window.renderHours=function(model){
     if(typeof baseRenderHours==="function")baseRenderHours(model);
     var offsets=[1,2,3,4,6,8,10,12],out="";
-    offsets.forEach(function(h){var r=horizon(model,h),cat=phenomenon(r);out+='<div class="hour-card"><div class="time">+'+h+' h · '+hourOnly(r.time)+'</div><div class="ico">'+icon(cat)+'</div><div class="micro '+cat.cls+'" style="font-weight:700">'+esc(cat.short)+'</div><div class="temp">'+fmt(r.T,0)+'°</div></div>';});
+    offsets.forEach(function(h){var r=horizon(model,h),cat=phenomenon(r);out+='<div class="hour-card"><div class="time">+'+h+' h · '+hourOnly(r.time)+'</div><div class="ico">'+icon(cat)+'</div><div class="micro '+cat.cls+'" style="font-weight:700">'+esc(cat.short)+'</div><div class="temp">'+fmt(r.T,0)+'°</div><div class="micro precip-rate">'+esc(precipPair(r))+'</div></div>';});
     html("hourStrip",out);
   };
 
@@ -263,7 +279,7 @@
       var b=map[k],peak=b.wetPeak;
       if(!peak){var key=Object.keys(b.skyCount).sort(function(a,z){return b.skyCount[z]-b.skyCount[a];})[0];peak=b.skySample[key];}
       var label=i===0?"Hoy":i===1?"Mañana":(typeof dayName==="function"?dayName(b.d):pad2(b.d.getDate())+'/'+pad2(b.d.getMonth()+1)),cat=phenomenon(peak);
-      out+='<div class="day-card"><div class="day-name">'+label+'</div><div class="day-date">'+pad2(b.d.getDate())+'/'+pad2(b.d.getMonth()+1)+'</div><div class="day-icon">'+icon(cat)+'</div><div class="day-temp">'+fmt(b.min,0)+'° / '+fmt(b.max,0)+'°</div><div class="day-snow '+cat.cls+'">'+esc(cat.short)+'</div><div class="day-meta">🌧️ '+fmt(b.rain,1)+' mm · ❄️ '+fmt(b.snow,1)+' cm</div></div>';
+      out+='<div class="day-card"><div class="day-name">'+label+'</div><div class="day-date">'+pad2(b.d.getDate())+'/'+pad2(b.d.getMonth()+1)+'</div><div class="day-icon">'+icon(cat)+'</div><div class="day-temp">'+fmt(b.min,0)+'° / '+fmt(b.max,0)+'°</div><div class="day-snow '+cat.cls+'">'+esc(cat.short)+'</div><div class="day-meta">🌧️ '+dailyRain(b.rain)+' · ❄️ '+dailySnow(b.snow)+'</div></div>';
     });
     html("dailyGrid",out||'<div class="day-card">Sin datos.</div>');
     setupLanguage();
@@ -292,10 +308,10 @@
   window.renderMain=function(model,s){
     if(typeof baseRenderMain==="function")baseRenderMain(model,s);
     patchCard("plus1",s.plus1);patchCard("plus2",s.plus2);patchCard("plus3",s.plus3);
-    var rain72=Math.max(0,n(s.rain72,0));text("rain72",fmt(rain72,1)+" mm");text("rain72Text",rain72<.1?"Sin lluvia medible.":rain72<5?"Acumulación líquida menor.":rain72<20?"Acumulación líquida moderada.":"Acumulación líquida importante.");
+    var rain72=Math.max(0,n(s.rain72,0));text("rain72",rain72<.05?"—":fmt(rain72,1)+" mm");text("rain72Text",rain72<.05?"Sin lluvia medible.":rain72<5?"Acumulación líquida menor.":rain72<20?"Acumulación líquida moderada.":"Acumulación líquida importante.");
     var rows=(model||[]).slice(0,72),peak=rows[0]||s.now,best=-1;
     rows.forEach(function(r){var c=phenomenon(r),score=(c.family==="sky"?0:c.rank)+(c.family==="snow"?n(r.cmh,0):c.family==="rain"?n(r.liquidRate,0)/5:0);if(score>best){best=score;peak=r;}});
-    var pc=phenomenon(peak),snow72=Math.max(0,n(s.snow72,0));text("peak72",localTime(peak.time));
+    var pc=phenomenon(peak),snow72=Math.max(0,n(s.snow72,0));text("snow72",snow72<.03?"—":fmt(snow72,1)+" cm");if(snow72<.03)text("snow72Text","Sin nieve medible.");text("peak72",localTime(peak.time));
     if(rain72<.1&&snow72<.03)text("peak72Text","Sin precipitación relevante · "+phenomenon(s.now).short+".");
     else text("peak72Text",pc.headline+" · "+agreement(peak)+" · "+amount(peak,pc).replace(/^🌧️ |^❄️ /,"")+".");
     text("confidenceLabel","Acuerdo multimodelo");text("confidence",Math.round(n(s.confidence,.5)*100)+"%");text("confidenceText","Acuerdo sobre el estado dominante entre las fuentes disponibles.");

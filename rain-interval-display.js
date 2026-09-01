@@ -71,7 +71,7 @@
   var p12=Array.prototype.slice.call(document.querySelectorAll(".panel h2")).filter(function(h){return h.textContent.trim()==="Próximas 12 horas";})[0];
   if(p12){
     var note=p12.closest(".panel").querySelector(".note");
-    if(note)note.textContent="La lluvia corresponde al acumulado del intervalo indicado; temperatura y cielo representan el final del intervalo.";
+    if(note)note.textContent="La lluvia se muestra como tasa media del intervalo horario (mm/h); la nieve como cm/h. Cuando no hay precipitación medible se indica –.";
   }
 
   try{if(latestModel&&latestModel.length&&latestSummary)window.renderMain(latestModel,latestSummary);}catch(e){}

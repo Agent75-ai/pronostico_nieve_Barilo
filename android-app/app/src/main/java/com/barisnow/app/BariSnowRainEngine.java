@@ -48,6 +48,9 @@ final class BariSnowRainEngine {
         merge(data.plus1, rain.plus1);
         merge(data.plus2, rain.plus2);
         merge(data.plus3, rain.plus3);
+        if (data.plus1 != null) data.plus1.rainRateMmH = rain.plus1Rate;
+        if (data.plus2 != null) data.plus2.rainRateMmH = rain.plus2Rate;
+        if (data.plus3 != null) data.plus3.rainRateMmH = rain.plus3Rate;
         if (data.tomorrow != null) data.tomorrow.rainMm = rain.tomorrowMm;
         if (data.dayAfter != null) data.dayAfter.rainMm = rain.dayAfterMm;
         merge(data.tomorrow, rain.tomorrow);
@@ -134,9 +137,15 @@ final class BariSnowRainEngine {
         if (model.isEmpty()) throw new IllegalStateException("Sin horas disponibles");
 
         RainData out = new RainData();
-        out.plus1 = category(horizon(model, 1));
-        out.plus2 = category(horizon(model, 2));
-        out.plus3 = category(horizon(model, 3));
+        Row h1 = horizon(model, 1);
+        Row h2 = horizon(model, 2);
+        Row h3 = horizon(model, 3);
+        out.plus1 = category(h1);
+        out.plus2 = category(h2);
+        out.plus3 = category(h3);
+        out.plus1Rate = Math.max(0, h1.liquid);
+        out.plus2Rate = Math.max(0, h2.liquid);
+        out.plus3Rate = Math.max(0, h3.liquid);
         out.tomorrow = dayCategory(model, 1);
         out.dayAfter = dayCategory(model, 2);
         out.tomorrowMm = dayLiquidTotal(model, 1);
@@ -586,6 +595,9 @@ final class BariSnowRainEngine {
         String plus3;
         String tomorrow;
         String dayAfter;
+        double plus1Rate = Double.NaN;
+        double plus2Rate = Double.NaN;
+        double plus3Rate = Double.NaN;
         double tomorrowMm = Double.NaN;
         double dayAfterMm = Double.NaN;
     }

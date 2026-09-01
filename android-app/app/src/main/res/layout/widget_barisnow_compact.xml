@@ -37,6 +37,7 @@
             <TextView android:id="@+id/plus1_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#EEF7FC" android:textSize="22sp" />
             <TextView android:layout_width="match_parent" android:layout_height="28dp" android:gravity="center" android:includeFontPadding="false" android:maxLines="2" android:text="Sensación térmica" android:textColor="#8EA5B5" android:textSize="8sp" />
             <TextView android:id="@+id/plus1_feels" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#70BDFF" android:textSize="13sp" />
+            <TextView android:id="@+id/plus1_rate" android:layout_width="match_parent" android:layout_height="14dp" android:gravity="center" android:includeFontPadding="false" android:maxLines="1" android:text="🌧 – · ❄ –" android:textColor="#9CCBE8" android:textSize="7sp" />
         </LinearLayout>
 
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_horizontal" android:orientation="vertical" android:paddingLeft="1dp" android:paddingRight="1dp">
@@ -47,6 +48,7 @@
             <TextView android:id="@+id/plus2_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#EEF7FC" android:textSize="22sp" />
             <TextView android:layout_width="match_parent" android:layout_height="28dp" android:gravity="center" android:includeFontPadding="false" android:maxLines="2" android:text="Sensación térmica" android:textColor="#8EA5B5" android:textSize="8sp" />
             <TextView android:id="@+id/plus2_feels" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#70BDFF" android:textSize="13sp" />
+            <TextView android:id="@+id/plus2_rate" android:layout_width="match_parent" android:layout_height="14dp" android:gravity="center" android:includeFontPadding="false" android:maxLines="1" android:text="🌧 – · ❄ –" android:textColor="#9CCBE8" android:textSize="7sp" />
         </LinearLayout>
 
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center_horizontal" android:orientation="vertical" android:paddingLeft="1dp" android:paddingRight="1dp">
@@ -57,6 +59,7 @@
             <TextView android:id="@+id/plus3_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#EEF7FC" android:textSize="22sp" />
             <TextView android:layout_width="match_parent" android:layout_height="28dp" android:gravity="center" android:includeFontPadding="false" android:maxLines="2" android:text="Sensación térmica" android:textColor="#8EA5B5" android:textSize="8sp" />
             <TextView android:id="@+id/plus3_feels" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#70BDFF" android:textSize="13sp" />
+            <TextView android:id="@+id/plus3_rate" android:layout_width="match_parent" android:layout_height="14dp" android:gravity="center" android:includeFontPadding="false" android:maxLines="1" android:text="🌧 – · ❄ –" android:textColor="#9CCBE8" android:textSize="7sp" />
         </LinearLayout>
     </LinearLayout>
 
