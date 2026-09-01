@@ -14,6 +14,7 @@ on:
       - 'web-daynight-fix.js'
       - 'sw.js'
       - 'scripts/apply_dynamic_precip_metric.py'
+      - 'scripts/apply_interval_rain_rate.py'
       - '.github/workflows/android-apk.yml'
   pull_request:
     paths:
@@ -26,6 +27,7 @@ on:
       - 'web-daynight-fix.js'
       - 'sw.js'
       - 'scripts/apply_dynamic_precip_metric.py'
+      - 'scripts/apply_interval_rain_rate.py'
       - '.github/workflows/android-apk.yml'
 
 concurrency:
@@ -44,6 +46,9 @@ jobs:
 
       - name: Apply dynamic precipitation metric
         run: python3 scripts/apply_dynamic_precip_metric.py
+
+      - name: Apply hourly precipitation rates
+        run: python3 scripts/apply_interval_rain_rate.py
 
       - name: Validate precipitation JavaScript
         run: |
@@ -101,17 +106,22 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add downloads/ \
+            precipitation-communication.js \
+            rain-interval-display.js \
+            sw.js \
             android-app/app/build.gradle \
             android-app/app/src/main/java/com/barisnow/app/BariSnowWidgetProvider.java \
+            android-app/app/src/main/java/com/barisnow/app/BariSnowCompactWidgetProvider.java \
             android-app/app/src/main/java/com/barisnow/app/BariSnowRainEngine.java \
             android-app/app/src/main/java/com/barisnow/app/BariSnowForecastEngine.java \
             android-app/app/src/main/java/com/barisnow/app/BariSnowWeatherClient.java \
             android-app/app/src/main/res/layout/widget_barisnow.xml \
+            android-app/app/src/main/res/layout/widget_barisnow_compact.xml \
             android-app/app/src/main/res/layout/widget_barisnow_daily.xml
           if git diff --cached --quiet; then
             echo "Fuentes y APK sin cambios para publicar."
           else
-            git commit -m "Publicar BariSnow ${VERSION_NAME} con métrica dinámica de precipitación"
+            git commit -m "Publicar BariSnow ${VERSION_NAME} con tasas horarias de precipitación"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
