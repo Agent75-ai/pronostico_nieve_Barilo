@@ -48,7 +48,9 @@ jobs:
         run: python3 scripts/apply_dynamic_precip_metric.py
 
       - name: Apply hourly precipitation rates
-        run: python3 scripts/apply_interval_rain_rate.py
+        run: |
+          sed -i 's/_feels"\\b/_feels"/' scripts/apply_interval_rain_rate.py
+          python3 scripts/apply_interval_rain_rate.py
 
       - name: Validate precipitation JavaScript
         run: |
@@ -106,6 +108,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add downloads/ \
+            scripts/apply_interval_rain_rate.py \
             precipitation-communication.js \
             rain-interval-display.js \
             sw.js \
