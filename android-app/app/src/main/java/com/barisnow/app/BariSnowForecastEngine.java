@@ -422,12 +422,18 @@ final class BariSnowForecastEngine {
             h.clock = clockFromIso(fallback.time);
             h.temp = fallback.T;
             h.feels = fallback.feels;
+            h.snowRateCmH = Math.max(0, fallback.cmh);
             h.state = categoricalSnow(fallback);
             return h;
         }
         h.clock = clockFromIso(c.optString("time", ""));
         h.temp = c.optDouble("temperature_2m", Double.NaN);
         h.feels = c.optDouble("apparent_temperature", Double.NaN);
+        double intervalSec = c.optDouble("interval", 900);
+        if (Double.isNaN(intervalSec) || Double.isInfinite(intervalSec) || intervalSec <= 0) intervalSec = 900;
+        double rateFactor = 3600.0 / intervalSec;
+        h.rainRateMmH = Math.max(0, c.optDouble("rain", 0) + c.optDouble("showers", 0)) * rateFactor;
+        h.snowRateCmH = Math.max(0, c.optDouble("snowfall", 0)) * rateFactor;
         h.state = currentCategory(c, place);
         return h;
     }

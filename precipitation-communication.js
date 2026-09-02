@@ -3,7 +3,7 @@
 
   var baseRenderMain=window.renderMain;
   var baseRenderHours=window.renderHours;
-  var currentSeq=0,currentCat=null,applyingCurrent=false;
+  var currentSeq=0,currentCat=null,currentRates=null,applyingCurrent=false;
 
   function n(x,d){return finite(x)?Number(x):d;}
   function snowShowerCode(code){return code===85||code===86;}
@@ -205,14 +205,27 @@
     return "https://api.open-meteo.com/v1/forecast?latitude="+p.lat+"&longitude="+p.lon+"&elevation="+p.elev+"&current="+encodeURIComponent(vars)+"&timezone="+encodeURIComponent("America/Argentina/Buenos_Aires")+"&temperature_unit=celsius&wind_speed_unit=kmh&precipitation_unit=mm";
   }
 
-  function applyCurrent(cat){
+  function currentRatesFrom(c){
+    var sec=n(c&&c.interval,900);if(!finite(sec)||sec<=0)sec=900;
+    var factor=3600/sec;
+    return {rain:Math.max(0,n(c&&c.rain,0)+n(c&&c.showers,0))*factor,snow:Math.max(0,n(c&&c.snowfall,0))*factor};
+  }
+
+  function currentRatesHtml(r){
+    if(!r)return '';
+    var rain=r.rain<.05?'🌧️ –':'🌧️ '+fmt(r.rain,r.rain<1?2:1)+' mm/h';
+    var snow=r.snow<.03?'❄️ –':r.snow<.12?'❄️ Traza':'❄️ '+fmt(r.snow,r.snow<1?2:1)+' cm/h';
+    return '<span class="chip">'+esc(rain)+'</span><span class="chip">'+esc(snow)+'</span>';
+  }
+
+  function applyCurrent(cat,rates){
     if(!cat)return;
     var nt=$("nowTemp");if(!nt)return;
     applyingCurrent=true;
     text("nowIcon",icon(cat));
     nt.className="big snow-headline "+cat.cls;
     nt.textContent=cat.headline;
-    text("nowPhase","ESTADO ACTUAL · 15 min"+(finite(cat.cloud)?" · nubosidad "+Math.round(cat.cloud)+"%":""));
+    text("nowPhase","ESTADO ACTUAL · últimos 15 min"+(finite(cat.cloud)?" · nubosidad "+Math.round(cat.cloud)+"%":""));var nm=$("nowMeta");if(nm&&rates)nm.innerHTML=currentRatesHtml(rates);
     applyingCurrent=false;
   }
 
@@ -220,7 +233,7 @@
     var seq=++currentSeq,p=selectedPlace();
     fetchJSON(currentUrl(p),9000).then(function(d){
       if(seq!==currentSeq||!d||!d.current)return;
-      currentCat=currentCategory(d.current,p);applyCurrent(currentCat);
+      currentCat=currentCategory(d.current,p);currentRates=currentRatesFrom(d.current);applyCurrent(currentCat,currentRates);
     }).catch(function(){});
   }
 
@@ -323,7 +336,7 @@
   };
 
   var nowTemp=$("nowTemp");
-  if(nowTemp){new MutationObserver(function(){if(applyingCurrent||!currentCat)return;if(nowTemp.textContent!==currentCat.headline)setTimeout(function(){applyCurrent(currentCat);},0);}).observe(nowTemp,{childList:true,subtree:true});}
+  if(nowTemp){new MutationObserver(function(){if(applyingCurrent||!currentCat)return;if(nowTemp.textContent!==currentCat.headline)setTimeout(function(){applyCurrent(currentCat,currentRates);},0);}).observe(nowTemp,{childList:true,subtree:true});}
 
   setupLanguage();
   try{if(latestModel&&latestModel.length&&latestSummary)window.renderMain(latestModel,latestSummary);else refreshCurrent();}catch(e){}

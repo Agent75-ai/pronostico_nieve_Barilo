@@ -48,6 +48,10 @@ final class BariSnowRainEngine {
         merge(data.plus1, rain.plus1);
         merge(data.plus2, rain.plus2);
         merge(data.plus3, rain.plus3);
+        if (data.now != null) {
+            if (!Double.isNaN(rain.nowRainRate)) data.now.rainRateMmH = rain.nowRainRate;
+            if (!Double.isNaN(rain.nowSnowRate)) data.now.snowRateCmH = rain.nowSnowRate;
+        }
         if (data.plus1 != null) data.plus1.rainRateMmH = rain.plus1Rate;
         if (data.plus2 != null) data.plus2.rainRateMmH = rain.plus2Rate;
         if (data.plus3 != null) data.plus3.rainRateMmH = rain.plus3Rate;
@@ -151,6 +155,9 @@ final class BariSnowRainEngine {
         out.tomorrowMm = dayLiquidTotal(model, 1);
         out.dayAfterMm = dayLiquidTotal(model, 2);
         out.now = currentCategory(currentRaw, place);
+        out.nowRainRate = currentRainRate(currentRaw);
+        out.nowSnowRate = currentSnowRate(currentRaw);
+        if (Double.isNaN(out.nowRainRate)) out.nowRainRate = Math.max(0, model.get(0).liquid);
         if (out.now == null) out.now = category(model.get(0));
         return out;
     }
@@ -361,6 +368,28 @@ final class BariSnowRainEngine {
             return "NUBLADO";
         }
         return "SIN PRECIPITACIÓN";
+    }
+
+    private static double currentRateFactor(JSONObject raw) {
+        JSONObject c = raw == null ? null : raw.optJSONObject("current");
+        if (c == null) return Double.NaN;
+        double intervalSec = c.optDouble("interval", 900);
+        if (Double.isNaN(intervalSec) || Double.isInfinite(intervalSec) || intervalSec <= 0) intervalSec = 900;
+        return 3600.0 / intervalSec;
+    }
+
+    private static double currentRainRate(JSONObject raw) {
+        JSONObject c = raw == null ? null : raw.optJSONObject("current");
+        double factor = currentRateFactor(raw);
+        if (c == null || Double.isNaN(factor)) return Double.NaN;
+        return Math.max(0, c.optDouble("rain", 0) + c.optDouble("showers", 0)) * factor;
+    }
+
+    private static double currentSnowRate(JSONObject raw) {
+        JSONObject c = raw == null ? null : raw.optJSONObject("current");
+        double factor = currentRateFactor(raw);
+        if (c == null || Double.isNaN(factor)) return Double.NaN;
+        return Math.max(0, c.optDouble("snowfall", 0)) * factor;
     }
 
     private static String currentCategory(JSONObject raw, BariSnowWidgetProvider.Place place) {
@@ -595,6 +624,8 @@ final class BariSnowRainEngine {
         String plus3;
         String tomorrow;
         String dayAfter;
+        double nowRainRate = Double.NaN;
+        double nowSnowRate = Double.NaN;
         double plus1Rate = Double.NaN;
         double plus2Rate = Double.NaN;
         double plus3Rate = Double.NaN;

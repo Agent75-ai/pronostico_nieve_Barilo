@@ -162,6 +162,7 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         applyHour(views, R.id.plus1_icon, R.id.plus1_clock, R.id.plus1_state, R.id.plus1_temp, R.id.plus1_feels, data.plus1);
         applyHour(views, R.id.plus2_icon, R.id.plus2_clock, R.id.plus2_state, R.id.plus2_temp, R.id.plus2_feels, data.plus2);
         applyHour(views, R.id.plus3_icon, R.id.plus3_clock, R.id.plus3_state, R.id.plus3_temp, R.id.plus3_feels, data.plus3);
+        applyRate(views, R.id.now_rate, data.now);
         applyRate(views, R.id.plus1_rate, data.plus1);
         applyRate(views, R.id.plus2_rate, data.plus2);
         applyRate(views, R.id.plus3_rate, data.plus3);
@@ -183,7 +184,7 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         views.setTextViewText(clockId, hour.clock);
         views.setTextViewText(stateId, hour.state);
         views.setTextViewText(tempId, formatTemp(hour.temp));
-        views.setTextViewText(feelsId, formatTemp(hour.feels));
+        views.setTextViewText(feelsId, formatFeels(hour.feels));
         views.setTextColor(stateId, colorFor(hour.state));
     }
 
@@ -192,7 +193,7 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
     }
 
     protected static String formatHourlyPrecip(HourData hour) {
-        if (hour == null) return "🌧 – · ❄ –";
+        if (hour == null) return "🌧 –\n❄ –";
         double rain = hour.rainRateMmH;
         double snow = hour.snowRateCmH;
         String rainText = Double.isNaN(rain) || Double.isInfinite(rain) || rain < .05
@@ -203,7 +204,7 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         else if (snow < .12) snowText = "Traza";
         else if (snow < 1) snowText = String.format(Locale.getDefault(), "%.1f cm/h", snow);
         else snowText = String.format(Locale.getDefault(), "%.0f cm/h", snow);
-        return "🌧 " + rainText + " · ❄ " + snowText;
+        return "🌧 " + rainText + "\n❄ " + snowText;
     }
 
     protected static void applyDay(RemoteViews views, boolean first, DayData day) {
@@ -281,6 +282,11 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
     protected static String formatTemp(double value) {
         if (Double.isNaN(value)) return "—";
         return String.format(Locale.getDefault(), "%.0f°", value);
+    }
+
+    protected static String formatFeels(double value) {
+        if (Double.isNaN(value)) return "Sens. —";
+        return String.format(Locale.getDefault(), "Sens. %.0f°", value);
     }
 
     protected static String formatRange(double min, double max) {
