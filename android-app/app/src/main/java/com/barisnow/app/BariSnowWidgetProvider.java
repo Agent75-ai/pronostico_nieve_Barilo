@@ -193,18 +193,45 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
     }
 
     protected static String formatHourlyPrecip(HourData hour) {
-        if (hour == null) return "🌧 –\n❄ –";
+        if (hour == null) return "–";
         double rain = hour.rainRateMmH;
         double snow = hour.snowRateCmH;
-        String rainText = Double.isNaN(rain) || Double.isInfinite(rain) || rain < .05
-                ? "–"
-                : (rain < 10 ? String.format(Locale.getDefault(), "%.1f mm/h", rain) : String.format(Locale.getDefault(), "%.0f mm/h", rain));
-        String snowText;
-        if (Double.isNaN(snow) || Double.isInfinite(snow) || snow < .03) snowText = "–";
-        else if (snow < .12) snowText = "Traza";
-        else if (snow < 1) snowText = String.format(Locale.getDefault(), "%.1f cm/h", snow);
-        else snowText = String.format(Locale.getDefault(), "%.0f cm/h", snow);
-        return "🌧 " + rainText + "\n❄ " + snowText;
+        boolean rainMeasured = !Double.isNaN(rain) && !Double.isInfinite(rain) && rain >= .05;
+        boolean snowMeasured = !Double.isNaN(snow) && !Double.isInfinite(snow) && snow >= .03;
+        String state = hour.state == null ? "" : hour.state;
+
+        if (!rainMeasured && !snowMeasured) return "–";
+
+        boolean mixedState = "LLUVIA Y NIEVE".equals(state)
+                || state.contains("PRECIPITACIÓN MIXTA");
+        boolean snowState = state.contains("NIEVE") || state.contains("COPOS")
+                || state.contains("GRANULADA");
+        boolean rainState = isRainState(state);
+
+        if (mixedState && rainMeasured && snowMeasured) {
+            // Aproximación 10:1: 1 cm/h de nieve ~ 1 mm/h de agua equivalente.
+            return snow >= rain ? formatSnowRate(snow) : formatRainRate(rain);
+        }
+        if (snowState && snowMeasured) return formatSnowRate(snow);
+        if (rainState && rainMeasured) return formatRainRate(rain);
+        if (rainMeasured && !snowMeasured) return formatRainRate(rain);
+        if (snowMeasured && !rainMeasured) return formatSnowRate(snow);
+        return snowState ? formatSnowRate(snow) : formatRainRate(rain);
+    }
+
+    private static String formatRainRate(double rain) {
+        if (Double.isNaN(rain) || Double.isInfinite(rain) || rain < .05) return "–";
+        return "🌧 " + (rain < 10
+                ? String.format(Locale.getDefault(), "%.1f mm/h", rain)
+                : String.format(Locale.getDefault(), "%.0f mm/h", rain));
+    }
+
+    private static String formatSnowRate(double snow) {
+        if (Double.isNaN(snow) || Double.isInfinite(snow) || snow < .03) return "–";
+        if (snow < .12) return "❄ Traza";
+        return "❄ " + (snow < 1
+                ? String.format(Locale.getDefault(), "%.1f cm/h", snow)
+                : String.format(Locale.getDefault(), "%.0f cm/h", snow));
     }
 
     protected static void applyDay(RemoteViews views, boolean first, DayData day) {

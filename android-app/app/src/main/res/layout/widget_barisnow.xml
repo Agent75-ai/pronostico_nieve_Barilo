@@ -82,7 +82,7 @@
             <TextView android:id="@+id/now_state" android:layout_width="match_parent" android:layout_height="40dp" android:ellipsize="end" android:fontFamily="sans-serif-medium" android:gravity="center" android:includeFontPadding="false" android:maxLines="2" android:text="—" android:textColor="#5DB7FF" android:textSize="13sp" />
             <TextView android:id="@+id/now_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#EEF7FC" android:textSize="24sp" />
             <TextView android:id="@+id/now_feels" android:layout_width="match_parent" android:layout_height="20dp" android:gravity="center" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:maxLines="1" android:text="Sens. —" android:textColor="#70BDFF" android:textSize="11sp" />
-            <TextView android:id="@+id/now_rate" android:layout_width="match_parent" android:layout_height="34dp" android:gravity="center" android:includeFontPadding="false" android:maxLines="2" android:lineSpacingExtra="2dp" android:text="🌧 –&#10;❄ –" android:textColor="#B5D8EC" android:textSize="11sp" />
+            <TextView android:id="@+id/now_rate" android:layout_width="match_parent" android:layout_height="24dp" android:gravity="center" android:includeFontPadding="false" android:maxLines="1" android:lineSpacingExtra="0dp" android:text="🌧 –&#10;❄ –" android:textColor="#B5D8EC" android:textSize="13sp"  android:fontFamily="sans-serif-medium" />
         </LinearLayout>
 
         <LinearLayout
@@ -99,7 +99,7 @@
             <TextView android:id="@+id/plus1_state" android:layout_width="match_parent" android:layout_height="40dp" android:ellipsize="end" android:fontFamily="sans-serif-medium" android:gravity="center" android:includeFontPadding="false" android:maxLines="2" android:text="—" android:textColor="#5DB7FF" android:textSize="13sp" />
             <TextView android:id="@+id/plus1_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#EEF7FC" android:textSize="24sp" />
             <TextView android:id="@+id/plus1_feels" android:layout_width="match_parent" android:layout_height="20dp" android:gravity="center" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:maxLines="1" android:text="Sens. —" android:textColor="#70BDFF" android:textSize="11sp" />
-            <TextView android:id="@+id/plus1_rate" android:layout_width="match_parent" android:layout_height="34dp" android:gravity="center" android:includeFontPadding="false" android:maxLines="2" android:lineSpacingExtra="2dp" android:text="🌧 –&#10;❄ –" android:textColor="#B5D8EC" android:textSize="11sp" />
+            <TextView android:id="@+id/plus1_rate" android:layout_width="match_parent" android:layout_height="24dp" android:gravity="center" android:includeFontPadding="false" android:maxLines="1" android:lineSpacingExtra="0dp" android:text="🌧 –&#10;❄ –" android:textColor="#B5D8EC" android:textSize="13sp"  android:fontFamily="sans-serif-medium" />
         </LinearLayout>
 
         <LinearLayout
@@ -116,7 +116,7 @@
             <TextView android:id="@+id/plus2_state" android:layout_width="match_parent" android:layout_height="40dp" android:ellipsize="end" android:fontFamily="sans-serif-medium" android:gravity="center" android:includeFontPadding="false" android:maxLines="2" android:text="—" android:textColor="#5DB7FF" android:textSize="13sp" />
             <TextView android:id="@+id/plus2_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#EEF7FC" android:textSize="24sp" />
             <TextView android:id="@+id/plus2_feels" android:layout_width="match_parent" android:layout_height="20dp" android:gravity="center" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:maxLines="1" android:text="Sens. —" android:textColor="#70BDFF" android:textSize="11sp" />
-            <TextView android:id="@+id/plus2_rate" android:layout_width="match_parent" android:layout_height="34dp" android:gravity="center" android:includeFontPadding="false" android:maxLines="2" android:lineSpacingExtra="2dp" android:text="🌧 –&#10;❄ –" android:textColor="#B5D8EC" android:textSize="11sp" />
+            <TextView android:id="@+id/plus2_rate" android:layout_width="match_parent" android:layout_height="24dp" android:gravity="center" android:includeFontPadding="false" android:maxLines="1" android:lineSpacingExtra="0dp" android:text="🌧 –&#10;❄ –" android:textColor="#B5D8EC" android:textSize="13sp"  android:fontFamily="sans-serif-medium" />
         </LinearLayout>
 
         <LinearLayout
@@ -133,7 +133,7 @@
             <TextView android:id="@+id/plus3_state" android:layout_width="match_parent" android:layout_height="40dp" android:ellipsize="end" android:fontFamily="sans-serif-medium" android:gravity="center" android:includeFontPadding="false" android:maxLines="2" android:text="—" android:textColor="#5DB7FF" android:textSize="13sp" />
             <TextView android:id="@+id/plus3_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#EEF7FC" android:textSize="24sp" />
             <TextView android:id="@+id/plus3_feels" android:layout_width="match_parent" android:layout_height="20dp" android:gravity="center" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:maxLines="1" android:text="Sens. —" android:textColor="#70BDFF" android:textSize="11sp" />
-            <TextView android:id="@+id/plus3_rate" android:layout_width="match_parent" android:layout_height="34dp" android:gravity="center" android:includeFontPadding="false" android:maxLines="2" android:lineSpacingExtra="2dp" android:text="🌧 –&#10;❄ –" android:textColor="#B5D8EC" android:textSize="11sp" />
+            <TextView android:id="@+id/plus3_rate" android:layout_width="match_parent" android:layout_height="24dp" android:gravity="center" android:includeFontPadding="false" android:maxLines="1" android:lineSpacingExtra="0dp" android:text="🌧 –&#10;❄ –" android:textColor="#B5D8EC" android:textSize="13sp"  android:fontFamily="sans-serif-medium" />
         </LinearLayout>
     </LinearLayout>
 
