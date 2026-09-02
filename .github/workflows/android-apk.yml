@@ -13,8 +13,6 @@ on:
       - 'current-sky-priority.js'
       - 'web-daynight-fix.js'
       - 'sw.js'
-      - 'scripts/apply_dynamic_precip_metric.py'
-      - 'scripts/apply_interval_rain_rate.py'
       - 'scripts/apply_widget_readability.py'
       - '.github/workflows/android-apk.yml'
   pull_request:
@@ -27,8 +25,6 @@ on:
       - 'current-sky-priority.js'
       - 'web-daynight-fix.js'
       - 'sw.js'
-      - 'scripts/apply_dynamic_precip_metric.py'
-      - 'scripts/apply_interval_rain_rate.py'
       - 'scripts/apply_widget_readability.py'
       - '.github/workflows/android-apk.yml'
 
@@ -45,14 +41,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Apply dynamic precipitation metric
-        run: python3 scripts/apply_dynamic_precip_metric.py
-
-      - name: Apply hourly precipitation rates
-        run: |
-          sed -i 's/_feels"\\b/_feels"/' scripts/apply_interval_rain_rate.py
-          python3 scripts/apply_interval_rain_rate.py
 
       - name: Apply widget readability and current rates
         run: python3 scripts/apply_widget_readability.py
@@ -113,7 +101,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add downloads/ \
-            scripts/apply_interval_rain_rate.py \
             scripts/apply_widget_readability.py \
             precipitation-communication.js \
             rain-interval-display.js \
