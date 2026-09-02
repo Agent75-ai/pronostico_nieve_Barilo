@@ -25,102 +25,93 @@ def patch_tag_by_id(text, view_id, attrs):
     return text[:m.start()] + tag + text[m.end():]
 
 
-def patch_text_tag(text, label, attrs):
-    pat = re.compile(r'<TextView\s+(?=[^>]*android:text="' + re.escape(label) + r'")[^>]*/>', re.S)
-    m = pat.search(text)
-    if not m:
-        return text
-    tag = m.group(0)
-    for key, value in attrs.items():
-        attr_pat = re.compile(r'android:' + re.escape(key) + r'="[^"]*"')
-        if attr_pat.search(tag):
-            tag = attr_pat.sub(f'android:{key}="{value}"', tag, count=1)
-        else:
-            tag = tag[:-2] + f' android:{key}="{value}" />'
-    return text[:m.start()] + tag + text[m.end():]
-
-
-def patch_all_text_tags(text, label, attrs):
-    pat = re.compile(r'<TextView\s+(?=[^>]*android:text="' + re.escape(label) + r'")[^>]*/>', re.S)
-    pos = 0
-    out = []
-    for m in pat.finditer(text):
-        out.append(text[pos:m.start()])
-        tag = m.group(0)
-        for key, value in attrs.items():
-            attr_pat = re.compile(r'android:' + re.escape(key) + r'="[^"]*"')
-            if attr_pat.search(tag):
-                tag = attr_pat.sub(f'android:{key}="{value}"', tag, count=1)
-            else:
-                tag = tag[:-2] + f' android:{key}="{value}" />'
-        out.append(tag)
-        pos = m.end()
-    out.append(text[pos:])
-    return ''.join(out)
-
-
-def update_main_layout(path):
+def update_layout(path, rate_size, rate_height):
     s = read(path)
-    s = s.replace('android:layout_weight="1.20"', 'android:layout_weight="1.30"', 1)
-    s = s.replace('android:layout_weight="0.80"', 'android:layout_weight="0.70"', 1)
-
-    for label in ("Ahora", "+1 hora", "+2 horas", "+3 horas"):
-        s = patch_text_tag(s, label, {"textSize": "14sp"})
-
     for prefix in ("now", "plus1", "plus2", "plus3"):
-        s = patch_tag_by_id(s, prefix + "_clock", {"textSize": "11sp"})
-        s = patch_tag_by_id(s, prefix + "_icon", {"textSize": "25sp"})
-        s = patch_tag_by_id(s, prefix + "_state", {"textSize": "13sp", "layout_height": "40dp"})
-        s = patch_tag_by_id(s, prefix + "_temp", {"textSize": "24sp"})
-        s = patch_tag_by_id(s, prefix + "_feels", {"textSize": "11sp", "layout_height": "20dp"})
-        s = patch_tag_by_id(s, prefix + "_rate", {"textSize": "11sp", "layout_height": "34dp", "lineSpacingExtra": "2dp"})
-
-    s = patch_text_tag(s, "Mañana", {"textSize": "15sp"})
-    s = patch_text_tag(s, "Pasado mañana", {"textSize": "15sp"})
-    s = patch_all_text_tags(s, "Temperatura", {"textSize": "11sp"})
-    s = patch_all_text_tags(s, "Sensación térmica", {"textSize": "11sp"})
-    for vid in ("day1_metric_label", "day2_metric_label"):
-        s = patch_tag_by_id(s, vid, {"textSize": "11sp"})
-    for vid in ("day1_state", "day2_state"):
-        s = patch_tag_by_id(s, vid, {"textSize": "14sp"})
-    for vid in ("day1_temp", "day2_temp"):
-        s = patch_tag_by_id(s, vid, {"textSize": "17sp"})
-    for vid in ("day1_feels", "day2_feels"):
-        s = patch_tag_by_id(s, vid, {"textSize": "15sp"})
-    for vid in ("day1_snow", "day2_snow"):
-        s = patch_tag_by_id(s, vid, {"textSize": "17sp"})
+        s = patch_tag_by_id(s, prefix + "_rate", {
+            "textSize": rate_size,
+            "layout_height": rate_height,
+            "maxLines": "1",
+            "lineSpacingExtra": "0dp",
+            "fontFamily": "sans-serif-medium",
+        })
     write(path, s)
 
 
-def update_compact_layout(path):
-    s = read(path)
-    for label in ("Ahora", "+1 hora", "+2 horas", "+3 horas"):
-        s = patch_text_tag(s, label, {"textSize": "13sp"})
-    for prefix in ("now", "plus1", "plus2", "plus3"):
-        s = patch_tag_by_id(s, prefix + "_clock", {"textSize": "10sp"})
-        s = patch_tag_by_id(s, prefix + "_icon", {"textSize": "23sp"})
-        s = patch_tag_by_id(s, prefix + "_state", {"textSize": "12sp", "layout_height": "38dp"})
-        s = patch_tag_by_id(s, prefix + "_temp", {"textSize": "22sp"})
-        s = patch_tag_by_id(s, prefix + "_feels", {"textSize": "10sp", "layout_height": "19dp"})
-        s = patch_tag_by_id(s, prefix + "_rate", {"textSize": "10sp", "layout_height": "31dp", "lineSpacingExtra": "1dp"})
-    write(path, s)
+# Una sola tasa visible permite usar una tipografía claramente mayor.
+update_layout('android-app/app/src/main/res/layout/widget_barisnow.xml', '13sp', '24dp')
+update_layout('android-app/app/src/main/res/layout/widget_barisnow_compact.xml', '12sp', '22dp')
 
+# ---------------------------------------------------------------------------
+# Provider: muestra solo la tasa de la fase meteorológica dominante.
+# Lluvia/llovizna -> mm/h; nieve/copos -> cm/h; seco -> –.
+# En mezcla real se usa la fase con mayor equivalente aproximado de agua.
+# ---------------------------------------------------------------------------
+provider = 'android-app/app/src/main/java/com/barisnow/app/BariSnowWidgetProvider.java'
+s = read(provider)
+start = s.find('    protected static String formatHourlyPrecip(HourData hour) {')
+end = s.find('    protected static void applyDay(', start)
+if start < 0 or end < 0:
+    raise RuntimeError('No se encontró formatHourlyPrecip')
 
-update_main_layout('android-app/app/src/main/res/layout/widget_barisnow.xml')
-update_compact_layout('android-app/app/src/main/res/layout/widget_barisnow_compact.xml')
+method = '''    protected static String formatHourlyPrecip(HourData hour) {
+        if (hour == null) return "–";
+        double rain = hour.rainRateMmH;
+        double snow = hour.snowRateCmH;
+        boolean rainMeasured = !Double.isNaN(rain) && !Double.isInfinite(rain) && rain >= .05;
+        boolean snowMeasured = !Double.isNaN(snow) && !Double.isInfinite(snow) && snow >= .03;
+        String state = hour.state == null ? "" : hour.state;
 
-# Nueva versión.
+        if (!rainMeasured && !snowMeasured) return "–";
+
+        boolean mixedState = "LLUVIA Y NIEVE".equals(state)
+                || state.contains("PRECIPITACIÓN MIXTA");
+        boolean snowState = state.contains("NIEVE") || state.contains("COPOS")
+                || state.contains("GRANULADA");
+        boolean rainState = isRainState(state);
+
+        if (mixedState && rainMeasured && snowMeasured) {
+            // Aproximación 10:1: 1 cm/h de nieve ~ 1 mm/h de agua equivalente.
+            return snow >= rain ? formatSnowRate(snow) : formatRainRate(rain);
+        }
+        if (snowState && snowMeasured) return formatSnowRate(snow);
+        if (rainState && rainMeasured) return formatRainRate(rain);
+        if (rainMeasured && !snowMeasured) return formatRainRate(rain);
+        if (snowMeasured && !rainMeasured) return formatSnowRate(snow);
+        return snowState ? formatSnowRate(snow) : formatRainRate(rain);
+    }
+
+    private static String formatRainRate(double rain) {
+        if (Double.isNaN(rain) || Double.isInfinite(rain) || rain < .05) return "–";
+        return "🌧 " + (rain < 10
+                ? String.format(Locale.getDefault(), "%.1f mm/h", rain)
+                : String.format(Locale.getDefault(), "%.0f mm/h", rain));
+    }
+
+    private static String formatSnowRate(double snow) {
+        if (Double.isNaN(snow) || Double.isInfinite(snow) || snow < .03) return "–";
+        if (snow < .12) return "❄ Traza";
+        return "❄ " + (snow < 1
+                ? String.format(Locale.getDefault(), "%.1f cm/h", snow)
+                : String.format(Locale.getDefault(), "%.0f cm/h", snow));
+    }
+
+'''
+s = s[:start] + method + s[end:]
+write(provider, s)
+
+# Versión 1.4.14.
 gradle = 'android-app/app/build.gradle'
 s = read(gradle)
-s = re.sub(r'versionCode\s+24\b', 'versionCode 25', s, count=1)
-s = s.replace("versionName '1.4.12'", "versionName '1.4.13'")
-s = re.sub(r'// BariSnow 1\.4\.12[^\n]*',
-           '// BariSnow 1.4.13 aumenta la jerarquía tipográfica y mejora la lectura del widget.', s, count=1)
+s = re.sub(r'versionCode\s+25\b', 'versionCode 26', s, count=1)
+s = s.replace("versionName '1.4.13'", "versionName '1.4.14'")
+s = re.sub(r'// BariSnow 1\.4\.13[^\n]*',
+           '// BariSnow 1.4.14 muestra una sola tasa por fase y aumenta su legibilidad.', s, count=1)
 write(gradle, s)
 
 client = 'android-app/app/src/main/java/com/barisnow/app/BariSnowWeatherClient.java'
 s = read(client)
-s = re.sub(r'BariSnowAndroidWidget/[0-9.]+', 'BariSnowAndroidWidget/1.4.13', s)
+s = re.sub(r'BariSnowAndroidWidget/[0-9.]+', 'BariSnowAndroidWidget/1.4.14', s)
 write(client, s)
 
-print('Tipografía BariSnow 1.4.13 aplicada.')
+print('Tasa dominante y tipografía BariSnow 1.4.14 aplicadas.')
