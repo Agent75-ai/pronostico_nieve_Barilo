@@ -15,6 +15,7 @@ on:
       - 'sw.js'
       - 'scripts/apply_dynamic_precip_metric.py'
       - 'scripts/apply_interval_rain_rate.py'
+      - 'scripts/apply_widget_readability.py'
       - '.github/workflows/android-apk.yml'
   pull_request:
     paths:
@@ -28,6 +29,7 @@ on:
       - 'sw.js'
       - 'scripts/apply_dynamic_precip_metric.py'
       - 'scripts/apply_interval_rain_rate.py'
+      - 'scripts/apply_widget_readability.py'
       - '.github/workflows/android-apk.yml'
 
 concurrency:
@@ -51,6 +53,9 @@ jobs:
         run: |
           sed -i 's/_feels"\\b/_feels"/' scripts/apply_interval_rain_rate.py
           python3 scripts/apply_interval_rain_rate.py
+
+      - name: Apply widget readability and current rates
+        run: python3 scripts/apply_widget_readability.py
 
       - name: Validate precipitation JavaScript
         run: |
@@ -109,6 +114,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add downloads/ \
             scripts/apply_interval_rain_rate.py \
+            scripts/apply_widget_readability.py \
             precipitation-communication.js \
             rain-interval-display.js \
             sw.js \
@@ -124,7 +130,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Fuentes y APK sin cambios para publicar."
           else
-            git commit -m "Publicar BariSnow ${VERSION_NAME} con tasas horarias de precipitación"
+            git commit -m "Publicar BariSnow ${VERSION_NAME} con widget legible y tasa actual"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
