@@ -182,7 +182,7 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
     protected static void applyHour(RemoteViews views, int iconId, int clockId, int stateId, int tempId, int feelsId, HourData hour) {
         views.setTextViewText(iconId, iconFor(hour.state));
         views.setTextViewText(clockId, hour.clock);
-        views.setTextViewText(stateId, hour.state);
+        views.setTextViewText(stateId, displayState(hour.state));
         views.setTextViewText(tempId, formatTemp(hour.temp));
         views.setTextViewText(feelsId, formatFeels(hour.feels));
         views.setTextColor(stateId, colorFor(hour.state));
@@ -243,7 +243,7 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
         int metricId = first ? R.id.day1_snow : R.id.day2_snow;
 
         views.setTextViewText(iconId, iconFor(day.state));
-        views.setTextViewText(stateId, day.state);
+        views.setTextViewText(stateId, displayState(day.state));
         views.setTextViewText(tempId, formatRange(day.minTemp, day.maxTemp));
         views.setTextViewText(feelsId, formatRange(day.minFeels, day.maxFeels));
 
@@ -266,6 +266,12 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
             views.setTextViewText(metricId, formatSnow(day.snowCm));
         }
         views.setTextColor(stateId, colorFor(day.state));
+    }
+
+    protected static String displayState(String state) {
+        if (state == null || state.isEmpty()) return "—";
+        String lower = state.toLowerCase(new Locale("es", "AR"));
+        return lower.substring(0, 1).toUpperCase(new Locale("es", "AR")) + lower.substring(1);
     }
 
     private static boolean isRainState(String state) {
