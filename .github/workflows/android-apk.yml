@@ -15,6 +15,7 @@ on:
       - 'sw.js'
       - 'scripts/apply_widget_readability.py'
       - 'scripts/apply_widget_4x4.py'
+      - 'scripts/apply_widget_4x3.py'
       - '.github/workflows/android-apk.yml'
   pull_request:
     paths:
@@ -28,6 +29,7 @@ on:
       - 'sw.js'
       - 'scripts/apply_widget_readability.py'
       - 'scripts/apply_widget_4x4.py'
+      - 'scripts/apply_widget_4x3.py'
       - '.github/workflows/android-apk.yml'
 
 concurrency:
@@ -44,10 +46,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Apply premium 4x4 widget design
+      - name: Apply premium 4x3 widget design
         run: |
           python3 scripts/apply_widget_readability.py
           python3 scripts/apply_widget_4x4.py
+          python3 scripts/apply_widget_4x3.py
 
       - name: Validate precipitation JavaScript
         run: |
@@ -107,6 +110,7 @@ jobs:
           git add downloads/ \
             scripts/apply_widget_readability.py \
             scripts/apply_widget_4x4.py \
+            scripts/apply_widget_4x3.py \
             precipitation-communication.js \
             rain-interval-display.js \
             sw.js \
@@ -125,7 +129,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Fuentes y APK sin cambios para publicar."
           else
-            git commit -m "Publicar BariSnow ${VERSION_NAME} con widget premium 4x4"
+            git commit -m "Publicar BariSnow ${VERSION_NAME} con widget premium 4x3"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
