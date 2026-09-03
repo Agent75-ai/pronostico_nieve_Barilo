@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.util.TypedValue;
 import android.widget.RemoteViews;
 
 import java.util.HashMap;
@@ -266,6 +267,8 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
             views.setTextViewText(metricLabelId, "Nieve");
             views.setTextViewText(metricId, formatSnow(day.snowCm));
         }
+        // Dato terciario: más pequeño que temperatura y sensación, sin alterar el XML del widget.
+        views.setTextViewTextSize(metricId, TypedValue.COMPLEX_UNIT_SP, 12f);
         views.setTextColor(stateId, colorFor(day.state));
     }
 
