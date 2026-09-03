@@ -10,11 +10,11 @@ android {
         applicationId 'com.barisnow.app'
         minSdk 23
         targetSdk 36
-        versionCode 30
-        versionName '1.4.18'
+        versionCode 31
+        versionName '1.4.19'
 
         // Ubicaciones de app y widgets gestionadas de manera independiente desde 1.4.4.
-        // BariSnow 1.4.18 adapta el widget premium aprobado al formato 4x3.
+        // BariSnow 1.4.19 restaura el widget limpio aprobado en formato 4x4.
         // AdMob queda preparado pero desactivado hasta cargar IDs reales y consentimiento.
         buildConfigField 'boolean', 'ADS_ENABLED', 'false'
         buildConfigField 'String', 'ADMOB_BANNER_ID', '""'

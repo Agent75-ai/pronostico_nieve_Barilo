@@ -47,7 +47,7 @@ final class BariSnowWeatherClient {
                 last = e;
                 if (i + 1 < attempts.length) {
                     try {
-                        Thread.sleep(120L);
+                        Thread.sleep(80L);
                     } catch (InterruptedException interrupted) {
                         Thread.currentThread().interrupt();
                         throw interrupted;
@@ -63,7 +63,7 @@ final class BariSnowWeatherClient {
     }
 
     private static String request(String endpoint, int requestedTimeoutMs) throws Exception {
-        int timeout = Math.max(2500, Math.min(requestedTimeoutMs, 4200));
+        int timeout = Math.max(2500, Math.min(requestedTimeoutMs, 3400));
         HttpURLConnection c = (HttpURLConnection) new URL(endpoint).openConnection();
         c.setConnectTimeout(timeout);
         c.setReadTimeout(timeout);
@@ -73,7 +73,7 @@ final class BariSnowWeatherClient {
         c.setRequestProperty("Accept", "application/json");
         c.setRequestProperty("Accept-Encoding", "identity");
         c.setRequestProperty("Connection", "close");
-        c.setRequestProperty("User-Agent", "BariSnowAndroidWidget/1.4.18");
+        c.setRequestProperty("User-Agent", "BariSnowAndroidWidget/1.4.19");
 
         int status = c.getResponseCode();
         if (status < 200 || status >= 300) {
