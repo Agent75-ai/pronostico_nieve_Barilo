@@ -12,8 +12,9 @@ def write(path, text):
 
 # Escala tipográfica final del widget completo 4x4.
 # El pipeline reconstruye primero el diseño limpio original y luego este parche
-# deja toda la tipografía informativa al 76,5% del tamaño base.
-# Esto equivale aproximadamente a un 15% adicional de reducción frente a 1.4.21.
+# deja toda la tipografía informativa al 83,25% del tamaño base.
+# Es el punto medio entre 1.4.21 (demasiado grande) y 1.4.22 (demasiado chico):
+# aproximadamente +8,8% frente a 1.4.22 y -7,5% frente a 1.4.21.
 # Los iconos meteorológicos, el copo de marca y el botón de refresco no cambian.
 layout = 'android-app/app/src/main/res/layout/widget_barisnow.xml'
 s = read(layout)
@@ -37,7 +38,7 @@ def set_attr(tag, key, value):
     return tag
 
 
-def shrink_tag(match):
+def scale_tag(match):
     tag = match.group(0)
     size_match = size_re.search(tag)
     if not size_match:
@@ -52,11 +53,11 @@ def shrink_tag(match):
         return tag
 
     base = float(size_match.group(1))
-    compact = base * 0.765
-    tag = tag[:size_match.start()] + f'android:textSize="{compact:.1f}sp"' + tag[size_match.end():]
+    balanced = base * 0.8325
+    tag = tag[:size_match.start()] + f'android:textSize="{balanced:.1f}sp"' + tag[size_match.end():]
 
-    # Los rótulos diarios deben permanecer en una sola línea: en la captura
-    # anterior "Sensación térmica" llegaba a envolver y se recortaba verticalmente.
+    # Los rótulos diarios permanecen en una sola línea para que la ganancia de
+    # tamaño no vuelva a provocar el recorte observado en "Sensación térmica".
     if literal_text in DAILY_LABELS:
         tag = set_attr(tag, 'maxLines', '1')
         tag = set_attr(tag, 'ellipsize', 'end')
@@ -64,21 +65,21 @@ def shrink_tag(match):
     return tag
 
 
-s = textview_re.sub(shrink_tag, s)
+s = textview_re.sub(scale_tag, s)
 write(layout, s)
 
 # Nueva versión.
 gradle = 'android-app/app/build.gradle'
 s = read(gradle)
-s = re.sub(r'versionCode\s+33\b', 'versionCode 34', s, count=1)
-s = s.replace("versionName '1.4.21'", "versionName '1.4.22'")
-s = re.sub(r'// BariSnow 1\.4\.21[^\n]*',
-           '// BariSnow 1.4.22 compacta un 15% adicional la tipografía del widget completo 4x4.', s, count=1)
+s = re.sub(r'versionCode\s+34\b', 'versionCode 35', s, count=1)
+s = s.replace("versionName '1.4.22'", "versionName '1.4.23'")
+s = re.sub(r'// BariSnow 1\.4\.22[^\n]*',
+           '// BariSnow 1.4.23 equilibra la tipografía del widget completo 4x4 en una escala intermedia.', s, count=1)
 write(gradle, s)
 
 client = 'android-app/app/src/main/java/com/barisnow/app/BariSnowWeatherClient.java'
 s = read(client)
-s = re.sub(r'BariSnowAndroidWidget/[0-9.]+', 'BariSnowAndroidWidget/1.4.22', s)
+s = re.sub(r'BariSnowAndroidWidget/[0-9.]+', 'BariSnowAndroidWidget/1.4.23', s)
 write(client, s)
 
-print('Tipografía compacta 76,5% del widget completo 4x4 aplicada para BariSnow 1.4.22.')
+print('Tipografía equilibrada 83,25% del widget completo 4x4 aplicada para BariSnow 1.4.23.')
