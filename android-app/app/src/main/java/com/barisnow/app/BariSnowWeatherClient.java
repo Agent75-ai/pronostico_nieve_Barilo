@@ -73,7 +73,7 @@ final class BariSnowWeatherClient {
         c.setRequestProperty("Accept", "application/json");
         c.setRequestProperty("Accept-Encoding", "identity");
         c.setRequestProperty("Connection", "close");
-        c.setRequestProperty("User-Agent", "BariSnowAndroidWidget/1.4.20");
+        c.setRequestProperty("User-Agent", "BariSnowAndroidWidget/1.4.21");
 
         int status = c.getResponseCode();
         if (status < 200 || status >= 300) {
