@@ -53,6 +53,20 @@
                 android:resource="@xml/barisnow_widget_info" />
         </receiver>
 
+
+        <receiver
+            android:name=".BariSnowComplete4x3WidgetProvider"
+            android:exported="false"
+            android:label="@string/widget_complete_4x3_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.barisnow.app.ACTION_WIDGET_REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/barisnow_widget_complete_4x3_info" />
+        </receiver>
+
         <receiver
             android:name=".BariSnowDailyWidgetProvider"
             android:exported="false"

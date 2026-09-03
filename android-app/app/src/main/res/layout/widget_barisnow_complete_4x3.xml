@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_background"
+    android:orientation="vertical"
+    android:padding="7dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="39dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <TextView android:layout_width="30dp" android:layout_height="match_parent" android:gravity="center" android:includeFontPadding="false" android:text="❄" android:textColor="#B9E3FF" android:textSize="21sp" />
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="BariSnow" android:textColor="#EEF7FC" android:textSize="16sp" />
+            <TextView android:id="@+id/widget_zone" android:layout_width="match_parent" android:layout_height="wrap_content" android:ellipsize="end" android:includeFontPadding="false" android:maxLines="1" android:text="Barrio Lago Moreno" android:textColor="#A9BAC7" android:textSize="10sp" />
+        </LinearLayout>
+        <TextView android:id="@+id/widget_updated" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="1dp" android:ellipsize="end" android:gravity="center_vertical|right" android:includeFontPadding="false" android:maxLines="1" android:text="Actualizando…" android:textColor="#A9BAC7" android:textSize="9sp" />
+        <TextView android:id="@+id/widget_refresh" android:layout_width="32dp" android:layout_height="32dp" android:gravity="center" android:includeFontPadding="false" android:text="↻" android:textColor="#DDF6FF" android:textSize="19sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.62"
+        android:background="@drawable/widget_hour_panel"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:padding="5dp">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_horizontal|center_vertical"
+            android:orientation="vertical"
+            android:paddingLeft="1dp"
+            android:paddingRight="1dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="Ahora" android:textColor="#79B8FF" android:textSize="13sp" />
+            <TextView android:id="@+id/now_clock" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:includeFontPadding="false" android:text="—" android:textColor="#A9BAC7" android:textSize="10sp" />
+            <TextView android:id="@+id/now_icon" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:includeFontPadding="false" android:text="❄" android:textSize="23sp" />
+            <TextView android:id="@+id/now_state" android:layout_width="match_parent" android:layout_height="27dp" android:layout_marginTop="1dp" android:ellipsize="end" android:fontFamily="sans-serif-medium" android:gravity="center" android:includeFontPadding="false" android:maxLines="2" android:text="—" android:textColor="#5DB7FF" android:textSize="11sp" />
+            <TextView android:id="@+id/now_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#F4FAFD" android:textSize="18sp" />
+            <TextView android:id="@+id/now_feels" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:gravity="center" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:maxLines="1" android:text="Sens. —" android:textColor="#73B9FF" android:textSize="10sp" />
+            <TextView android:id="@+id/now_rate" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:ellipsize="end" android:gravity="center" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:maxLines="1" android:text="–" android:textColor="#D4E4EE" android:textSize="10sp" />
+        </LinearLayout>
+        <TextView
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:background="#29485D"
+            android:text="" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_horizontal|center_vertical"
+            android:orientation="vertical"
+            android:paddingLeft="1dp"
+            android:paddingRight="1dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="+1 hora" android:textColor="#79B8FF" android:textSize="13sp" />
+            <TextView android:id="@+id/plus1_clock" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:includeFontPadding="false" android:text="—" android:textColor="#A9BAC7" android:textSize="10sp" />
+            <TextView android:id="@+id/plus1_icon" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:includeFontPadding="false" android:text="❄" android:textSize="23sp" />
+            <TextView android:id="@+id/plus1_state" android:layout_width="match_parent" android:layout_height="27dp" android:layout_marginTop="1dp" android:ellipsize="end" android:fontFamily="sans-serif-medium" android:gravity="center" android:includeFontPadding="false" android:maxLines="2" android:text="—" android:textColor="#5DB7FF" android:textSize="11sp" />
+            <TextView android:id="@+id/plus1_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#F4FAFD" android:textSize="18sp" />
+            <TextView android:id="@+id/plus1_feels" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:gravity="center" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:maxLines="1" android:text="Sens. —" android:textColor="#73B9FF" android:textSize="10sp" />
+            <TextView android:id="@+id/plus1_rate" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:ellipsize="end" android:gravity="center" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:maxLines="1" android:text="–" android:textColor="#D4E4EE" android:textSize="10sp" />
+        </LinearLayout>
+        <TextView
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:background="#29485D"
+            android:text="" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_horizontal|center_vertical"
+            android:orientation="vertical"
+            android:paddingLeft="1dp"
+            android:paddingRight="1dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="+2 horas" android:textColor="#79B8FF" android:textSize="13sp" />
+            <TextView android:id="@+id/plus2_clock" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:includeFontPadding="false" android:text="—" android:textColor="#A9BAC7" android:textSize="10sp" />
+            <TextView android:id="@+id/plus2_icon" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:includeFontPadding="false" android:text="❄" android:textSize="23sp" />
+            <TextView android:id="@+id/plus2_state" android:layout_width="match_parent" android:layout_height="27dp" android:layout_marginTop="1dp" android:ellipsize="end" android:fontFamily="sans-serif-medium" android:gravity="center" android:includeFontPadding="false" android:maxLines="2" android:text="—" android:textColor="#5DB7FF" android:textSize="11sp" />
+            <TextView android:id="@+id/plus2_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#F4FAFD" android:textSize="18sp" />
+            <TextView android:id="@+id/plus2_feels" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:gravity="center" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:maxLines="1" android:text="Sens. —" android:textColor="#73B9FF" android:textSize="10sp" />
+            <TextView android:id="@+id/plus2_rate" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:ellipsize="end" android:gravity="center" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:maxLines="1" android:text="–" android:textColor="#D4E4EE" android:textSize="10sp" />
+        </LinearLayout>
+        <TextView
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:background="#29485D"
+            android:text="" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_horizontal|center_vertical"
+            android:orientation="vertical"
+            android:paddingLeft="1dp"
+            android:paddingRight="1dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="+3 horas" android:textColor="#79B8FF" android:textSize="13sp" />
+            <TextView android:id="@+id/plus3_clock" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:includeFontPadding="false" android:text="—" android:textColor="#A9BAC7" android:textSize="10sp" />
+            <TextView android:id="@+id/plus3_icon" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:includeFontPadding="false" android:text="❄" android:textSize="23sp" />
+            <TextView android:id="@+id/plus3_state" android:layout_width="match_parent" android:layout_height="27dp" android:layout_marginTop="1dp" android:ellipsize="end" android:fontFamily="sans-serif-medium" android:gravity="center" android:includeFontPadding="false" android:maxLines="2" android:text="—" android:textColor="#5DB7FF" android:textSize="11sp" />
+            <TextView android:id="@+id/plus3_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#F4FAFD" android:textSize="18sp" />
+            <TextView android:id="@+id/plus3_feels" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:gravity="center" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:maxLines="1" android:text="Sens. —" android:textColor="#73B9FF" android:textSize="10sp" />
+            <TextView android:id="@+id/plus3_rate" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:ellipsize="end" android:gravity="center" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:maxLines="1" android:text="–" android:textColor="#D4E4EE" android:textSize="10sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        android:layout_weight="0.88"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="3dp"
+            android:layout_weight="1"
+            android:background="@drawable/widget_day_panel"
+            android:orientation="vertical"
+            android:padding="6dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="Mañana" android:textColor="#79B8FF" android:textSize="13sp" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginTop="2dp" android:layout_weight="1.05" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:id="@+id/day1_icon" android:layout_width="31dp" android:layout_height="wrap_content" android:gravity="center" android:includeFontPadding="false" android:text="❄" android:textSize="20sp" />
+                <TextView android:id="@+id/day1_state" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginLeft="3dp" android:layout_weight="1" android:ellipsize="end" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:maxLines="2" android:text="—" android:textColor="#EEF7FC" android:textSize="11sp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="0.82" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:includeFontPadding="false" android:text="Temp." android:textColor="#A9BAC7" android:textSize="9sp" />
+                <TextView android:id="@+id/day1_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="3dp" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#F4FAFD" android:textSize="11sp" />
+                <TextView android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" android:text="" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:includeFontPadding="false" android:text="Sens." android:textColor="#A9BAC7" android:textSize="9sp" />
+                <TextView android:id="@+id/day1_feels" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="3dp" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#73B9FF" android:textSize="11sp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="0.82" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:id="@+id/day1_metric_label" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:ellipsize="end" android:includeFontPadding="false" android:maxLines="1" android:text="Nieve" android:textColor="#A9BAC7" android:textSize="9sp" />
+                <TextView android:id="@+id/day1_snow" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#D4E4EE" android:textSize="11sp" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:background="@drawable/widget_day_panel"
+            android:orientation="vertical"
+            android:padding="6dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="Pasado mañana" android:textColor="#79B8FF" android:textSize="13sp" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginTop="2dp" android:layout_weight="1.05" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:id="@+id/day2_icon" android:layout_width="31dp" android:layout_height="wrap_content" android:gravity="center" android:includeFontPadding="false" android:text="❄" android:textSize="20sp" />
+                <TextView android:id="@+id/day2_state" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginLeft="3dp" android:layout_weight="1" android:ellipsize="end" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:maxLines="2" android:text="—" android:textColor="#EEF7FC" android:textSize="11sp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="0.82" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:includeFontPadding="false" android:text="Temp." android:textColor="#A9BAC7" android:textSize="9sp" />
+                <TextView android:id="@+id/day2_temp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="3dp" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#F4FAFD" android:textSize="11sp" />
+                <TextView android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" android:text="" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:includeFontPadding="false" android:text="Sens." android:textColor="#A9BAC7" android:textSize="9sp" />
+                <TextView android:id="@+id/day2_feels" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="3dp" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#73B9FF" android:textSize="11sp" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="0.82" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:id="@+id/day2_metric_label" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:ellipsize="end" android:includeFontPadding="false" android:maxLines="1" android:text="Nieve" android:textColor="#A9BAC7" android:textSize="9sp" />
+                <TextView android:id="@+id/day2_snow" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" android:text="—" android:textColor="#D4E4EE" android:textSize="11sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

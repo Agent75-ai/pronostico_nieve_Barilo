@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">BariSnow</string>
-    <string name="widget_complete_name">BariSnow · Completo</string>
+    <string name="widget_complete_name">BariSnow · Completo 4×4</string>
+    <string name="widget_complete_4x3_name">BariSnow · Completo 4×3</string>
     <string name="widget_hours_name">BariSnow · Próximas horas</string>
     <string name="widget_daily_name">BariSnow · Ahora y 2 días</string>
 </resources>

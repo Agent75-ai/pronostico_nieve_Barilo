@@ -72,6 +72,7 @@ public class BariSnowWidgetProvider extends AppWidgetProvider {
 
     public static void requestRefresh(Context context) {
         sendRefresh(context, BariSnowWidgetProvider.class);
+        sendRefresh(context, BariSnowComplete4x3WidgetProvider.class);
         sendRefresh(context, BariSnowCompactWidgetProvider.class);
         sendRefresh(context, BariSnowDailyWidgetProvider.class);
     }
