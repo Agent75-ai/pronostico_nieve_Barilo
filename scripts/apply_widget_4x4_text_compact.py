@@ -10,12 +10,10 @@ def write(path, text):
     Path(path).write_text(text, encoding='utf-8')
 
 
-# Escala tipográfica final del widget completo 4x4.
-# El pipeline reconstruye primero el diseño limpio original y luego este parche
-# deja toda la tipografía informativa al 83,25% del tamaño base.
-# Los valores diarios de precipitación son información terciaria y se fijan en
-# 12sp para que no compitan visualmente con temperatura y sensación térmica.
-# Los iconos meteorológicos, el copo de marca y el botón de refresco no cambian.
+# Escala tipográfica equilibrada del widget completo 4x4.
+# El XML queda exactamente con la estructura/tamaños que cargaban en 1.4.23.
+# El valor diario de precipitación se reduce a 12sp mediante RemoteViews en
+# tiempo de ejecución, evitando modificar esas dos vistas dentro del layout.
 layout = 'android-app/app/src/main/res/layout/widget_barisnow.xml'
 s = read(layout)
 
@@ -27,7 +25,6 @@ text_re = re.compile(r'android:text="([^"]*)"')
 EXEMPT_IDS = {'widget_refresh'}
 EXEMPT_LITERALS = {'❄', '↻'}
 DAILY_LABELS = {'Temperatura', 'Sensación térmica'}
-DAILY_PRECIP_VALUE_IDS = {'day1_snow', 'day2_snow'}
 
 
 def set_attr(tag, key, value):
@@ -55,10 +52,8 @@ def scale_tag(match):
 
     base = float(size_match.group(1))
     balanced = base * 0.8325
-    final_size = 12.0 if view_id in DAILY_PRECIP_VALUE_IDS else balanced
-    tag = tag[:size_match.start()] + f'android:textSize="{final_size:.1f}sp"' + tag[size_match.end():]
+    tag = tag[:size_match.start()] + f'android:textSize="{balanced:.1f}sp"' + tag[size_match.end():]
 
-    # Los rótulos diarios permanecen en una sola línea para evitar recortes.
     if literal_text in DAILY_LABELS:
         tag = set_attr(tag, 'maxLines', '1')
         tag = set_attr(tag, 'ellipsize', 'end')
@@ -69,18 +64,34 @@ def scale_tag(match):
 s = textview_re.sub(scale_tag, s)
 write(layout, s)
 
+# Reducir exclusivamente el valor diario de precipitación desde RemoteViews.
+provider = 'android-app/app/src/main/java/com/barisnow/app/BariSnowWidgetProvider.java'
+s = read(provider)
+if 'import android.util.TypedValue;' not in s:
+    s = s.replace('import android.graphics.Color;\n', 'import android.graphics.Color;\nimport android.util.TypedValue;\n')
+
+needle = '        views.setTextColor(stateId, colorFor(day.state));\n'
+replacement = ('        // Dato terciario: más pequeño que temperatura y sensación, sin alterar el XML del widget.\n'
+               '        views.setTextViewTextSize(metricId, TypedValue.COMPLEX_UNIT_SP, 12f);\n'
+               '        views.setTextColor(stateId, colorFor(day.state));\n')
+if 'views.setTextViewTextSize(metricId, TypedValue.COMPLEX_UNIT_SP, 12f);' not in s:
+    if needle not in s:
+        raise SystemExit('No se encontró el punto de inserción en applyDay().')
+    s = s.replace(needle, replacement, 1)
+write(provider, s)
+
 # Nueva versión.
 gradle = 'android-app/app/build.gradle'
 s = read(gradle)
-s = re.sub(r'versionCode\s+35\b', 'versionCode 36', s, count=1)
-s = s.replace("versionName '1.4.23'", "versionName '1.4.24'")
-s = re.sub(r'// BariSnow 1\.4\.23[^\n]*',
-           '// BariSnow 1.4.24 reduce el peso visual del valor diario de precipitación en el widget 4x4.', s, count=1)
+s = re.sub(r'versionCode\s+36\b', 'versionCode 37', s, count=1)
+s = s.replace("versionName '1.4.24'", "versionName '1.4.25'")
+s = re.sub(r'// BariSnow 1\.4\.24[^\n]*',
+           '// BariSnow 1.4.25 restaura el layout 4x4 estable y reduce precipitación vía RemoteViews.', s, count=1)
 write(gradle, s)
 
 client = 'android-app/app/src/main/java/com/barisnow/app/BariSnowWeatherClient.java'
 s = read(client)
-s = re.sub(r'BariSnowAndroidWidget/[0-9.]+', 'BariSnowAndroidWidget/1.4.24', s)
+s = re.sub(r'BariSnowAndroidWidget/[0-9.]+', 'BariSnowAndroidWidget/1.4.25', s)
 write(client, s)
 
-print('BariSnow 1.4.24: valor diario de precipitación del widget 4x4 fijado en 12sp.')
+print('BariSnow 1.4.25: layout 4x4 estable restaurado y precipitación diaria a 12sp vía RemoteViews.')
