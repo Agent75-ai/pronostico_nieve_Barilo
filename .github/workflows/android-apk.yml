@@ -42,7 +42,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Apply widget readability and current rates
+      - name: Apply premium 5x5 widget design
         run: python3 scripts/apply_widget_readability.py
 
       - name: Validate precipitation JavaScript
@@ -113,11 +113,14 @@ jobs:
             android-app/app/src/main/java/com/barisnow/app/BariSnowWeatherClient.java \
             android-app/app/src/main/res/layout/widget_barisnow.xml \
             android-app/app/src/main/res/layout/widget_barisnow_compact.xml \
-            android-app/app/src/main/res/layout/widget_barisnow_daily.xml
+            android-app/app/src/main/res/layout/widget_barisnow_daily.xml \
+            android-app/app/src/main/res/xml/barisnow_widget_info.xml \
+            android-app/app/src/main/res/drawable/widget_hour_panel.xml \
+            android-app/app/src/main/res/drawable/widget_day_panel.xml
           if git diff --cached --quiet; then
             echo "Fuentes y APK sin cambios para publicar."
           else
-            git commit -m "Publicar BariSnow ${VERSION_NAME} con widget legible y tasa actual"
+            git commit -m "Publicar BariSnow ${VERSION_NAME} con widget premium 5x5"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
