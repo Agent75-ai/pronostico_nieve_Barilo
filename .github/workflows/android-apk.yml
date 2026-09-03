@@ -14,8 +14,7 @@ on:
       - 'web-daynight-fix.js'
       - 'sw.js'
       - 'scripts/apply_widget_readability.py'
-      - 'scripts/apply_widget_4x4.py'
-      - 'scripts/apply_widget_4x3.py'
+      - 'scripts/apply_widget_clean_4x4.py'
       - '.github/workflows/android-apk.yml'
   pull_request:
     paths:
@@ -28,8 +27,7 @@ on:
       - 'web-daynight-fix.js'
       - 'sw.js'
       - 'scripts/apply_widget_readability.py'
-      - 'scripts/apply_widget_4x4.py'
-      - 'scripts/apply_widget_4x3.py'
+      - 'scripts/apply_widget_clean_4x4.py'
       - '.github/workflows/android-apk.yml'
 
 concurrency:
@@ -46,11 +44,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Apply premium 4x3 widget design
+      - name: Apply clean premium 4x4 widget design
         run: |
           python3 scripts/apply_widget_readability.py
-          python3 scripts/apply_widget_4x4.py
-          python3 scripts/apply_widget_4x3.py
+          python3 scripts/apply_widget_clean_4x4.py
 
       - name: Validate precipitation JavaScript
         run: |
@@ -109,8 +106,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add downloads/ \
             scripts/apply_widget_readability.py \
-            scripts/apply_widget_4x4.py \
-            scripts/apply_widget_4x3.py \
+            scripts/apply_widget_clean_4x4.py \
             precipitation-communication.js \
             rain-interval-display.js \
             sw.js \
@@ -129,7 +125,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Fuentes y APK sin cambios para publicar."
           else
-            git commit -m "Publicar BariSnow ${VERSION_NAME} con widget premium 4x3"
+            git commit -m "Publicar BariSnow ${VERSION_NAME} con widget limpio 4x4"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
