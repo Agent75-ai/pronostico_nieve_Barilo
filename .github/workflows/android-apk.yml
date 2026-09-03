@@ -16,7 +16,7 @@ on:
       - 'scripts/apply_widget_readability.py'
       - 'scripts/apply_widget_clean_4x4.py'
       - 'scripts/apply_widget_complete_4x3.py'
-      - 'scripts/apply_widget_4x4_text_90.py'
+      - 'scripts/apply_widget_4x4_text_compact.py'
       - '.github/workflows/android-apk.yml'
   pull_request:
     paths:
@@ -31,7 +31,7 @@ on:
       - 'scripts/apply_widget_readability.py'
       - 'scripts/apply_widget_clean_4x4.py'
       - 'scripts/apply_widget_complete_4x3.py'
-      - 'scripts/apply_widget_4x4_text_90.py'
+      - 'scripts/apply_widget_4x4_text_compact.py'
       - '.github/workflows/android-apk.yml'
 
 concurrency:
@@ -53,7 +53,7 @@ jobs:
           python3 scripts/apply_widget_readability.py
           python3 scripts/apply_widget_clean_4x4.py
           python3 scripts/apply_widget_complete_4x3.py
-          python3 scripts/apply_widget_4x4_text_90.py
+          python3 scripts/apply_widget_4x4_text_compact.py
 
       - name: Validate precipitation JavaScript
         run: |
@@ -114,7 +114,7 @@ jobs:
             scripts/apply_widget_readability.py \
             scripts/apply_widget_clean_4x4.py \
             scripts/apply_widget_complete_4x3.py \
-            scripts/apply_widget_4x4_text_90.py \
+            scripts/apply_widget_4x4_text_compact.py \
             precipitation-communication.js \
             rain-interval-display.js \
             sw.js \
@@ -138,7 +138,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Fuentes y APK sin cambios para publicar."
           else
-            git commit -m "Publicar BariSnow ${VERSION_NAME} con tipografía 4x4 reducida"
+            git commit -m "Publicar BariSnow ${VERSION_NAME} con tipografía 4x4 compacta"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
