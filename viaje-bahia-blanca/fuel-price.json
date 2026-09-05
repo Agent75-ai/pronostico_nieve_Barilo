@@ -1,0 +1,16 @@
+{
+  "product": "Nafta súper",
+  "country": "Argentina",
+  "currency": "ARS",
+  "unit": "litro",
+  "average_ars_liter": 2156.46,
+  "median_ars_liter": null,
+  "stations": 48,
+  "observations": 48,
+  "latest_reported_at": "2026-09-03",
+  "generated_at": "2026-09-05T12:30:00Z",
+  "method": "Valor inicial de respaldo; el workflow diario lo reemplaza con el promedio calculado desde el dataset oficial de precios en surtidor.",
+  "source": "Secretaría de Energía — Precios en Surtidor",
+  "source_dataset": "Precios en Surtidor - Resolución 314/2016",
+  "source_resource_id": "80ac25de-a44a-4445-9215-090cf55cfda5"
+}
