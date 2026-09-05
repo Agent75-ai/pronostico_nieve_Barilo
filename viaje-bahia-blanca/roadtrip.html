@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="roadtrip-v3.css?v=4">
   <link rel="stylesheet" href="roadtrip-v4.css?v=4">
   <link rel="stylesheet" href="roadtrip-v5.css?v=5">
+  <link rel="stylesheet" href="roadtrip-v6.css?v=6">
 </head>
 <body>
 <header class="top page">
@@ -17,145 +18,23 @@
       <div class="eyebrow"><span class="eyebrow-dot"></span>Planificador integral de viaje</div>
       <h1>Bahía Blanca, etapa por etapa</h1>
       <p class="lead">Armá la ruta, cargá las estadías y mirá el costo total del viaje en auto. Los kilómetros, el combustible y el presupuesto se recalculan en tiempo real.</p>
-      <div class="hero-features" aria-label="Funciones principales">
-        <span class="feature">🚗 Ruta por etapas</span>
-        <span class="feature">⛽ Combustible automático</span>
-        <span class="feature">🏨 Varias estadías</span>
-        <span class="feature">📷 Capturas con OCR</span>
-      </div>
+      <div class="hero-features" aria-label="Funciones principales"><span class="feature">🚗 Ruta por etapas</span><span class="feature">⛽ Combustible automático</span><span class="feature">🏨 Varias estadías</span><span class="feature">📷 Capturas con OCR</span></div>
     </div>
-    <div class="route-card" aria-label="Resumen del viaje">
-      <div class="route-head">
-        <span class="route-label">Destino principal</span>
-        <div class="destination">Bahía Blanca</div>
-        <div class="route-line" id="routePreview">Bariloche → Bahía Blanca</div>
-      </div>
-      <div class="route-meta">
-        <div class="route-stat"><span class="k">Kilómetros</span><span class="v" id="heroKm">0 km</span></div>
-        <div class="route-stat"><span class="k">Combustible</span><span class="v" id="heroFuel">0 L</span></div>
-        <div class="route-stat"><span class="k">Duración</span><span class="v" id="heroDuration">1 día</span></div>
-        <div class="route-stat"><span class="k">Grupo</span><span class="v" id="heroTravelers">1 viajero</span></div>
-      </div>
-    </div>
+    <div class="route-card" aria-label="Resumen del viaje"><div class="route-head"><span class="route-label">Destino principal</span><div class="destination">Bahía Blanca</div><div class="route-line" id="routePreview">Bariloche → Bahía Blanca</div></div><div class="route-meta"><div class="route-stat"><span class="k">Kilómetros</span><span class="v" id="heroKm">0 km</span></div><div class="route-stat"><span class="k">Combustible</span><span class="v" id="heroFuel">0 L</span></div><div class="route-stat"><span class="k">Duración</span><span class="v" id="heroDuration">1 día</span></div><div class="route-stat"><span class="k">Grupo</span><span class="v" id="heroTravelers">1 viajero</span></div></div></div>
   </section>
 </header>
-
 <main class="page">
-  <nav class="journey-nav" aria-label="Flujo de planificación">
-    <a class="journey-step" href="#ruta" data-workflow="route"><span class="step-number">1</span><span><strong>Armá la ruta</strong><small id="routeStepStatus">Pendiente de cálculo</small></span></a>
-    <a class="journey-step" href="#estadias" data-workflow="stays"><span class="step-number">2</span><span><strong>Cargá las estadías</strong><small id="stayStepStatus">Sin reservas</small></span></a>
-    <a class="journey-step" href="#resumen" data-workflow="budget"><span class="step-number">3</span><span><strong>Revisá el presupuesto</strong><small id="budgetStepStatus">Faltan importes</small></span></a>
-  </nav>
-
-  <div class="toolbar" aria-label="Acciones del plan">
-    <button class="btn secondary" id="wholeRouteBtn" type="button">🗺️ Abrir ruta en Google Maps</button>
-    <button class="btn secondary" id="shareBtn" type="button">🔗 Compartir</button>
-    <button class="btn secondary" id="exportBtn" type="button">⬇️ CSV</button>
-    <button class="btn secondary" id="printBtn" type="button">🖨️ PDF</button>
-    <button class="btn ghost danger" id="resetBtn" type="button">Reiniciar</button>
-    <span class="autosave" id="autosaveStatus" aria-live="polite">● Guardado automático</span>
-  </div>
-
-  <section class="summary-grid" aria-label="Resumen de costos">
-    <div class="metric primary"><div class="metric-label">Presupuesto total</div><div class="metric-value" id="summaryTotal">$ 0</div><div class="metric-sub" id="summaryContingency">Incluye contingencia</div></div>
-    <div class="metric"><div class="metric-label">Costo del auto</div><div class="metric-value" id="summaryCar">$ 0</div><div class="metric-sub" id="summaryKm">0 km</div></div>
-    <div class="metric"><div class="metric-label">Alojamientos</div><div class="metric-value" id="summaryStays">$ 0</div><div class="metric-sub" id="summaryNights">0 noches</div></div>
-    <div class="metric"><div class="metric-label">Saldo objetivo</div><div class="metric-value" id="summaryRemaining">—</div><div class="metric-sub" id="summaryTarget">Sin objetivo definido</div></div>
-  </section>
-
-  <div class="layout">
-    <div class="stack">
-      <section class="panel" id="configuracion">
-        <div class="panel-head"><div><h2>Datos básicos</h2><p class="hint">Con estos datos alcanza para empezar. Las opciones menos frecuentes están agrupadas debajo.</p></div><span class="tag">Inicio</span></div>
-        <div id="setupNotice" class="setup-notice" role="status"></div>
-        <div class="form-grid thirds basic-grid">
-          <div class="field"><label for="origin">Origen inicial</label><input id="origin" value="Bariloche" autocomplete="address-level2" /></div>
-          <div class="field"><label for="startDate">Salida</label><input id="startDate" type="date" /></div>
-          <div class="field"><label for="endDate">Regreso</label><input id="endDate" type="date" /></div>
-          <div class="field"><label for="travelers">Viajeros</label><input id="travelers" type="number" min="1" step="1" value="1" inputmode="numeric" /></div>
-          <div class="field"><label for="fuelConsumption">Consumo del auto <span class="label-help">L/100 km</span></label><input id="fuelConsumption" type="number" min="0" step="0.1" value="8.5" inputmode="decimal" /></div>
-          <div class="field"><label for="fuelPrice">Precio combustible / L</label><input id="fuelPrice" type="number" min="0" step="0.01" value="0" inputmode="decimal" placeholder="Ej. 1.500" /></div>
-        </div>
-        <details class="advanced-config">
-          <summary>Opciones avanzadas <span>moneda, contingencia, tipo de cambio y objetivo</span></summary>
-          <div class="form-grid advanced-grid">
-            <div class="field"><label for="currency">Moneda base</label><select id="currency"><option value="ARS">ARS · peso argentino</option><option value="USD">USD · dólar</option></select></div>
-            <div class="field"><label for="contingency">Contingencia (%)</label><input id="contingency" type="number" min="0" max="100" step="1" value="10" inputmode="decimal" /></div>
-            <div class="field"><label for="usdArs">USD → ARS</label><input id="usdArs" type="number" min="0" step="0.01" value="0" placeholder="Solo si hay precios en USD" inputmode="decimal" /></div>
-            <div class="field"><label for="budgetTarget">Presupuesto objetivo</label><input id="budgetTarget" type="number" min="0" step="0.01" value="0" inputmode="decimal" /></div>
-            <div class="field full"><label for="notes">Notas generales</label><textarea id="notes" rows="3" placeholder="Horarios, reservas, equipaje, reuniones, restricciones de ruta…"></textarea></div>
-          </div>
-        </details>
-      </section>
-
-      <section class="panel focus-panel" id="ruta">
-        <div class="panel-head"><div><h2>1. Ruta y etapas en auto</h2><p class="hint">Primero definí cada tramo y calculá la ruta. Los ajustes de peajes, estacionamiento y kilómetros locales quedan dentro de “Costos y ajustes”.</p></div><span class="tag">Logística</span></div>
-        <div id="stages" class="stage-list"></div>
-        <div class="add-row stage-add-row"><small>Las etapas nuevas empiezan desde el destino anterior para que la ruta quede encadenada.</small><div class="stage-actions"><button class="btn primary" id="calcAllRoutesBtn" type="button">↻ Calcular todas</button><button class="btn secondary" id="addStageBtn" type="button">+ Agregar etapa</button><button class="btn secondary" id="addReturnBtn" type="button">↩ Agregar regreso</button></div></div>
-        <p class="routing-credit">Distancias y tiempos calculados con <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>, Nominatim y OSRM. Google Maps queda como contraste final.</p>
-      </section>
-
-      <section class="panel focus-panel" id="estadias">
-        <div class="panel-head"><div><h2>2. Estadías y alojamientos</h2><p class="hint">Cargá una reserva por parada. Podés escribir el importe o importarlo desde una captura para reducir carga manual.</p></div><span class="tag">Estadías</span></div>
-        <div class="privacy-note">🔒 Las capturas se procesan localmente en tu navegador y no se guardan en el presupuesto.</div>
-        <div id="stays" class="stay-list"></div>
-        <div class="add-row"><small>El total de las reservas incluidas se suma automáticamente.</small><button class="btn primary" id="addStayBtn" type="button">+ Agregar estadía</button></div>
-      </section>
-
-      <section class="panel" id="otros-gastos">
-        <div class="panel-head"><div><h2>3. Otros gastos</h2><p class="hint">Sumá solo lo que no esté cubierto por auto o alojamiento: comidas, actividades, seguro, compras y extras.</p></div><span class="tag">Complementos</span></div>
-        <div class="table-shell"><div class="expense-table"><table><thead><tr><th>Rubro</th><th>Concepto</th><th>Precio</th><th>Base</th><th>Subtotal</th><th></th></tr></thead><tbody id="expenseBody"></tbody></table></div></div>
-        <div class="add-row"><small>Los gastos por persona o día se multiplican automáticamente.</small><button class="btn secondary" id="addExpenseBtn" type="button">+ Agregar gasto</button></div>
-      </section>
-    </div>
-
-    <aside class="stack sticky" id="resumen">
-      <section class="panel decision-panel">
-        <div class="panel-head"><div><h2>Presupuesto del viaje</h2><p class="hint">Resultado principal para tomar decisiones.</p></div><span class="tag">Resumen</span></div>
-        <div class="total-card"><div class="k">Total estimado</div><div class="v" id="sideTotal">$ 0</div></div>
-        <div class="quick-card"><div class="k">Por persona</div><div class="v" id="perPersonText">$ 0</div></div>
-        <div class="quick-card"><div class="k">Por persona / día</div><div class="v" id="perPersonDayText">$ 0</div></div>
-        <div class="split"><span>Duración</span><span id="durationText">1 día</span></div>
-        <div class="split"><span>Conducción estimada</span><span id="driveTimeText">0 h</span></div>
-        <div class="split"><span>Noches reservadas</span><span id="reservedNightsText">0</span></div>
-        <div class="split"><span>Contingencia</span><span id="contingencyText">$ 0</span></div>
-        <div class="status" id="status" role="status" aria-live="polite"></div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-head"><div><h2>Resumen del auto</h2><p class="hint">Datos necesarios para revisar el costo logístico.</p></div><span class="tag">Auto</span></div>
-        <div class="quick-card"><div class="k">Distancia total</div><div class="v" id="totalKmText">0 km</div></div>
-        <div class="quick-card"><div class="k">Combustible estimado</div><div class="v" id="fuelLitersText">0 L</div></div>
-        <div class="quick-card"><div class="k">Costo combustible</div><div class="v" id="fuelCostText">$ 0</div></div>
-        <div class="split"><span>Peajes</span><span id="tollsText">$ 0</span></div>
-        <div class="split"><span>Estacionamiento</span><span id="parkingText">$ 0</span></div>
-        <div class="split"><span>Km locales</span><span id="localKmText">0 km</span></div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-head"><div><h2>Distribución</h2><p class="hint">Dónde se concentra el gasto.</p></div><span class="tag">Costos</span></div>
-        <div id="categoryBreakdown" class="breakdown"></div>
-      </section>
-
-      <details class="panel map-panel map-details">
-        <summary><span><strong>Mapa de referencia</strong><small>Bahía Blanca y acceso al mapa ampliado</small></span><span class="tag">Mapa</span></summary>
-        <div class="map-content">
-          <iframe title="Mapa de Bahía Blanca" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=-62.43%2C-38.86%2C-62.08%2C-38.58&amp;layer=mapnik&amp;marker=-38.7183%2C-62.2663"></iframe>
-          <a class="map-credit" href="https://www.openstreetmap.org/?mlat=-38.7183&amp;mlon=-62.2663#map=11/-38.7183/-62.2663" target="_blank" rel="noopener">Abrir mapa ampliado ↗</a>
-        </div>
-      </details>
-    </aside>
-  </div>
+  <nav class="journey-nav" aria-label="Flujo de planificación"><a class="journey-step" href="#ruta" data-workflow="route"><span class="step-number">1</span><span><strong>Armá la ruta</strong><small id="routeStepStatus">Pendiente de cálculo</small></span></a><a class="journey-step" href="#estadias" data-workflow="stays"><span class="step-number">2</span><span><strong>Cargá las estadías</strong><small id="stayStepStatus">Sin reservas</small></span></a><a class="journey-step" href="#resumen" data-workflow="budget"><span class="step-number">3</span><span><strong>Revisá el presupuesto</strong><small id="budgetStepStatus">Faltan importes</small></span></a></nav>
+  <div class="toolbar" aria-label="Acciones del plan"><button class="btn secondary" id="wholeRouteBtn" type="button">🗺️ Abrir ruta en Google Maps</button><button class="btn secondary" id="shareBtn" type="button">🔗 Compartir</button><button class="btn secondary" id="exportBtn" type="button">⬇️ CSV</button><button class="btn secondary" id="printBtn" type="button">🖨️ PDF</button><button class="btn ghost danger" id="resetBtn" type="button">Reiniciar</button><span class="autosave" id="autosaveStatus" aria-live="polite">● Guardado automático</span></div>
+  <section class="summary-grid" aria-label="Resumen de costos"><div class="metric primary"><div class="metric-label">Presupuesto total</div><div class="metric-value" id="summaryTotal">$ 0</div><div class="metric-sub" id="summaryContingency">Incluye contingencia</div></div><div class="metric"><div class="metric-label">Costo del auto</div><div class="metric-value" id="summaryCar">$ 0</div><div class="metric-sub" id="summaryKm">0 km</div></div><div class="metric"><div class="metric-label">Alojamientos</div><div class="metric-value" id="summaryStays">$ 0</div><div class="metric-sub" id="summaryNights">0 noches</div></div><div class="metric"><div class="metric-label">Saldo objetivo</div><div class="metric-value" id="summaryRemaining">—</div><div class="metric-sub" id="summaryTarget">Sin objetivo definido</div></div></section>
+  <div class="layout"><div class="stack">
+    <section class="panel" id="configuracion"><div class="panel-head"><div><h2>Datos básicos</h2><p class="hint">Con estos datos alcanza para empezar. Las opciones menos frecuentes están agrupadas debajo.</p></div><span class="tag">Inicio</span></div><div id="setupNotice" class="setup-notice" role="status"></div><div class="form-grid thirds basic-grid"><div class="field"><label for="origin">Origen inicial</label><input id="origin" value="Bariloche" autocomplete="address-level2" /></div><div class="field"><label for="startDate">Salida</label><input id="startDate" type="date" /></div><div class="field"><label for="endDate">Regreso</label><input id="endDate" type="date" /></div><div class="field"><label for="travelers">Viajeros</label><input id="travelers" type="number" min="1" step="1" value="1" inputmode="numeric" /></div><div class="field"><label for="fuelConsumption">Consumo del auto <span class="label-help">L/100 km</span></label><input id="fuelConsumption" type="number" min="0" step="0.1" value="8.5" inputmode="decimal" /></div><div class="field"><label for="fuelPrice">Precio combustible / L</label><input id="fuelPrice" type="number" min="0" step="0.01" value="0" inputmode="decimal" placeholder="Ej. 1.500" /></div></div><details class="advanced-config"><summary>Opciones avanzadas <span>moneda, contingencia, tipo de cambio y objetivo</span></summary><div class="form-grid advanced-grid"><div class="field"><label for="currency">Moneda base</label><select id="currency"><option value="ARS">ARS · peso argentino</option><option value="USD">USD · dólar</option></select></div><div class="field"><label for="contingency">Contingencia (%)</label><input id="contingency" type="number" min="0" max="100" step="1" value="10" inputmode="decimal" /></div><div class="field"><label for="usdArs">USD → ARS</label><input id="usdArs" type="number" min="0" step="0.01" value="0" placeholder="Solo si hay precios en USD" inputmode="decimal" /></div><div class="field"><label for="budgetTarget">Presupuesto objetivo</label><input id="budgetTarget" type="number" min="0" step="0.01" value="0" inputmode="decimal" /></div><div class="field full"><label for="notes">Notas generales</label><textarea id="notes" rows="3" placeholder="Horarios, reservas, equipaje, reuniones, restricciones de ruta…"></textarea></div></div></details></section>
+    <section class="panel focus-panel" id="ruta"><div class="panel-head"><div><h2>1. Ruta y etapas en auto</h2><p class="hint">Primero definí cada tramo y calculá la ruta. Los ajustes de peajes, estacionamiento y kilómetros locales quedan dentro de “Costos y ajustes”.</p></div><span class="tag">Logística</span></div><div id="stages" class="stage-list"></div><div class="add-row stage-add-row"><small>Las etapas nuevas empiezan desde el destino anterior para que la ruta quede encadenada.</small><div class="stage-actions"><button class="btn primary" id="calcAllRoutesBtn" type="button">↻ Calcular todas</button><button class="btn secondary" id="addStageBtn" type="button">+ Agregar etapa</button><button class="btn secondary" id="addReturnBtn" type="button">↩ Agregar regreso</button></div></div><p class="routing-credit">Distancias y tiempos calculados con <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>, Nominatim y OSRM. Google Maps queda como contraste final.</p></section>
+    <section class="panel focus-panel" id="estadias"><div class="panel-head"><div><h2>2. Estadías y alojamientos</h2><p class="hint">Cargá una reserva por parada. Podés escribir el importe o importarlo desde una captura para reducir carga manual.</p></div><span class="tag">Estadías</span></div><div class="privacy-note">🔒 Las capturas se procesan localmente en tu navegador y no se guardan en el presupuesto.</div><div id="stays" class="stay-list"></div><div class="add-row"><small>El total de las reservas incluidas se suma automáticamente.</small><button class="btn primary" id="addStayBtn" type="button">+ Agregar estadía</button></div></section>
+    <section class="panel" id="otros-gastos"><div class="panel-head"><div><h2>3. Otros gastos</h2><p class="hint">Sumá solo lo que no esté cubierto por auto o alojamiento: comidas, actividades, seguro, compras y extras.</p></div><span class="tag">Complementos</span></div><div class="table-shell"><div class="expense-table"><table><thead><tr><th>Rubro</th><th>Concepto</th><th>Precio</th><th>Base</th><th>Subtotal</th><th></th></tr></thead><tbody id="expenseBody"></tbody></table></div></div><div class="add-row"><small>Los gastos por persona o día se multiplican automáticamente.</small><button class="btn secondary" id="addExpenseBtn" type="button">+ Agregar gasto</button></div></section>
+  </div><aside class="stack sticky" id="resumen"><section class="panel decision-panel"><div class="panel-head"><div><h2>Presupuesto del viaje</h2><p class="hint">Resultado principal para tomar decisiones.</p></div><span class="tag">Resumen</span></div><div class="total-card"><div class="k">Total estimado</div><div class="v" id="sideTotal">$ 0</div></div><div class="quick-card"><div class="k">Por persona</div><div class="v" id="perPersonText">$ 0</div></div><div class="quick-card"><div class="k">Por persona / día</div><div class="v" id="perPersonDayText">$ 0</div></div><div class="split"><span>Duración</span><span id="durationText">1 día</span></div><div class="split"><span>Conducción estimada</span><span id="driveTimeText">0 h</span></div><div class="split"><span>Noches reservadas</span><span id="reservedNightsText">0</span></div><div class="split"><span>Contingencia</span><span id="contingencyText">$ 0</span></div><div class="status" id="status" role="status" aria-live="polite"></div></section><section class="panel"><div class="panel-head"><div><h2>Resumen del auto</h2><p class="hint">Datos necesarios para revisar el costo logístico.</p></div><span class="tag">Auto</span></div><div class="quick-card"><div class="k">Distancia total</div><div class="v" id="totalKmText">0 km</div></div><div class="quick-card"><div class="k">Combustible estimado</div><div class="v" id="fuelLitersText">0 L</div></div><div class="quick-card"><div class="k">Costo combustible</div><div class="v" id="fuelCostText">$ 0</div></div><div class="split"><span>Peajes</span><span id="tollsText">$ 0</span></div><div class="split"><span>Estacionamiento</span><span id="parkingText">$ 0</span></div><div class="split"><span>Km locales</span><span id="localKmText">0 km</span></div></section><section class="panel"><div class="panel-head"><div><h2>Distribución</h2><p class="hint">Dónde se concentra el gasto.</p></div><span class="tag">Costos</span></div><div id="categoryBreakdown" class="breakdown"></div></section><details class="panel map-panel map-details"><summary><span><strong>Mapa de referencia</strong><small>Bahía Blanca y acceso al mapa ampliado</small></span><span class="tag">Mapa</span></summary><div class="map-content"><iframe title="Mapa de Bahía Blanca" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=-62.43%2C-38.86%2C-62.08%2C-38.58&amp;layer=mapnik&amp;marker=-38.7183%2C-62.2663"></iframe><a class="map-credit" href="https://www.openstreetmap.org/?mlat=-38.7183&amp;mlon=-62.2663#map=11/-38.7183/-62.2663" target="_blank" rel="noopener">Abrir mapa ampliado ↗</a></div></details></aside></div>
 </main>
-
-<div class="mobile-budget-bar" aria-label="Resumen móvil">
-  <span><small>Total estimado</small><strong id="mobileTotal">$ 0</strong></span>
-  <a href="#resumen">Ver resumen ↑</a>
-</div>
-<div class="undo-toast" id="undoToast" role="status" aria-live="polite" hidden><span id="undoText"></span><button id="undoBtn" type="button">Deshacer</button></div>
-
-<script src="roadtrip-v3-1.js?v=4"></script>
-<script src="roadtrip-v4-2.js?v=4"></script>
-<script src="roadtrip-v4-3.js?v=4"></script>
+<div class="mobile-budget-bar" aria-label="Resumen móvil"><span><small>Total estimado</small><strong id="mobileTotal">$ 0</strong></span><a href="#resumen">Ver resumen ↑</a></div><div class="undo-toast" id="undoToast" role="status" aria-live="polite" hidden><span id="undoText"></span><button id="undoBtn" type="button">Deshacer</button></div>
+<script src="roadtrip-v3-1.js?v=4"></script><script src="roadtrip-v4-2.js?v=4"></script><script src="roadtrip-v4-3.js?v=4"></script><script src="roadtrip-v6.js?v=6"></script>
 </body>
 </html>
