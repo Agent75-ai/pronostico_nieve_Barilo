@@ -1,0 +1,10 @@
+/* Automatic market fuel price v6 */
+.fuel-market-box{margin-top:8px;padding:10px 11px;border:1px solid #dce8e5;border-radius:12px;background:#f7fbf9;display:grid;gap:7px}
+.fuel-market-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.fuel-market-toggle{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--ink);cursor:pointer}
+.fuel-market-toggle input{width:auto;min-height:auto;accent-color:var(--brand2)}
+.fuel-market-refresh{min-height:32px;padding:5px 9px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--brand);font-weight:700;font-size:.76rem;cursor:pointer}
+.fuel-market-refresh:disabled{opacity:.55;cursor:wait}
+.fuel-market-status{font-size:.76rem;line-height:1.4;color:var(--muted)}
+.fuel-market-status strong{color:var(--brand)}
+@media(max-width:620px){.fuel-market-box{padding:9px}.fuel-market-top{align-items:flex-start}.fuel-market-refresh{width:100%}}
