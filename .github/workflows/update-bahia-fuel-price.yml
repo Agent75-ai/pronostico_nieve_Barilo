@@ -1,13 +1,7 @@
 name: Update Bahía Blanca fuel price
 
 on:
-  schedule:
-    - cron: '17 9 * * *'
   workflow_dispatch:
-  push:
-    paths:
-      - 'viaje-bahia-blanca/scripts/update_fuel_price.py'
-      - '.github/workflows/update-bahia-fuel-price.yml'
 
 permissions:
   contents: write
